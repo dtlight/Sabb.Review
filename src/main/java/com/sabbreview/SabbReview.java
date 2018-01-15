@@ -5,6 +5,8 @@ import com.sabbreview.model.User;
 import com.sabbreview.responses.HelloWorld;
 import com.sabbreview.responses.NotFound;
 
+import java.net.URI;
+import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -18,11 +20,9 @@ import static spark.Spark.staticFiles;
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
-  private static EntityManagerFactory factory;
 
   public static void main(String... args) {
-    factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    EntityManager em = factory.createEntityManager();
+    EntityManager em = getEntityManager();
 
     port(getHerokuAssignedPort());
 
@@ -54,4 +54,21 @@ public class SabbReview {
     return 4567;
   }
 
+  private static EntityManager getEntityManager() {
+    EntityManagerFactory entityManagerFactory;
+    if(System.getenv("DATABASE_URL") != null){
+      URI uri = URI.create(System.getenv("DATABASE_URL"));
+      HashMap<String, String> persistenceMap = new HashMap<>();
+      persistenceMap.put("javax.persistence.jdbc.url", "jdbc:postgresql://" + uri.getHost() + ':' + uri.getPort() + uri.getPath()+"?sslmode=require");
+      System.out.println(uri.getUserInfo().split(":")[1]);
+      persistenceMap.put("javax.persistence.jdbc.user", uri.getUserInfo().split(":")[0]);
+      persistenceMap.put("javax.persistence.jdbc.password", uri.getUserInfo().split(":")[1]);
+      persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
+
+      entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
+    } else {
+      entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+    }
+    return entityManagerFactory.createEntityManager();
+  }
 }
