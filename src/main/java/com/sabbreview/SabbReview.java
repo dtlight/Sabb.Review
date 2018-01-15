@@ -20,6 +20,7 @@ import static spark.Spark.staticFiles;
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
+  private static final String DB_ENV_VARIABLE = "POSTGRES_ELEPHANT";
 
   public static void main(String... args) {
     EntityManager em = getEntityManager();
@@ -56,11 +57,10 @@ public class SabbReview {
 
   private static EntityManager getEntityManager() {
     EntityManagerFactory entityManagerFactory;
-    if(System.getenv("DATABASE_URL") != null){
-      URI uri = URI.create(System.getenv("DATABASE_URL"));
+    if(System.getenv(DB_ENV_VARIABLE) != null){
+      URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
       HashMap<String, String> persistenceMap = new HashMap<>();
       persistenceMap.put("javax.persistence.jdbc.url", "jdbc:postgresql://" + uri.getHost() + ':' + uri.getPort() + uri.getPath()+"?sslmode=require");
-      System.out.println(uri.getUserInfo().split(":")[1]);
       persistenceMap.put("javax.persistence.jdbc.user", uri.getUserInfo().split(":")[0]);
       persistenceMap.put("javax.persistence.jdbc.password", uri.getUserInfo().split(":")[1]);
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
