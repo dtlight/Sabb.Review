@@ -1,0 +1,322 @@
+@font-face {
+    font-family: 'BebasNeueRegular';
+    src: url('fonts/BebasNeue-webfont.eot');
+    src: url('fonts/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/BebasNeue-webfont.woff') format('woff'),
+         url('fonts/BebasNeue-webfont.ttf') format('truetype'),
+         url('fonts/BebasNeue-webfont.svg#BebasNeueRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'FontomasCustomRegular';
+    src: url('fonts/fontomas-webfont.eot');
+    src: url('fonts/fontomas-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/fontomas-webfont.woff') format('woff'),
+         url('fonts/fontomas-webfont.ttf') format('truetype'),
+         url('fonts/fontomas-webfont.svg#FontomasCustomRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+body,div,dl,dt,dd,ul,ol,li,h1,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+	margin:0;
+	padding:0;
+}
+html,body {
+	margin:0;
+	padding:0;
+	height: 100%;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+fieldset,img { 
+	border:0;
+}
+address,caption,cite,code,dfn,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	background: #fff url(../images/background_rhul.jpg);
+	background-size:cover;
+	font-weight: 400;
+	font-size: 15px;
+	color: #1d3c41;
+	overflow-y: scroll;
+}
+a{
+	color: #292323;
+}
+.container{
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+.clr{
+	clear: both;
+}
+.container > header{
+	padding: 100px 30px 10px 30px;
+	margin: 0px 20px 10px 20px;
+	position: relative;
+	display: block;
+    text-align: center;
+}
+#container_form{
+	 text-align: left;
+	 margin: 0;
+	 padding: 0;
+	 margin: 0 auto;
+	 font-family: "Trebuchet MS","Myriad Pro",Arial,sans-serif;
+}
+
+a.hiddenform{
+	display: none;
+}
+#wrapper{
+	width: 60%;
+	right: 0px;
+	min-height: 560px;	
+	margin: 0px auto;	
+	width: 500px;
+	position: relative;	
+}
+#wrapper a{
+	color: rgb(95, 155, 198);
+	text-decoration: underline;
+}
+#wrapper h1{
+	font-size: 48px;
+	color: rgb(6, 106, 117);
+	padding: 2px 0 10px 0;
+	font-family: 'BebasNeueRegular','Arial Narrow',Arial,sans-serif;
+	font-weight: bold;
+	text-align: center;
+	padding-bottom: 30px;
+}
+#wrapper h1{
+    background: rgb(237, 106, 36);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+}
+#wrapper h1:after{
+	content: ' ';
+	display: block;
+	width: 100%;
+	height: 2px;
+	margin-top: 10px;
+}
+#wrapper p{
+	margin-bottom:15px;
+}
+#wrapper p:first-child{
+	margin: 0px;
+}
+#wrapper label{
+	color: rgb(53, 24, 2);
+	position: relative;
+}
+::-webkit-input-placeholder  { 
+	color: rgb(180, 180, 180); 
+	font-style: italic;
+}
+input:-moz-placeholder,
+textarea:-moz-placeholder{ 
+	color: rgb(180, 180, 180);
+	font-style: italic;
+} 
+input {
+  outline: none;
+}
+#wrapper input:not([type="checkbox"]){
+	width: 90%;
+	margin-top: 4px;
+	padding: 10px 5px 10px 30px;	
+	border: 1px solid rgb(178, 178, 178);
+	-webkit-appearance: textfield;
+	-webkit-box-sizing: content-box;
+	  -moz-box-sizing : content-box;
+	       box-sizing : content-box;
+	-webkit-border-radius: 1px;
+	   -moz-border-radius: 1px;
+	        border-radius: 1px;
+	-webkit-box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.6) inset;
+	   -moz-box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.6) inset;
+	        box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.6) inset;
+	-webkit-transition: all 0.2s linear;
+	   -moz-transition: all 0.2s linear;
+	     -o-transition: all 0.2s linear;
+	        transition: all 0.2s linear;
+}
+#wrapper input:not([type="checkbox"]):active,
+#wrapper input:not([type="checkbox"]):focus{
+	border: 1px solid rgba(91, 90, 90, 0.7);
+	background: rgba(238, 236, 240, 0.2);	
+	-webkit-box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.9) inset;
+	   -moz-box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.9) inset;
+	        box-shadow: 0px 1px 4px 0px rgba(210, 205. 201, 0.9) inset;
+} 
+
+[data-icon]:after {
+    content: attr(data-icon);
+    font-family: 'FontomasCustomRegular';
+    color: rgb(237, 106, 36);
+    position: absolute;
+    left: 10px;
+    top: 35px;
+	width: 30px;
+}
+#wrapper p.button input{
+	width: 30%;
+	cursor: pointer;	
+	background: white;
+	padding: 8px 5px;
+	font-family: 'BebasNeueRegular','Arial Narrow',Arial,sans-serif;
+	color: rgb(237, 106, 36);
+	font-size: 24px;	
+	border: 1px solid rgb(237, 106, 36);
+	margin-bottom: 10px;	
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	-webkit-border-radius: 1px;
+	   -moz-border-radius: 1px;
+	        border-radius: 1px;	
+	-webkit-transition: all 0.2s linear;
+	   -moz-transition: all 0.2s linear;
+	     -o-transition: all 0.2s linear;
+	        transition: all 0.2s linear;
+}
+#wrapper p.button input:hover{
+	color: white;
+	background: rgb(237, 106, 36);
+	border: 1px solid white;
+}
+#wrapper p.switch_form a {
+	display: inline-block;
+	font-weight: bold;
+	background: white;
+	font-family: 'BebasNeueRegular','Arial Narrow',Arial,sans-serif;
+	padding: 2px 6px;
+	color: rgb(237, 106, 36);
+	margin-left: 10px;
+	text-decoration: none;
+	-webkit-border-radius: 1px;
+	-moz-border-radius: 1px;
+	border-radius: 1px;
+	border: 1px solid rgb(237, 106, 36);
+	-webkit-transition: all 0.4s linear;
+	-moz-transition: all 0.4s  linear;
+	-o-transition: all 0.4s linear;
+	-ms-transition: all 0.4s  linear;
+	transition: all 0.4s  linear;
+}
+#wrapper p.switch_form a:hover {
+	color: white;
+	background: rgb(237, 106, 36);
+	border: 1px solid white;
+}
+#wrapper p.switch_form a:active{
+	position: relative;
+	top: 1px;
+}
+#register, #login{
+	position: absolute;
+	top: 0px;
+	width: 90%;	
+	padding: 20px 5% 70px 5%;
+	margin: 0 0 25px 0;
+	background: rgb(247, 247, 247);
+	border: 1px solid rgba(147, 184, 189,0.8);
+	-webkit-box-shadow: 0pt 2px 5px rgba(181, 182, 183,  0.7),	0px 0px 8px 5px rgba(210, 200, 185, 0.4) inset;
+	   -moz-box-shadow: 0pt 2px 5px rgba(181, 182, 183,  0.7),	0px 0px 8px 5px rgba(210, 200, 185, 0.4) inset;
+	        box-shadow: 0pt 2px 5px rgba(181, 182, 183,  0.7),	0px 0px 8px 5px rgba(210, 200, 185, 0.4) inset;
+	-webkit-box-shadow: 5px;
+	-moz-border-radius: 2px;
+		 border-radius: 2px;
+}
+#register{	
+	z-index: 25;
+	opacity: 0;
+}
+#login{
+	z-index: 50;
+}
+#registerform:target ~ #wrapper #register,#loginform:target ~ #wrapper #login{
+	z-index: 50;
+	-webkit-animation-name: fadeInLeft;
+	-moz-animation-name: fadeInLeft;
+	-ms-animation-name: fadeInLeft;
+	-o-animation-name: fadeInLeft;
+	animation-name: fadeInLeft;
+	-webkit-animation-delay: .1s;
+	-moz-animation-delay: .1s;
+	-o-animation-delay: .1s;
+	-ms-animation-delay: .1s;
+	animation-delay: .1s;
+}
+#toregister:target ~ #wrapper #login,
+#loginform:target ~ #wrapper #register{
+	-webkit-animation-name: fadeOutLeft;
+	-moz-animation-name: fadeOutLeft;
+	-ms-animation-name: fadeOutLeft;
+	-o-animation-name: fadeOutLeft;
+	animation-name: fadeOutLeft;
+}
+p.login.button,p.signin.button{
+	text-align: right;
+	margin: 6x 0;
+}
+.keeplogged{
+	margin-top: -6px;
+}
+.keeplogged input,.keeplogged label{
+	display: inline-block;
+	font-size: 13px;	
+}
+.keeplogged input#keeploggedin{
+	margin-right: 6px;
+}
+.keeplogged label{
+	width: 80%;
+}
+p.switch_form{
+	position: absolute;
+	color: rgb(127, 124, 124);
+	left: 0px;
+	height: 20px;
+	width: 440px;
+	padding: 15px 30px 20px 30px;
+	font-size: 22px	;
+	text-align: right;
+	background: rgb(227, 102, 36));
+}
+/*
+ Animations
+ Author: http://daneden.me/animate/ 
+ */
+.animate{
+	-webkit-animation-duration: 0.5s;
+	-webkit-animation-timing-function: ease;
+	-webkit-animation-fill-mode: both;
+	
+	-moz-animation-duration: 0.5s;
+	-moz-animation-timing-function: ease;
+	-moz-animation-fill-mode: both;
+	
+	-o-animation-duration: 0.5s;
+	-o-animation-timing-function: ease;
+	-o-animation-fill-mode: both;
+	
+	-ms-animation-duration: 0.5s;
+	-ms-animation-timing-function: ease;
+	-ms-animation-fill-mode: both;
+	
+	animation-duration: 0.5s;
+	animation-timing-function: ease;
+	animation-fill-mode: both;
+}
