@@ -1,30 +1,37 @@
 package com.sabbreview.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity(name = "users")
 public class User {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  public Long id;
-  public String username;
-  public String password;
+  String emailAddress;
+  String password;
+  public Boolean isAdmin;
+
+  @OneToMany
+  public List<Assignment> assignments = new ArrayList<>();
 
   public User() {}
 
-  public User(String username, String password) {
-    this.setUsername(username);
+  public User(String emailAddress, String password) {
+    this.setEmailAddress(emailAddress);
     this.setPassword(password);
   }
   @Override public String toString() {
-    return "User("+username+")";
+    return "User("+emailAddress+")";
   }
 
-  public String getUsername() {
-    return username;
+  public String getEmailAddress() {
+    return emailAddress;
+  }
+
+  public void addAssignment(Assignment assignment) {
+    this.assignments.add(assignment);
   }
 
   public User setPassword(String password) {
@@ -32,8 +39,8 @@ public class User {
     return this;
   }
 
-  public User setUsername(String username) {
-    this.username = username;
+  public User setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
     return this;
   }
 }

@@ -1,6 +1,9 @@
 package com.sabbreview;
 
 import com.google.gson.Gson;
+import com.sabbreview.model.Application;
+import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Role;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.HelloWorld;
 import com.sabbreview.responses.NotFound;
@@ -42,6 +45,22 @@ public class SabbReview {
       em.getTransaction().commit();
       return new Gson().toJson(user);
     });
+
+    get("/api/user/:id", (req, res) -> new Gson().toJson(em.find(User.class, req.params("id"))));
+
+    em.getTransaction().begin();
+    User testUser = new User("matthew@bargrove.com", "testpw");
+    User testUser2 = new User("geoff@bargrove.com", "testpw2");
+    em.persist(testUser);
+    em.persist(testUser2);
+    Application testApplication = new Application(testUser);
+    em.persist(testApplication);
+    Role role = new Role("Test Role");
+    em.persist(role);
+    Assignment assignment = new Assignment(testUser2, testApplication, role);
+    testUser.addAssignment(assignment);
+    em.persist(assignment);
+    em.getTransaction().commit();
 
 
     notFound((request, response) -> new NotFound().toJSON());
