@@ -7,16 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-@Entity(name = "applications")
-@UuidGenerator(name="APPLICATION_ID_GEN")
-public class Application {
+@Entity(name = "applications") @UuidGenerator(name = "APPLICATION_ID_GEN") public class Application
+    extends Model {
 
   @Id
   @GeneratedValue(generator="APPLICATION_ID_GEN")
   public String id;
 
-  @ManyToOne
-  public transient User applicant;
+  @ManyToOne private transient User applicant;
 
   public Application() {
 

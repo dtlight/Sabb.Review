@@ -6,15 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-@Entity(name = "users")
-public class User {
-  @Id
-  String emailAddress;
-  String password;
+@Entity(name = "users") public class User extends Model {
+  @Id private String emailAddress;
+  @SuppressWarnings("FieldCanBeLocal") private String password;
   public Boolean isAdmin;
 
-  @OneToMany
-  public List<Assignment> assignments = new ArrayList<>();
+  @OneToMany private List<Assignment> assignments = new ArrayList<>();
 
   public User() {}
 
@@ -34,12 +31,12 @@ public class User {
     this.assignments.add(assignment);
   }
 
-  public User setPassword(String password) {
+  private User setPassword(String password) {
     this.password = password;
     return this;
   }
 
-  public User setEmailAddress(String emailAddress) {
+  private User setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
     return this;
   }

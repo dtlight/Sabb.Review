@@ -4,12 +4,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name = "roles")
-public class Role {
-  @Id
-  @SequenceGenerator(initialValue = 1, name = "role_id_gen")
+@Entity(name = "roles") public class Role extends Model {
+  @Id @SequenceGenerator(name = "role_id_gen")
   int id;
-  public String name;
+  private String name;
 
   public Role() {}
 

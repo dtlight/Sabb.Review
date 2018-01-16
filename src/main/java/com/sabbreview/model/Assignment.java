@@ -6,20 +6,15 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name = "assignments")
-public class Assignment {
-  @Id
-  @SequenceGenerator(initialValue = 1, name = "ass_id_gen")
+@Entity(name = "assignments") public class Assignment extends Model {
+  @Id @SequenceGenerator(name = "ass_id_gen")
   public int id;
 
-  @ManyToOne(targetEntity = User.class)
-  public transient User owner;
-  @ManyToOne
-  public Application application;
+  @ManyToOne(targetEntity = User.class) private transient User owner;
 
+  @ManyToOne private Application application;
 
-  @ManyToOne
-  Role role;
+  @ManyToOne private Role role;
 
   Date dueDate;
 
