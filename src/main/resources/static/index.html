@@ -1,15 +1,71 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <title>Hello World</title>
+        <meta charset="UTF-8" />
+        <title>RHUL SLS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="images/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/animate-custom.css" />
     </head>
     <body>
-        This is gonna be easy, right?
-        I believe so.
-        <a href="/test">Test</a>
-        <form action="/api/user/register" method="post">
-            <input type="text" name="username" placeholder="Username"/><br>
-            <input type="password" name="password" placeholder="Password"/>
-            <input type="submit"/>
-        </form>
+        <div class="container">
+            <header>
+            </header>
+            <section>
+                <div id="container_form" >
+                    <a class="hiddenform" id="registerform"></a>
+                    <a class="hiddenform" id="loginform"></a>
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form  action="" autocomplete="on">
+                                <h1>Login</h1>
+                                <p>
+                                    <label for="username" class="username_c" data-icon="u" >Username </label>
+                                    <input id="username" name="username" required="required" type="text" placeholder="username"/>
+                                </p>
+                                <p>
+                                    <label for="password" class="userpassword_c" data-icon="p">Password </label>
+                                    <input id="password" name="password" required="required" type="password" placeholder="password" />
+                                </p>
+                                <p class="keeplogged">
+                  									<input type="checkbox" name="keeploggedin" id="keeploggedin" value="keeploggedin" />
+                  									<label for="keeploggedin">Keep me logged in</label>
+              								  </p>
+                                <p class="login button">
+                                    <input type="submit" value="Login" />
+                								</p>
+                                <p class="switch_form">
+                  									<a href="#registerform" class="to_register">REGISTER</a>
+                								</p>
+                            </form>
+                        </div>
+                        <div id="register" class="animate form">
+                            <form  action="" autocomplete="on">
+                                <h1> Register </h1>
+                                <p>
+                                    <label for="registerusername" class="username_c" data-icon="u">Username</label>
+                                    <input id="registerusername" name="registerusername" required="required" type="text" placeholder="username" />
+                                </p>
+                                <p>
+                                    <label for="registeremail" class="usermail_c" data-icon="e" >Email</label>
+                                    <input id="registeremail" name="registeremail" required="required" type="email" placeholder="email"/>
+                                </p>
+                                <p>
+                                    <label for="registerpassword" class="userpassword_c" data-icon="p">Password </label>
+                                    <input id="registerpassword" name="registerpassword" required="required" type="password" placeholder="password"/>
+                                </p>
+                                <p class="signin button">
+                								    <input type="submit" value="REGISTER"/>
+                								</p>
+                                <p class="switch_form">
+                									  <a href="#loginform" class="to_register"> LOGIN </a>
+                								</p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </body>
 </html>
