@@ -21,7 +21,7 @@ import static spark.Spark.staticFiles;
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
-  private static final String DB_ENV_VARIABLE = "POSTGRES_ELEPHANT";
+  private static final String DB_ENV_VARIABLE = "POSTGRES_GOOGLE";
   private static Gson gson = new Gson();
   private static EntityManager em = getEntityManager();
 
