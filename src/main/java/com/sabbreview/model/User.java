@@ -40,4 +40,5 @@ import javax.persistence.OneToMany;
     this.emailAddress = emailAddress;
     return this;
   }
+
 }
