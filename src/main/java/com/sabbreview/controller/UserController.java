@@ -9,11 +9,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 public class UserController {
-
   private static EntityManager em = SabbReview.getEntityManager();
 
   public static TransactionState<User> registerUser(User user) {
     try {
+      user.encryptPassword();
       em.getTransaction().begin();
       em.persist(user);
       em.getTransaction().commit();
@@ -35,5 +35,15 @@ public class UserController {
     }
   }
 
+
+  public static TransactionState<User> generateSession(String emailAddress, String password) {
+    User user = em.find(User.class, emailAddress);
+    //TODO The rest of the JWT shiz (Kal)
+    if (user == null) {
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not find user");
+    } else {
+      return new TransactionState<>(user, TransactionStatus.STATUS_OK);
+    }
+  }
 
 }
