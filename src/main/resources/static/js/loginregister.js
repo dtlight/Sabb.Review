@@ -41,8 +41,13 @@ $(document).ready(function(){
 
     $.ajax(settings).done(function (response) {
       console.log(response);
-      responseemail = response.value.emailAddress;
-      responsepassword = response.value.password;
+      if (response.state == "STATE_ERROR"){
+        window.alert("Email or password aren't correct");
+        formlogin.reset();
+      } else {
+        responseemail = response.value.emailAddress;
+        responsepassword = response.value.password;
+      }
     });
 
     if (password != responsepassword){
