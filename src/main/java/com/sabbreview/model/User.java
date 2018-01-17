@@ -1,39 +1,52 @@
 package com.sabbreview.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.mindrot.jbcrypt.BCrypt;
 
-@Entity(name = "users")
-public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  public Long id;
-  public String username;
-  public String password;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+@Entity(name = "users") public class User extends Model {
+
+  private static transient int HASH_ROUNDS = 10;
+
+  @Id private String emailAddress;
+  @SuppressWarnings("FieldCanBeLocal") private String password;
+  public Boolean isAdmin;
+
+  @OneToMany private List<Assignment> assignments = new ArrayList<>();
 
   public User() {}
 
-  public User(String username, String password) {
-    this.setUsername(username);
+  public User(String emailAddress, String password) {
+    this.setEmailAddress(emailAddress);
     this.setPassword(password);
   }
   @Override public String toString() {
-    return "User("+username+")";
+    return "User("+emailAddress+")";
   }
 
-  public String getUsername() {
-    return username;
+  public String getEmailAddress() {
+    return emailAddress;
   }
 
-  public User setPassword(String password) {
+  public void addAssignment(Assignment assignment) {
+    this.assignments.add(assignment);
+  }
+
+  private User setPassword(String password) {
     this.password = password;
     return this;
   }
 
-  public User setUsername(String username) {
-    this.username = username;
+  public void encryptPassword() {
+    this.setPassword(BCrypt.hashpw(password, BCrypt.gensalt(HASH_ROUNDS)));
+  }
+
+  private User setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
     return this;
   }
 }

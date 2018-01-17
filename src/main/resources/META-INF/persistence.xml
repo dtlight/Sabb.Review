@@ -4,13 +4,16 @@
     <persistence-unit name="SabbReview" >
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>com.sabbreview.model.User</class>
+        <class>com.sabbreview.model.Application</class>
+        <class>com.sabbreview.model.Assignment</class>
+        <class>com.sabbreview.model.Role</class>
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/SabbReview"/>
             <property name="javax.persistence.jdbc.driver " value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="cs2855"/>
             <property name="javax.persistence.jdbc.password" value=""/>
             <property name="eclipselink.target-database" value="PostgreSQL" />
-            <property name="eclipselink.ddl-generation" value="create-tables" />
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
         </properties>
     </persistence-unit>

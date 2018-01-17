@@ -1,9 +1,10 @@
 package com.sabbreview;
 
 import com.google.gson.Gson;
+import com.sabbreview.controller.UserController;
 import com.sabbreview.model.User;
-import com.sabbreview.responses.HelloWorld;
 import com.sabbreview.responses.NotFound;
+import com.sabbreview.responses.TransactionState;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -20,29 +21,22 @@ import static spark.Spark.staticFiles;
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
-  private static final String DB_ENV_VARIABLE = "POSTGRES_ELEPHANT";
+  private static final String DB_ENV_VARIABLE = "POSTGRES_GOOGLE";
+  private static Gson gson = new Gson();
+  private static EntityManager em = getEntityManager();
 
   public static void main(String... args) {
-    EntityManager em = getEntityManager();
 
     port(getHerokuAssignedPort());
 
     staticFiles.location("static");
 
-    before((req, res) -> {
-      res.type("application/json");
-    });
+    before((req, res) -> res.type("application/json"));
 
-    get("/test", (req, res) -> new HelloWorld().toJSON());
+    post("/api/user",
+        (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
-    post("/api/user/register", (req, res) -> {
-      em.getTransaction().begin();
-      User user = new User(req.queryParams("username"), req.queryParams("password"));
-      em.persist(user);
-      em.getTransaction().commit();
-      return new Gson().toJson(user);
-    });
-
+    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
     notFound((request, response) -> new NotFound().toJSON());
   }
@@ -55,20 +49,30 @@ public class SabbReview {
     return 4567;
   }
 
-  private static EntityManager getEntityManager() {
+  public static EntityManager getEntityManager() {
     EntityManagerFactory entityManagerFactory;
-    if(System.getenv(DB_ENV_VARIABLE) != null){
+    if (System.getenv(DB_ENV_VARIABLE) != null) {
       URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
       HashMap<String, String> persistenceMap = new HashMap<>();
-      persistenceMap.put("javax.persistence.jdbc.url", "jdbc:postgresql://" + uri.getHost() + ':' + uri.getPort() + uri.getPath()+"?sslmode=require");
+      persistenceMap.put("javax.persistence.jdbc.url",
+          "jdbc:postgresql://" + uri.getHost() + ':' + uri.getPort() + uri.getPath()
+              + "?sslmode=require");
       persistenceMap.put("javax.persistence.jdbc.user", uri.getUserInfo().split(":")[0]);
       persistenceMap.put("javax.persistence.jdbc.password", uri.getUserInfo().split(":")[1]);
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
-
-      entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
+      entityManagerFactory =
+          Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
     } else {
       entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     }
     return entityManagerFactory.createEntityManager();
+  }
+
+  private static String toJson(TransactionState transactionState) {
+    return gson.toJson(transactionState);
+  }
+
+  private static <T> T fromJson(String string, Class<T> classOfT) {
+    return gson.fromJson(string, classOfT);
   }
 }
