@@ -1,3 +1,4 @@
+
 package com.sabbreview.controller;
 
 import com.sabbreview.SabbReview;
@@ -14,6 +15,7 @@ public class ApplicationController {
 
     public static TransactionState<User> registerApplication(User applicant) {
 
+        //I need to create setters and getters for applicant and then create a validation condition for each getter?
         try{
             em.getTransaction().begin();
             if(!applicant.get().matches("")){
