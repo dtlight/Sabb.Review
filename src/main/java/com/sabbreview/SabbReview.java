@@ -1,7 +1,9 @@
 package com.sabbreview;
 
 import com.google.gson.Gson;
+import com.sabbreview.controller.ApplicationController;
 import com.sabbreview.controller.UserController;
+import com.sabbreview.model.Application;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
@@ -12,12 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.notFound;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
@@ -38,8 +35,24 @@ public class SabbReview {
 
     get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
+
+    delete("/api/application", (req, res) -> toJson(ApplicationController.deleteApplication(fromJson(req.body(), Application.class))));
+
+    get("/api/application/:id", (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
+
+    post("/api/application", (req, res) -> toJson(ApplicationController.createApplication(fromJson(req.body(), Application.class)));
+
+    post("/api/application", (req, res) -> toJson(ApplicationController.assignApplication(fromJson(req.body(), Application.class)));
+
+
+
     notFound((request, response) -> new NotFound().toJSON());
+
+
+
   }
+
+
 
   private static int getHerokuAssignedPort() {
     ProcessBuilder processBuilder = new ProcessBuilder();
