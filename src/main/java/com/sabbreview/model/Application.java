@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 
   @Id
   @GeneratedValue(generator="APPLICATION_ID_GEN")
-  public String id;
+  private String id;
 
   @ManyToOne private transient User applicant;
 
@@ -24,4 +24,19 @@ import javax.persistence.ManyToOne;
     this.applicant = applicant;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public User getApplicant() {
+    return applicant;
+  }
+
+  public void setApplicant(User applicant) {
+    this.applicant = applicant;
+  }
 }
