@@ -30,6 +30,7 @@ import javax.persistence.ManyToOne;
 
   public void setId(String id) {
     this.id = id;
+
   }
 
   public User getApplicant() {
@@ -38,5 +39,9 @@ import javax.persistence.ManyToOne;
 
   public void setApplicant(User applicant) {
     this.applicant = applicant;
+  }
+
+  @Override public String toString() {
+    return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + '}';
   }
 }

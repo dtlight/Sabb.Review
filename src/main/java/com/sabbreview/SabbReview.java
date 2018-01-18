@@ -1,5 +1,9 @@
 package com.sabbreview;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.sabbreview.controller.ApplicationController;
 import com.sabbreview.controller.UserController;
@@ -7,6 +11,8 @@ import com.sabbreview.model.Application;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
+import com.sabbreview.responses.TransactionStatus;
+import spark.Request;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -15,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import static spark.Spark.*;
+
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
@@ -28,10 +35,15 @@ public class SabbReview {
 
     staticFiles.location("static");
 
+    before((req, res) -> acceptAuthentication(req));
+
     before((req, res) -> res.type("application/json"));
 
     post("/api/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
+
+    post("/api/login", (req, res) -> toJson(UserController
+        .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
 
     get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
@@ -44,12 +56,10 @@ public class SabbReview {
 
     post("/api/application", (req, res) -> toJson(ApplicationController.assignApplication(fromJson(req.body(), Application.class)));
 
+    get("/api/user", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(UserController.getUser(principle))));
 
-
-    notFound((request, response) -> new NotFound().toJSON());
-
-
-
+    notFound((request, response) -> new Gson().toJson(new NotFound()));
   }
 
 
@@ -87,5 +97,35 @@ public class SabbReview {
 
   private static <T> T fromJson(String string, Class<T> classOfT) {
     return gson.fromJson(string, classOfT);
+  }
+
+  private static String requireAuthentication(Request req, AuthentcatedRequest result) {
+    if (req.attribute("isAuthenticated")) {
+      return result.onAccept(req.attribute("principle"));
+    } else {
+      halt(401, toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
+          "Could not verify authentication token")));
+      return null;
+    }
+  }
+
+  private static void acceptAuthentication(Request req) {
+    String token = req.headers("Authorization");
+    if (token == null) {
+      req.attribute("isAuthenticated", false);
+    } else {
+      try {
+        String jwtString = token.split("Bearer ")[1];
+        Algorithm algorithm = Algorithm.HMAC256("secret");
+        JWTVerifier verifier = JWT.require(algorithm).withIssuer("sabbreview").build();
+        DecodedJWT decodedJWT = verifier.verify(jwtString);
+        req.attribute("isAuthenticated", true);
+        req.attribute("principle", decodedJWT.getClaim("principle").asString());
+      } catch (Exception e) {
+        e.printStackTrace();
+        halt(401, toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
+            "Could not verify authentication token")));
+      }
+    }
   }
 }
