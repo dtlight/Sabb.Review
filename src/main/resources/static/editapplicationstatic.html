@@ -2,134 +2,132 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>RHUL SLS</title>
+    <title>Edit Application</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.ico">
 </head>
 <body>
 
 <form name="editApplication">
 
-    <div name="section1">
-        <p4>SECTION 1</p4>
-        <br>
-        <br>
-        Name:<br>
-        <input type="text" name="name">
-        <br>
+    <div id="sectionOne" class="">
+        <u>SECTION 1</u>
 
-        Department:<br>
-        <input type="text" name="department">
-        <br>
+        <div id="contactDetails">
+            <div>
+                <b>Contact Details:</b>
 
-        Date of appointment:<br>
-        <input type="text" name="appointmentDate">
-        <br>
+                <label for="name">Name:</label>
+                <input type="text" id="name">
 
-        PresentPost:<br>
-        <input type="text" name="presentPost">
-        <br>
-        <br>
-        <br>
-        <b>Contact details during period of leave:</b>
-        <br>
-        Address for correspondence:<br>
-        <input type="textarea" name="address">
-        <br>
+                <label for="department">Department:</label>
+                <input type="text" id="department">
 
-        Email<br>
-        <input type="text" name="email">
+                <label for="appointmentDate">Date of appointment:</label>
+                <input type="text" id="appointmentDate">
+
+                <label for="presentPost">PresentPost:</label>
+                <input type="text" id="presentPost">
+            </div>
+        </div>
 
 
-        <br>
-        <br>
+        <div id="leaveContactDetail">
+            <b>Contact details during period of leave:</b>
+
+            <label for="address">Address for correspondence:</label>
+            <input type="text" id="address">
+
+            <label for="email">Email:</label>
+            <input type="text" id="email">
+        </div>
+
+        <div id="emergencyContactDetails">
+            <b>Emergency contact details during period of leave </b>
+
+            <label for="emergencyContactName">Name:</label>
+            <input type="text" id="emergencyContactName">
 
 
-        <b>Emergency contact details during period of leave </b>
-        <br>
-        <br>
-        Name:<br>
-        <input type="text" name="emergencyContactName">
-        <br>
-        Telephone:<br>
-        <input type="text" name="emergencyTelephoneNo">
-        <br>
-        Address<br>
-        <input type="textarea" name="emergencyAddress">
-        <br>
-        Email<br>
-        <input type="text" name="emergencyEmail">
+            <label for="emergencyTelephoneNo">Telephone:</label>
+            <input type="number" id="emergencyTelephoneNo">
 
-        <br>
-        <br>
+            <label for="emergencyAddress">Address:</label>
+            <input type="text" id="emergencyAddress">
 
-        List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave
-        <br>
-        <input type="textarea" name="remuneration">
-        <br>
-        <br>
+            <label for="emergencyEmail"> Email:</label>
+            <input type="text" id="emergencyEmail">
 
+            <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
+            <input type="text" id="remuneration">
+        </div>
     </div>
 
-    <br>
-    <br>
-
-
-    <div name="section2">
-
+    <div id="sectionTwo">
         SECTION 2:
-        <br>
-        <br>
-        <br>
-        Number of terms of service accrued at the college: <br>
-        <input type="text" name="termsCount">
-        <br>
-        <br>
 
-        Please give the date of your last sabbatical and stated objectives with evidence of how this were met
-        and attach a copy of the report (max 200 words): <br>
-        <input type="text" name="lastSabbaticalDate">
-        <br>
-        <br>
+        <div>
+            <label for="termsCount">Number of terms of service accrued at the college:</label>
+            <input type="number" id="termsCount">
 
-        Please give detail of your last three research outputs <br>
-        1. <input type="text" name="researchOutput1"> <br>
-        2. <input type="text" name="researchOutput2"> <br>
-        3. <input type="text" name="researchOutput3"> <br>
-        <br>
-        <br>
+            <div>
+                <label for="lastSabbaticalDate">
+                    Please give the date of your last sabbatical and stated objectives with evidence of how this were met<br>
+                    and attach a copy of the report (max 200 words):
+                </label>
+                <input type="text" id="lastSabbaticalDate">
+                <input type="file" id="lastSabbaticalReport">
+            </div>
 
-        <br>
-        Please provide period of sabbatical leave requested and justification: <br>
-        Start Date: <input type="date" name="leaveStartDate"> <br>
-        End Date: <input type="date" name="leaveEndDate"><br>
-        <br>
-        <input type="text" name="leaveJustification">
-        <br>
-        <br>
-        Please note that if you intend to take the summer vacation off before a sabbatical, it
-        can only start after all the College examination boards have been completed
-        <br>
-        <br>
+            <div>
+                Please give detail of your last three research outputs
+                <label for="researchOutput1">1.</label>
+                <input type="text" id="researchOutput1">
+
+                <label for="researchOutput2">2.</label>
+                <input type="text" id="researchOutput2">
+
+                <label for="researchOutput3">2.</label>
+                <input type="text" id="researchOutput3">
+            </div>
+
+            <div>
+                Please provide period of sabbatical leave requested and justification:
+
+                <label for="leaveStartDate">Start Date:</label>
+                <input type="date" id="leaveStartDate">
+
+                <label for="leaveEndDate">End Date:</label>
+                <input type="date" id="leaveEndDate">
+            </div>
+            
+            <input type="text" id="leaveJustification">
 
 
-        Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars): <br>
-        <input type="text" name="leaveObjectives">
-        <br>
+            Please note that if you intend to take the summer vacation off before a sabbatical, it
+            can only start after all the College examination boards have been completed
 
-        Outline how the work relates to College strategic objectives (max 200 words): <br>
-        <input type="text" name="collegeStrategicAlign">
-        <br>
 
-        Detail anticipated outputs and outcomes (max 200 words): <br>
-        <input type="text" name="anticipatedOutputs">
-        <br>
+            <label for="leaveObjectives">Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars):</label>
+            <input type="text" id="leaveObjectives">
 
-        Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words): <br>
-        <input type="text" name="programmeOutline">
-        <br>
 
-        List research grants being applied for in relation to the sabbatical leave:
-        <input type="text" name="appliedGrants">
-        <br>
+            <label for="collegeStrategicAlign">Outline how the work relates to College strategic objectives (max 200 words):</label>
+            <input type="text" id="collegeStrategicAlign">
+
+
+            <label for="anticipatedOutputs">Detail anticipated outputs and outcomes (max 200 words):</label>
+            <input type="text" id="anticipatedOutputs">
+
+
+            <label for="programmeOutline">Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words):</label>
+            <input type="text" id="programmeOutline">
+
+
+            <label for="appliedGrants">List research grants being applied for in relation to the sabbatical leave:</label>
+            <input type="text" id="appliedGrants">
+        </div>
     </div>
 </form>
 </body>
