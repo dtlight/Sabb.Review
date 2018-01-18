@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 
   @Id
   @GeneratedValue(generator="APPLICATION_ID_GEN")
-  public String id;
+  private String id;
 
   @ManyToOne private transient User applicant;
 
@@ -28,18 +28,17 @@ import javax.persistence.ManyToOne;
     return id;
   }
 
-  public Application setId(String id) {
+  public void setId(String id) {
     this.id = id;
-    return this;
+
   }
 
   public User getApplicant() {
     return applicant;
   }
 
-  public Application setApplicant(User applicant) {
+  public void setApplicant(User applicant) {
     this.applicant = applicant;
-    return this;
   }
 
   @Override public String toString() {
