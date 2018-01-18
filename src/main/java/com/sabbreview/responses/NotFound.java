@@ -1,7 +1,5 @@
 package com.sabbreview.responses;
 
-import com.sabbreview.HTTPResponse;
-
-public class NotFound extends HTTPResponse {
+public class NotFound {
   String status = "Not Found";
 }

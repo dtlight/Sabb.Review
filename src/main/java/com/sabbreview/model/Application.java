@@ -24,4 +24,25 @@ import javax.persistence.ManyToOne;
     this.applicant = applicant;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public Application setId(String id) {
+    this.id = id;
+    return this;
+  }
+
+  public User getApplicant() {
+    return applicant;
+  }
+
+  public Application setApplicant(User applicant) {
+    this.applicant = applicant;
+    return this;
+  }
+
+  @Override public String toString() {
+    return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + '}';
+  }
 }
