@@ -52,9 +52,9 @@ public class SabbReview {
 
     get("/api/application/:id", (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    post("/api/application", (req, res) -> toJson(ApplicationController.createApplication(fromJson(req.body(), Application.class)));
+    post("/api/application", (req, res) -> toJson(ApplicationController.createApplication(fromJson(req.body(), Application.class))));
 
-    post("/api/application", (req, res) -> toJson(ApplicationController.assignApplication(fromJson(req.body(), Application.class)));
+    //post("/api/application", (req, res) -> toJson(ApplicationController.assignApplication(fromJson(req.body(), Application.class)));
 
     get("/api/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
