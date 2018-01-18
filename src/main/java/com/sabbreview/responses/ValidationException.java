@@ -3,6 +3,10 @@ package com.sabbreview.responses;
 public class ValidationException extends Exception {
   String validationField;
 
+  public ValidationException() {
+
+  }
+
   public ValidationException(String field) {
     this.validationField = field;
   }

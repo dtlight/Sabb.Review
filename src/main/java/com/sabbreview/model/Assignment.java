@@ -27,4 +27,9 @@ import javax.persistence.SequenceGenerator;
     this.role = role;
   }
 
+
+  @Override public String toString() {
+    return "Assignment{" + "id=" + id + ", owner=" + owner + ", application=" + application
+        + ", role=" + role + ", dueDate=" + dueDate + '}';
+  }
 }

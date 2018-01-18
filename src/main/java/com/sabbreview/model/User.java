@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity(name = "users") public class User extends Model {
-
   private static transient int HASH_ROUNDS = 10;
 
   @Id private String emailAddress;
@@ -23,9 +22,6 @@ import javax.persistence.OneToMany;
   public User(String emailAddress, String password) {
     this.setEmailAddress(emailAddress);
     this.setPassword(password);
-  }
-  @Override public String toString() {
-    return "User("+emailAddress+")";
   }
 
   public String getEmailAddress() {
@@ -50,4 +46,11 @@ import javax.persistence.OneToMany;
     return this;
   }
 
+  public boolean verifyPassword(String password) {
+    return BCrypt.checkpw(password, this.password);
+  }
+
+  @Override public String toString() {
+    return "User{" + "emailAddress='" + emailAddress + '\'' + ", isAdmin=" + isAdmin + '}';
+  }
 }
