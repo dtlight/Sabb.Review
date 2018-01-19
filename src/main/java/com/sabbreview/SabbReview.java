@@ -14,7 +14,6 @@ import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
-import com.sun.javafx.binding.StringFormatter;
 import spark.Request;
 
 import java.net.URI;
@@ -23,7 +22,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import static spark.Spark.*;
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.notFound;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 
 
 public class SabbReview {
@@ -86,12 +92,9 @@ public class SabbReview {
       URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
       HashMap<String, String> persistenceMap = new HashMap<>();
       String[] userDetails =  uri.getUserInfo().split(":");
-      String jdbcURL = StringFormatter.format("jdbc:postgresql://%s:%d%s?sslmode=require&user=%s&password=%s",
-          uri.getHost(), uri.getPort(), uri.getPath(), userDetails[0], userDetails[1]).getValue();
-      System.out.println(jdbcURL);
+      String jdbcURL = String.format("jdbc:postgresql://%s:%d%s?user=%s&password=%s", uri.getHost(), uri.getPort(),
+              uri.getPath(), userDetails[0], userDetails[1]);
       persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
-
-
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
       entityManagerFactory =
           Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
