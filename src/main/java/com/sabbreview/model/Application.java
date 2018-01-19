@@ -6,15 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
+@NamedQueries({
+    @NamedQuery(name="authenticated-delete", query = "delete from applications where id = :id and applicant = :principle")
+})
 @Entity(name = "applications") @UuidGenerator(name = "APPLICATION_ID_GEN") public class Application
-    extends Model {
+ extends Model {
 
   @Id
   @GeneratedValue(generator="APPLICATION_ID_GEN")
   private String id;
 
-  @ManyToOne private transient User applicant;
+  @ManyToOne() private User applicant;
 
   public Application() {
 

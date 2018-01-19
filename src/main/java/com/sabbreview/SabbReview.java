@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.ApplicationController;
 import com.sabbreview.controller.UserController;
 import com.sabbreview.model.Application;
@@ -26,7 +28,7 @@ import static spark.Spark.*;
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
   private static final String DB_ENV_VARIABLE = "POSTGRES_GOOGLE";
-  private static Gson gson = new Gson();
+  private static Gson gson = generateGson();
   private static EntityManager em = getEntityManager();
 
   public static void main(String... args) {
@@ -42,24 +44,28 @@ public class SabbReview {
     post("/api/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
+    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
+
     post("/api/login", (req, res) -> toJson(UserController
         .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
 
-    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
+    /*
+     * Application endpoints
+     */
 
-    delete("/api/application", (req, res) -> toJson(ApplicationController.deleteApplication(fromJson(req.body(), Application.class))));
+    delete("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController.deleteApplication(principle, fromJson(req.body(), Application.class)))));
+
+    post("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController.createApplication(principle, fromJson(req.body(), Application.class)))));
 
     get("/api/application/:id", (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    post("/api/application", (req, res) -> toJson(ApplicationController.createApplication(fromJson(req.body(), Application.class))));
 
-    //post("/api/application", (req, res) -> toJson(ApplicationController.assignApplication(fromJson(req.body(), Application.class)));
 
     get("/api/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
 
-    notFound((request, response) -> new Gson().toJson(new NotFound()));
+    notFound((request, response) -> gson.toJson(new NotFound()));
   }
 
 
@@ -90,6 +96,13 @@ public class SabbReview {
     }
     return entityManagerFactory.createEntityManager();
   }
+
+  private static Gson generateGson() {
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
+    return gsonBuilder.create();
+  }
+
 
   private static String toJson(TransactionState transactionState) {
     return gson.toJson(transactionState);
