@@ -45,7 +45,7 @@
 
                 <p>
                     <label for="address">Address for correspondence:</label>
-                    <input type="text" id="address">
+                    <textarea id="address"></textarea>
                 </p>
 
                 <p>
@@ -68,7 +68,7 @@
                 </p>
                 <p>
                     <label for="emergencyAddress">Address:</label>
-                    <input type="text" id="emergencyAddress">
+                    <textarea id="emergencyAddress"></textarea>
                 </p>
                 <p>
                     <label for="emergencyEmail"> Email:</label>
@@ -76,7 +76,7 @@
                 </p>
                 <p>
                     <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
-                    <input type="text" id="remuneration">
+                    <textarea id="remuneration"></textarea>
                 </p>
             </div>
 
@@ -90,11 +90,18 @@
 
                 <div class="questionsGroup">
                     <label for="lastSabbaticalDate">
-                        Please give the date of your last sabbatical and stated objectives with evidence of how this were met<br>
-                        and attach a copy of the report (max 200 words):
+                        <p>
+                            Please give the date of your last sabbatical and stated objectives with evidence of how this were met<br>
+                            and attach a copy of the report (max 200 words):
+                        </p>
                     </label>
-                    <input type="text" id="lastSabbaticalDate">
+
+                    <p>
+                        <input type="date" id="lastSabbaticalDate">
+                    </p>
+
                     <input type="file" id="lastSabbaticalReport">
+
                 </div>
 
                 <div class="questionsGroup">
@@ -103,15 +110,15 @@
                     </p>
                     <p>
                         <label for="researchOutput1">1.</label>
-                        <input type="text" id="researchOutput1">
+                        <textarea id="researchOutput1"></textarea>
                     </p>
                     <p>
                         <label for="researchOutput2">2.</label>
-                        <input type="text" id="researchOutput2">
+                        <textarea id="researchOutput2"></textarea>
                     </p>
                     <p>
                         <label for="researchOutput3">2.</label>
-                        <input type="text" id="researchOutput3">
+                        <textarea id="researchOutput3"></textarea>
                     </p>
                 </div>
 
@@ -120,17 +127,14 @@
                         Please provide period of sabbatical leave requested and justification:
                     </p>
                     <p>
-                        <label for="leaveStartDate">Start Date:</label>
                         <input type="date" id="leaveStartDate">
-                    </p>
-                    <p>
                         <label for="leaveEndDate">End Date:</label>
                         <input type="date" id="leaveEndDate">
                     </p>
 
 
                     <p>
-                        <input title="leaveJustification" type="text" id="leaveJustification">
+                        <textarea id="leaveJustification"></textarea>
                     </p>
                 </div>
 
@@ -145,32 +149,32 @@
 
                     <p>
                         <label for="leaveObjectives">Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars):</label>
-                        <input type="text" id="leaveObjectives">
+                        <textarea id="leaveObjectives"></textarea>
                     </p>
 
                     <p>
                         <label for="collegeStrategicAlign">Outline how the work relates to College strategic objectives (max 200 words):</label>
-                        <input type="text" id="collegeStrategicAlign">
+                        <textarea id="collegeStrategicAlign"></textarea>
                     </p>
 
                     <p>
                         <label for="anticipatedOutputs">Detail anticipated outputs and outcomes (max 200 words):</label>
-                        <input type="text" id="anticipatedOutputs">
+                        <textarea id="anticipatedOutputs"></textarea>
                     </p>
 
                     <p>
                         <label for="programmeOutline">Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words):</label>
-                        <input type="text" id="programmeOutline">
+                        <textarea id="programmeOutline"></textarea>
                     </p>
 
                     <p>
                         <label for="appliedGrants">List research grants being applied for in relation to the sabbatical leave:</label>
-                        <input type="text" id="appliedGrants">
+                        <textarea id="appliedGrants"></textarea>
                     </p>
 
                     <p>
                         <label for="professionalDevelopmentOutline">Outline how the sabbatical supports your professional development:</label>
-                        <input type="text" id="professionalDevelopmentOutline">
+                        <textarea id="professionalDevelopmentOutline"></textarea>
                     </p>
                 </div>
 
