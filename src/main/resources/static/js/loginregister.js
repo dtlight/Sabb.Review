@@ -7,13 +7,15 @@ $(document).ready(function(){
       var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://{{host}}:{{port}}/api/user",
+        "url": "/api/user",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json"
         },
-        "processData": false,
-        "data": "{\n  \"emailAddress\": \email\,\n  \"password\": \password\\n}"
+        "data": {
+          emailAddress: email,
+            password: password
+        }
       }
 
       $.ajax(settings).done(function (response) {
