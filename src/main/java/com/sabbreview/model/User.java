@@ -13,9 +13,11 @@ import javax.persistence.OneToMany;
 
   @Id private String emailAddress;
   @SuppressWarnings("FieldCanBeLocal") private String password;
+
   public Boolean isAdmin;
 
   @OneToMany private List<Assignment> assignments = new ArrayList<>();
+  @OneToMany(mappedBy="applicant") private List<Application> applications = new ArrayList<>();
 
   public User() {}
 
@@ -43,6 +45,33 @@ import javax.persistence.OneToMany;
 
   private User setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
+    return this;
+  }
+
+  public Boolean getAdmin() {
+    return isAdmin;
+  }
+
+  public User setAdmin(Boolean admin) {
+    isAdmin = admin;
+    return this;
+  }
+
+  public List<Assignment> getAssignments() {
+    return assignments;
+  }
+
+  public User setAssignments(List<Assignment> assignments) {
+    this.assignments = assignments;
+    return this;
+  }
+
+  public List<Application> getApplications() {
+    return applications;
+  }
+
+  public User setApplications(List<Application> applications) {
+    this.applications = applications;
     return this;
   }
 
