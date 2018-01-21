@@ -24,11 +24,11 @@
                         <div class="col-sm-4 text-left">
                             RHUL SLS
                         </div>
-                        <div class="col-sm-5">
-                            Request Status: (get status)
+                        <div class="col-sm-4 text-center">
+                            <h1 class="text-light">New notification<span class="badge badge-default">New</span></p>
                         </div>
-                        <div class="col-sm-3 text-center">
-                            (UserName)
+                        <div class="col-sm-4 text-right">
+                            Name Surname
                         </div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="row">
                     <table id="timeline" class="table table-bordered table-striped" style="background:rgba(255, 166, 0, 0.8)">
                         <thead>
-                            <th>Event Time Line</th>
+                            <th><h3 align="center">Event Timeline</h3></th>
                         </thead>
                         <tbody>
                             <tr><td>Iddo Tzameereereer Application has been rejected</td></tr>
@@ -49,11 +49,13 @@
                 </div>
             </div>
             <div class="col-sm-4">
-                <div class="row text-center" style="color:black; font-size:34px">
-                    Applications
-                </div>
                 <div class="row">
                     <table id="applicationList" class="table table-bordered table-striped" style="background:rgba(255, 166, 0, 0.8)">
+                        <thead>
+
+                            <th>Applications</th>
+
+                        </thead>
                         <thead>
                             <tr>
                             <th>Applicant Name</th>
@@ -76,15 +78,8 @@
                     </table>
                 </div>
                 <div class="row text-center" style="color:black; font-size:28px">
-                    <div class="col-sm-4" onclick="redirect">
-                        Submit Application
-                    </div>
-                    <div class="col-sm-4" onclick="redirect">
-                        My Applicaitions
-                    </div>
-                    <div class="col-sm-4" onclick="redirect">
-                        View All
-                    </div>
+                    <button type="button" class="btn btn-primary">My application</button>
+                    <button type="button" class="btn btn-primary">View All</button>
                 </div>
             </div>
             <div class="col-sm-4">
