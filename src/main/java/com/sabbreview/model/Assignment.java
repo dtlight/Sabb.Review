@@ -1,9 +1,11 @@
 package com.sabbreview.model;
 
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 @Entity(name = "assignments") public class Assignment extends Model {
@@ -16,9 +18,8 @@ import javax.persistence.SequenceGenerator;
 
   @ManyToOne private Role role;
 
-  private String comments;
-
-  private int acceptanceState;
+  @OneToMany(targetEntity = Comment.class)
+  private List<Comment> comments;
 
   Date dueDate;
 
@@ -67,21 +68,12 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
-  public String getComments() {
+  public List<Comment> getComments() {
     return comments;
   }
 
-  public Assignment setComments(String comments) {
+  public Assignment setComments(List<Comment> comments) {
     this.comments = comments;
-    return this;
-  }
-
-  public int getAcceptanceState() {
-    return acceptanceState;
-  }
-
-  public Assignment setAcceptanceState(int acceptanceState) {
-    this.acceptanceState = acceptanceState;
     return this;
   }
 
@@ -96,7 +88,6 @@ import javax.persistence.SequenceGenerator;
 
   @Override public String toString() {
     return "Assignment{" + "id=" + id + ", owner=" + owner + ", application=" + application
-        + ", role=" + role + ", comments='" + comments + '\'' + ", acceptanceState="
-        + acceptanceState + ", dueDate=" + dueDate + '}';
+        + ", role=" + role + ", comments=" + comments + ", dueDate=" + dueDate + '}';
   }
 }
