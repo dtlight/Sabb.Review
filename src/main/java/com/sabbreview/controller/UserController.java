@@ -108,8 +108,6 @@ public class UserController extends Controller {
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
 
-
-
   public static void attach() {
     delete("/api/user",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(UserController.deleteUser(principle))));

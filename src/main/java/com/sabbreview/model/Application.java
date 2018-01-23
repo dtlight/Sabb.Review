@@ -1,5 +1,6 @@
 package com.sabbreview.model;
 
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @NamedQueries({
     @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id")
@@ -21,6 +23,9 @@ public class Application
   String id;
 
   @ManyToOne() private User applicant = null;
+
+  @OneToMany
+  public List<FieldInstance> fields;
 
   @Enumerated
   private AcceptanceState state = AcceptanceState.PENDING;
@@ -64,6 +69,8 @@ public class Application
     return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + ", state=" + state
         + '}';
   }
+
+
 }
 
 
