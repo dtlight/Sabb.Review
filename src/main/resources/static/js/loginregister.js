@@ -13,8 +13,7 @@ $(document).ready(function(){
           "Content-Type": "application/json"
         },
         "data": {
-          emailAddress: email,
-            password: password
+          emailAddress: email, password: password
         }
       }
 
