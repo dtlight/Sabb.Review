@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(function() {
   $("#REGISTER").click(function(){
     var email = $("#registeremail");
     var password = $("#registerpassword");
