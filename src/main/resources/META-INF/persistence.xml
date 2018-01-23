@@ -7,6 +7,12 @@
         <class>com.sabbreview.model.Application</class>
         <class>com.sabbreview.model.Assignment</class>
         <class>com.sabbreview.model.Role</class>
+        <class>com.sabbreview.model.Comment</class>
+        <class>com.sabbreview.model.Field</class>
+        <class>com.sabbreview.model.FieldInstance</class>
+        <class>com.sabbreview.model.FieldOption</class>
+        <class>com.sabbreview.model.FieldType</class>
+        <class>com.sabbreview.model.Template</class>
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/SabbReview?user=cs2855"/>
             <property name="javax.persistence.jdbc.driver " value="org.postgresql.Driver"/>
