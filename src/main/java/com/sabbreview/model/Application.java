@@ -10,7 +10,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 @NamedQueries({
-    @NamedQuery(name="authenticated-delete", query = "delete from applications where id = :id and applicant = :principle")
+    @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id")
 })
 @Entity(name = "applications")
 public class Application

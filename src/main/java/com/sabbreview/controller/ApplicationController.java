@@ -4,11 +4,11 @@ import com.sabbreview.SabbReview;
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.User;
+import com.sabbreview.responses.AuthenticationException;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import static spark.Spark.delete;
 import static spark.Spark.get;
@@ -32,7 +32,7 @@ public class ApplicationController extends Controller {
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
-      e.printStackTrace();
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
@@ -46,6 +46,7 @@ public class ApplicationController extends Controller {
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
@@ -54,13 +55,16 @@ public class ApplicationController extends Controller {
       String applicationID) {
     try {
       em.getTransaction().begin();
-      TypedQuery<Application> nq = em.createNamedQuery("authenticated-delete", Application.class);
-      nq.setParameter("id", applicationID);
-      nq.setParameter("principle", principle);
-
+      Application application = em.find(Application.class, applicationID);
+      if(application.getApplicant().getEmailAddress().equals(principle)) {
+        em.remove(application);
+      } else {
+        throw new AuthenticationException();
+      }
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
@@ -73,12 +77,13 @@ public class ApplicationController extends Controller {
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
 
 
-  private static TransactionState<Application> getApplication(String applicationID,
+  private static TransactionState<Application> setAcceptanceState(String applicationID,
       AcceptanceState acceptanceState) {
     Application application;
     try {
@@ -88,9 +93,8 @@ public class ApplicationController extends Controller {
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    } finally {
-      em.close();
     }
   }
 
@@ -106,7 +110,7 @@ public class ApplicationController extends Controller {
         (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
     put("/api/application/:id/state/:state", (req, res) -> toJson(ApplicationController
-        .getApplication(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
+        .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
 
   }
 }

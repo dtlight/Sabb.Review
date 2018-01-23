@@ -33,6 +33,7 @@ public class UserController extends Controller {
     try {
       user.encryptPassword();
       em.getTransaction().begin();
+      user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       } else {
@@ -40,11 +41,13 @@ public class UserController extends Controller {
       }
       em.getTransaction().commit();
     } catch (RollbackException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
           (e.getCause().getMessage().contains("duplicate") ?
               "There is already a user with that email address" :
               null));
     } catch (ValidationException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
     return new TransactionState<>(user, TransactionStatus.STATUS_OK);
@@ -75,8 +78,10 @@ public class UserController extends Controller {
         throw new ValidationException();
       }
     } catch (ValidationException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not verify user");
     } catch (UnsupportedEncodingException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Internal Exception");
     }
     return new TransactionState<>(new Token(token), TransactionStatus.STATUS_OK);
@@ -94,12 +99,16 @@ public class UserController extends Controller {
       }
       em.getTransaction().commit();
     } catch (RollbackException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     } catch (ValidationException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Invalid user principle");
     }
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
+
+
 
   public static void attach() {
     delete("/api/user",
@@ -112,6 +121,7 @@ public class UserController extends Controller {
 
     post("/api/login", (req, res) -> toJson(UserController
         .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
+
     get("/api/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
   }
