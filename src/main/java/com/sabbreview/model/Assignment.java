@@ -1,8 +1,10 @@
 package com.sabbreview.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -20,6 +22,9 @@ import javax.persistence.SequenceGenerator;
 
   @OneToMany(targetEntity = Comment.class)
   private List<Comment> comments;
+
+  @Enumerated
+  private AcceptanceState state = AcceptanceState.PENDING;
 
   Date dueDate;
 
@@ -74,6 +79,12 @@ import javax.persistence.SequenceGenerator;
 
   public Assignment setComments(List<Comment> comments) {
     this.comments = comments;
+    return this;
+  }
+
+  public Assignment addComment(Comment comment) {
+    if(this.comments == null) this.comments = new ArrayList<>();
+    this.comments.add(comment);
     return this;
   }
 

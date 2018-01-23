@@ -8,6 +8,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.ApplicationController;
+import com.sabbreview.controller.FieldController;
+import com.sabbreview.controller.RoleController;
+import com.sabbreview.controller.TemplateController;
 import com.sabbreview.controller.UserController;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
@@ -47,6 +50,10 @@ public class SabbReview {
 
     ApplicationController.attach();
     UserController.attach();
+    RoleController.attach();
+
+    FieldController.attach();
+    TemplateController.attach();
 
     notFound((request, response) -> gson.toJson(new NotFound()));
 

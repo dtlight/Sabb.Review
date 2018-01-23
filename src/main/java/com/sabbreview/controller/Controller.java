@@ -7,9 +7,14 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
 
+import javax.persistence.EntityManager;
+
 import static spark.Spark.halt;
 
-abstract class Controller {
+class Controller {
+  static EntityManager em = SabbReview.getEntityManager();
+
+
   static String toJson(TransactionState transactionState) {
     return SabbReview.gson.toJson(transactionState);
   }
@@ -25,6 +30,12 @@ abstract class Controller {
       halt(401, toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
           "Could not verify authentication token")));
       return null;
+    }
+  }
+
+  static void rollback() {
+    if(em.getTransaction().isActive()){
+      em.getTransaction().rollback();
     }
   }
 }
