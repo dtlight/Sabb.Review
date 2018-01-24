@@ -1,8 +1,6 @@
 package com.sabbreview.controller;
 
 import com.sabbreview.SabbReview;
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
@@ -12,78 +10,65 @@ import com.sabbreview.responses.ValidationException;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
-import static spark.Spark.delete;
-import static spark.Spark.post;
-import static spark.Spark.put;
+public class AssignmentController {
+    private static EntityManager em = SabbReview.getEntityManager();
 
 
-public class AssignmentController extends Controller {
-
-    private static TransactionState<Assignment> createAssignment(String principle, Assignment assignment) {
+    public static TransactionState<Assignment> createApplication(String principle, Assignment assignment) {
         try {
             em.getTransaction().begin();
             em.persist(assignment); //telling jpa to store
             em.getTransaction().commit();
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
         } catch (RollbackException e) {
-            rollback();
-            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create application");
+
+        } catch (ValidationException e) {
+
         }
     }
-
-    private static TransactionState<Assignment> deleteAssignment(String principle, Assignment assignment) {
-        try{
+    /*public static TransactionState<Assignment> setOwner(User owner, Assignment assignment) {
+        try {
             em.getTransaction().begin();
-            em.persist(assignment);
+            assignment.setOwner(owner);
+            em.merge(assignment);
             em.getTransaction().commit();
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-        } catch (RollbackException e){
-            rollback();
-            return new TransactionState<>( null, TransactionStatus.STATUS_ERROR, "Could not delete application");
-        }
-    }
-
-    private static TransactionState<Assignment> changeAssignment(String principle, Assignment assignment ){
-        try{
-            em.getTransaction().begin();
-            em.persist(assignment);
-            em.getTransaction().commit();
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-        } catch (RollbackException e) {
-            rollback();
-            return new TransactionState<>( null, TransactionStatus.STATUS_ERROR, "Could not change application");
-        }
-    }
-
-
-    public static TransactionState<> setAcceptanceState(Application applicationID, AcceptanceState acceptanceState){
-        Assignment assignment;
-        try{
-            em.getTransaction().begin();
-            assignment = em.find(Assignment.id, applicationID); //change id to static in Assignment model?
-            assignment.setState(acceptanceState);
-            em.getTransaction().commit();
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-        } catch (RollbackException e) {
-            rollback();
+            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK, "");
+        } catch (Exception e) {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
 
-
-    public static void attach() {
-        post("/api/assignment", (req, res) -> requireAuthentication(req,
-                (principle -> toJson(createAssignment(principle, fromJson(req.body(), Assignment.class))))));
-
-        delete("/api/assignment", (req, res) -> requireAuthentication(req,
-                (principle -> toJson(deleteAssignment(principle, fromJson(req.body(), Assignment.class))))));
-
-        put("/api/assignment", (req, res) -> requireAuthentication(req,
-                (principle -> toJson(changeAssignment(principle, fromJson(req.body(), Assignment.class))))));
-
-        put("/api/assignment/:id/state/:state", (req, res) -> toJson(ApplicationController
-                .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
-
-        //set acceptance state app controller
+    public static TransactionState<Assignment> getOwner(String owner) { /////     Assignment assignment;
+        try {
+            Assignment assignment = em.find(Assignment.id, owner);
+            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK, "");
+        } catch (Exception e) {
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
     }
+
+    public static TransactionState<Assignment> setComments(String principle, Assignment comments) { ////////// em.find to find the assignment, then getComments and then add, then re-merge
+
+        try {
+            if(comments == null) comments = new Assignment();
+            em.getTransaction().begin();
+            User user = em.find(User.class, principle);
+            comments.setComments(user);
+            em.persist(comments);
+            em.getTransaction().commit();
+            return new TransactionState<>(comments, TransactionStatus.STATUS_OK, "");
+        } catch (Exception e) {
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
+    }*/
+
+  //set acceptance state
+
+
+    //get comments
+
+
+
+    //get acceptance state
+
+
 }
