@@ -15,15 +15,25 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
-public class UserController {
-  private static final String EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.post;
+
+public class UserController extends Controller {
+  private static final String EMAIL_REGEX;
+
+  static {
+    EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+  }
+
   private static EntityManager em = SabbReview.getEntityManager();
 
 
-  public static TransactionState<User> registerUser(User user) {
+  private static TransactionState<User> registerUser(User user) {
     try {
       user.encryptPassword();
       em.getTransaction().begin();
+      user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       } else {
@@ -31,17 +41,19 @@ public class UserController {
       }
       em.getTransaction().commit();
     } catch (RollbackException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
           (e.getCause().getMessage().contains("duplicate") ?
               "There is already a user with that email address" :
               null));
     } catch (ValidationException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
     return new TransactionState<>(user, TransactionStatus.STATUS_OK);
   }
 
-  public static TransactionState<User> getUser(String emailAddress) {
+  private static TransactionState<User> getUser(String emailAddress) {
     User user = em.find(User.class, emailAddress);
     if (user == null) {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not find user");
@@ -51,7 +63,7 @@ public class UserController {
   }
 
 
-  public static TransactionState<Token> generateSession(String emailAddress, String password) {
+  private static TransactionState<Token> generateSession(String emailAddress, String password) {
     String token;
     try {
       User user = em.find(User.class, emailAddress);
@@ -66,23 +78,49 @@ public class UserController {
         throw new ValidationException();
       }
     } catch (ValidationException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not verify user");
     } catch (UnsupportedEncodingException e) {
+      rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Internal Exception");
     }
     return new TransactionState<>(new Token(token), TransactionStatus.STATUS_OK);
 
   }
 
-  public static TransactionState<User> deleteUser(User user) {
+  private static TransactionState<User> deleteUser(String principle) {
     try {
       em.getTransaction().begin();
-      em.remove(user);
-    } catch (RollbackException e) {
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
-    } finally {
+      User user = em.find(User.class, principle);
+      if(user == null) {
+        throw new ValidationException();
+      } else {
+        em.remove(user);
+      }
       em.getTransaction().commit();
+    } catch (RollbackException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    } catch (ValidationException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Invalid user principle");
     }
-    return new TransactionState<>(user, TransactionStatus.STATUS_OK);
+    return new TransactionState<>(null, TransactionStatus.STATUS_OK);
+  }
+
+  public static void attach() {
+    delete("/api/user",
+        (req, res) -> requireAuthentication(req, (principle) -> toJson(UserController.deleteUser(principle))));
+
+    post("/api/user",
+        (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
+
+    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
+
+    post("/api/login", (req, res) -> toJson(UserController
+        .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
+
+    get("/api/user", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(UserController.getUser(principle))));
   }
 }

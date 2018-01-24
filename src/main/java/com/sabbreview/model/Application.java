@@ -1,25 +1,34 @@
 package com.sabbreview.model;
 
-import org.eclipse.persistence.annotations.UuidGenerator;
-
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @NamedQueries({
-    @NamedQuery(name="authenticated-delete", query = "delete from applications where id = :id and applicant = :principle")
+    @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id")
 })
-@Entity(name = "applications") @UuidGenerator(name = "APPLICATION_ID_GEN") public class Application
+@Entity(name = "applications")
+public class Application
  extends Model {
 
   @Id
-  @GeneratedValue(generator="APPLICATION_ID_GEN")
-  private String id;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  String id;
 
-  @ManyToOne() private User applicant;
+  @ManyToOne() private User applicant = null;
+
+  @OneToMany
+  public List<FieldInstance> fields;
+
+  @Enumerated
+  private AcceptanceState state = AcceptanceState.PENDING;
 
   public Application() {
 
@@ -46,7 +55,22 @@ import javax.persistence.NamedQuery;
     this.applicant = applicant;
   }
 
-  @Override public String toString() {
-    return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + '}';
+
+  public Application setState(AcceptanceState state) {
+    this.state = state;
+    return this;
   }
+
+  public AcceptanceState getState() {
+    return state;
+  }
+
+  @Override public String toString() {
+    return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + ", state=" + state
+        + '}';
+  }
+
+
 }
+
+

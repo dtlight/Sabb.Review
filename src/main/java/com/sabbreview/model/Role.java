@@ -2,11 +2,9 @@ package com.sabbreview.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 
 @Entity(name = "roles") public class Role extends Model {
-  @Id @SequenceGenerator(name = "role_id_gen")
-  int id;
+  @Id
   private String name;
 
   private boolean canRefuseApplication;
@@ -17,15 +15,6 @@ import javax.persistence.SequenceGenerator;
 
   public Role(String name) {
     this.name = name;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public Role setId(int id) {
-    this.id = id;
-    return this;
   }
 
   public String getName() {
@@ -65,7 +54,7 @@ import javax.persistence.SequenceGenerator;
   }
 
   @Override public String toString() {
-    return "Role{" + "id=" + id + ", name='" + name + '\'' + ", canRefuseApplication="
-        + canRefuseApplication + ", canComment=" + canComment + ", canEdit=" + canEdit + '}';
+    return "Role{" + "name='" + name + '\'' + ", canRefuseApplication=" + canRefuseApplication
+        + ", canComment=" + canComment + ", canEdit=" + canEdit + '}';
   }
 }

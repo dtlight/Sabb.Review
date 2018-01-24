@@ -8,8 +8,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.ApplicationController;
+import com.sabbreview.controller.FieldController;
+import com.sabbreview.controller.RoleController;
+import com.sabbreview.controller.TemplateController;
 import com.sabbreview.controller.UserController;
-import com.sabbreview.model.Application;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
@@ -23,19 +25,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
 import static spark.Spark.port;
-import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 
 public class SabbReview {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
   private static final String DB_ENV_VARIABLE = "DATABASE_URL";
-  private static Gson gson = generateGson();
+  public static Gson gson = generateGson();
   private static EntityManager em = getEntityManager();
 
   public static void main(String... args) {
@@ -44,35 +43,20 @@ public class SabbReview {
 
     staticFiles.location("static");
 
-    before((req, res) -> acceptAuthentication(req));
+    before((req, res) -> {
+      acceptAuthentication(req);
+      res.type("application/json");
+    });
 
-    before((req, res) -> res.type("application/json"));
+    ApplicationController.attach();
+    UserController.attach();
+    RoleController.attach();
 
-    post("/api/user",
-        (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
-
-    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
-
-    post("/api/login", (req, res) -> toJson(UserController
-        .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
-
-
-    /*
-     * Application endpoints
-     */
-
-    delete("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController.deleteApplication(principle, fromJson(req.body(), Application.class)))));
-
-    post("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController.createApplication(principle, fromJson(req.body(), Application.class)))));
-
-    get("/api/application/:id", (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
-
-
-
-    get("/api/user", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(UserController.getUser(principle))));
+    FieldController.attach();
+    TemplateController.attach();
 
     notFound((request, response) -> gson.toJson(new NotFound()));
+
   }
 
 
@@ -91,8 +75,9 @@ public class SabbReview {
     if (System.getenv(DB_ENV_VARIABLE) != null) {
       URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
       HashMap<String, String> persistenceMap = new HashMap<>();
-      String[] userDetails =  uri.getUserInfo().split(":");
-      String jdbcURL = String.format("jdbc:postgresql://%s:%d%s?user=%s&password=%s", uri.getHost(), uri.getPort(),
+      String[] userDetails = uri.getUserInfo().split(":");
+      String jdbcURL = String
+          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s", uri.getHost(), uri.getPort(),
               uri.getPath(), userDetails[0], userDetails[1]);
       persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
@@ -111,23 +96,6 @@ public class SabbReview {
   }
 
 
-  private static String toJson(TransactionState transactionState) {
-    return gson.toJson(transactionState);
-  }
-
-  private static <T> T fromJson(String string, Class<T> classOfT) {
-    return gson.fromJson(string, classOfT);
-  }
-
-  private static String requireAuthentication(Request req, AuthentcatedRequest result) {
-    if (req.attribute("isAuthenticated")) {
-      return result.onAccept(req.attribute("principle"));
-    } else {
-      halt(401, toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
-          "Could not verify authentication token")));
-      return null;
-    }
-  }
 
   private static void acceptAuthentication(Request req) {
     String token = req.headers("Authorization");
@@ -143,7 +111,7 @@ public class SabbReview {
         req.attribute("principle", decodedJWT.getClaim("principle").asString());
       } catch (Exception e) {
         e.printStackTrace();
-        halt(401, toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
+        halt(401, gson.toJson(new TransactionState<User>(null, TransactionStatus.STATUS_ERROR,
             "Could not verify authentication token")));
       }
     }
