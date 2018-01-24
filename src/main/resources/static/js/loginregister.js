@@ -1,21 +1,4 @@
 $(document).ready(function () {
-  $("#REGISTER").click(function(){
-    var email = $("#registeremail");
-    var password = $("#registerpassword");
-    var passwordc = $("#registerpasswordc");
-    if (password = passwordc){
-      var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "/api/user",
-        "method": "POST",
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "data": {
-          emailAddress: email, password: password
-        }
-      }
 
     $("#formregister").submit(function (e) {
         e.preventDefault();
