@@ -13,171 +13,154 @@
 </head>
 <body>
 
-<div id="formWrapper" class="container-fluid" style="padding: 5%;">
-    <form id="editApplication" style="text-align: center; ">
-        <div id="sectionOne" class="formSection">
+<div id="formWrapper" class="container-fluid justify-content-center">
+    <form id="editApplication">
+        <div id="sectionOne" class="container">
             <h2><u>SECTION 1</u></h2>
+            <b class="text-center">Contact Details: </b>
 
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Name: </label>
+                        <input type="text" id="name" class="form-control">
 
-            <div class="questionsGroup">
-                <b>Contact Details: </b>
+                        <label for="department">Department: </label>
+                        <input type="text" id="department" class="form-control">
 
-                <p>
-                    <label for="name">Name: </label>
-                    <input type="text" id="name">
-                </p>
-                <p>
-                    <label for="department">Department: </label>
-                    <input type="text" id="department">
-                </p>
-                <p>
-                    <label for="appointmentDate">Date of appointment: </label>
-                    <input type="text" id="appointmentDate">
-                </p>
-                <p>
-                    <label for="presentPost">PresentPost: </label>
-                    <input type="text" id="presentPost">
-                </p>
+                        <label for="address" >Address for correspondence:</label>
+                        <textarea id="address" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="appointmentDate">Date of appointment: </label>
+                        <input type="date" id="appointmentDate" class="form-control" >
+
+                        <label for="presentPost">Present post: </label>
+                        <input type="text" id="presentPost" class="form-control">
+
+                        <label for="email" >Email:</label>
+                        <input type="text" id="email" class="form-control">
+                    </div>
+                </div>
             </div>
 
+            <b>Emergency contact details during period of leave</b>
+            <div class="row">
 
-            <div class="questionsGroup">
+                <div class="col-lg-6">
 
-                <p>
-                    <label for="address">Address for correspondence:</label>
-                    <textarea id="address"></textarea>
-                </p>
+                    <div class="form-group">
+                        <label for="emergencyContactName">Name:</label>
+                        <input type="text" id="emergencyContactName" class="form-control">
 
-                <p>
-                    <label for="email">Email:</label>
-                    <input type="text" id="email">
-                </p>
+                        <label for="emergencyTelephoneNo">Telephone:</label>
+                        <input type="text" id="emergencyTelephoneNo" class="form-control">
+
+                        <label for="emergencyEmail"> Email:</label>
+                        <input type="text" id="emergencyEmail" class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="emergencyAddress">Address:</label>
+                        <textarea id="emergencyAddress" class="form-control"></textarea>
+
+                        <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
+                        <textarea id="remuneration" class="form-control"></textarea>
+                    </div>
+                </div>
             </div>
+            <h2><u>SECTION 2:</u></h2>
 
-            <div class="questionsGroup">
-                <b>Emergency contact details during period of leave</b>
+            <div class="row">
+                <div class="col-lg-6">
+                    <label for="termsCount">Number of terms of service accrued at the college:</label>
+                    <input type="number" id="termsCount" class="form-control">
 
-                <p>
-                    <label for="emergencyContactName">Name:</label>
-                    <input type="text" id="emergencyContactName">
-                </p>
-
-                <p>
-                    <label for="emergencyTelephoneNo">Telephone:</label>
-                    <input type="text" id="emergencyTelephoneNo">
-                </p>
-                <p>
-                    <label for="emergencyAddress">Address:</label>
-                    <textarea id="emergencyAddress"></textarea>
-                </p>
-                <p>
-                    <label for="emergencyEmail"> Email:</label>
-                    <input type="text" id="emergencyEmail">
-                </p>
-                <p>
-                    <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
-                    <textarea id="remuneration"></textarea>
-                </p>
-            </div>
-
-            <div class="formSection">
-
-                <h2><u>SECTION 2:</u></h2>
-
-                <label for="termsCount">Number of terms of service accrued at the college:</label>
-                <input type="number" id="termsCount">
-
-
-                <div class="questionsGroup">
                     <label for="lastSabbaticalDate">
                         <p>
-                            Please give the date of your last sabbatical and stated objectives with evidence of how this were met<br>
-                            and attach a copy of the report (max 200 words):
+                            Please give the date of your last sabbatical:
                         </p>
                     </label>
 
-                    <p>
-                        <input type="date" id="lastSabbaticalDate">
-                    </p>
+                    <input type="date" id="lastSabbaticalDate" class="form-control">
 
-                    <input type="file" id="lastSabbaticalReport">
+                    <label>Stated objectives of your last sabbatical, with evidence of how these were met:</label>
+                    <textarea class="form-control" id="sabbaticalObjectives"></textarea>
 
+                    <label for="lastSabbaticalReport">Attach a copy of the report (max 200 words): </label>
+                    <input type="file" id="lastSabbaticalReport" class="form-control">
                 </div>
 
-                <div class="questionsGroup">
+                <div class="col-lg-6">
                     <p>
                         Please give detail of your last three research outputs:
                     </p>
-                    <p>
-                        <label for="researchOutput1">1.</label>
-                        <textarea id="researchOutput1"></textarea>
-                    </p>
-                    <p>
-                        <label for="researchOutput2">2.</label>
-                        <textarea id="researchOutput2"></textarea>
-                    </p>
-                    <p>
-                        <label for="researchOutput3">2.</label>
-                        <textarea id="researchOutput3"></textarea>
-                    </p>
+
+
+                    <label for="researchOutput1">1.</label>
+                    <textarea id="researchOutput1" class="form-control"></textarea>
+
+                    <label for="researchOutput2">2.</label>
+                    <textarea id="researchOutput2" class="form-control"></textarea>
+
+                    <label for="researchOutput3">2.</label>
+                    <textarea id="researchOutput3" class="form-control"></textarea>
                 </div>
 
-                <div class="questionsGroup">
-                    <p>
-                        Please provide period of sabbatical leave requested and justification:
-                    </p>
-                    <p>
-                        <input type="date" id="leaveStartDate">
-                        <label for="leaveEndDate">End Date:</label>
-                        <input type="date" id="leaveEndDate">
-                    </p>
+                <div class="col-lg-6">
 
 
-                    <p>
-                        <textarea id="leaveJustification"></textarea>
-                    </p>
+                    <label for="leaveStartDate">Please provide period of sabbatical leave requested and justification:</label>
+                    <input type="date" id="leaveStartDate" class="form-control">
+
+                    <label for="leaveEndDate">End Date:</label>
+                    <input type="date" id="leaveEndDate" class="form-control">
+
+                    <textarea id="leaveJustification" class="form-control"></textarea>
                 </div>
+            </div>
 
-                <div class="questionsGroup">
+            <div class="questionsGroup">
 
-                    <p>
-                        <b>
-                            Please note that if you intend to take the summer vacation off before a sabbatical, it
-                            can only start after all the College examination boards have been completed
-                        </b>
-                    </p>
+                <p>
+                    <b>
+                        Please note that if you intend to take the summer vacation off before a sabbatical, it
+                        can only start after all the College examination boards have been completed
+                    </b>
+                </p>
 
-                    <p>
+                <div class="row">
+                    <div class="col-lg-6">
                         <label for="leaveObjectives">Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars):</label>
-                        <textarea id="leaveObjectives"></textarea>
-                    </p>
+                        <textarea id="leaveObjectives" class="form-control"></textarea>
 
-                    <p>
                         <label for="collegeStrategicAlign">Outline how the work relates to College strategic objectives (max 200 words):</label>
-                        <textarea id="collegeStrategicAlign"></textarea>
-                    </p>
+                        <textarea id="collegeStrategicAlign" class="form-control"></textarea>
 
-                    <p>
                         <label for="anticipatedOutputs">Detail anticipated outputs and outcomes (max 200 words):</label>
-                        <textarea id="anticipatedOutputs"></textarea>
-                    </p>
+                        <textarea id="anticipatedOutputs" class="form-control"></textarea>
+                    </div>
+                    <div class="col-lg-6">
 
-                    <p>
                         <label for="programmeOutline">Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words):</label>
-                        <textarea id="programmeOutline"></textarea>
-                    </p>
+                        <textarea id="programmeOutline" class="form-control"></textarea>
 
-                    <p>
                         <label for="appliedGrants">List research grants being applied for in relation to the sabbatical leave:</label>
-                        <textarea id="appliedGrants"></textarea>
-                    </p>
+                        <textarea id="appliedGrants" class="form-control"></textarea>
 
-                    <p>
                         <label for="professionalDevelopmentOutline">Outline how the sabbatical supports your professional development:</label>
-                        <textarea id="professionalDevelopmentOutline"></textarea>
-                    </p>
+                        <textarea id="professionalDevelopmentOutline" class="form-control"></textarea>
+                    </div>
                 </div>
 
+            </div>
+
+            <div class="container" style="text-align:center">
                 <button id="submitForm">Submit</button>
             </div>
         </div>
