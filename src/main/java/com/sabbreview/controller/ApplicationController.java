@@ -82,6 +82,7 @@ public class ApplicationController extends Controller {
     }
   }
 
+//improve to add multi[ple fields
 
   private static TransactionState<Application> setAcceptanceState(String applicationID,
       AcceptanceState acceptanceState) {
