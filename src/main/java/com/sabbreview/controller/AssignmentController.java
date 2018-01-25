@@ -1,15 +1,11 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.SabbReview;
+
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
-import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
-import com.sabbreview.responses.ValidationException;
-
-import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 import static spark.Spark.delete;
@@ -22,7 +18,7 @@ public class AssignmentController extends Controller {
     private static TransactionState<Assignment> createAssignment(String principle, Assignment assignment) {
         try {
             em.getTransaction().begin();
-            em.persist(assignment); //telling jpa to store
+            em.persist(assignment);
             em.getTransaction().commit();
             return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
         } catch (RollbackException e) {
@@ -55,8 +51,7 @@ public class AssignmentController extends Controller {
         }
     }
 
-
-    public static TransactionState<> setAcceptanceState(Application applicationID, AcceptanceState acceptanceState){
+    public static TransactionState<Assignment> setAcceptanceState(Application applicationID, AcceptanceState acceptanceState){
         Assignment assignment;
         try{
             em.getTransaction().begin();
@@ -70,7 +65,6 @@ public class AssignmentController extends Controller {
         }
     }
 
-
     public static void attach() {
         post("/api/assignment", (req, res) -> requireAuthentication(req,
                 (principle -> toJson(createAssignment(principle, fromJson(req.body(), Assignment.class))))));
@@ -83,7 +77,5 @@ public class AssignmentController extends Controller {
 
         put("/api/assignment/:id/state/:state", (req, res) -> toJson(ApplicationController
                 .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
-
-        //set acceptance state app controller
     }
 }
