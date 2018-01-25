@@ -4,16 +4,19 @@
     <meta charset="UTF-8" />
     <title>Edit Application</title>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="script" type="text/javascript" href="js/editapplication.js" />
+    <script src="js/editapplication.js" ></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
 <body>
+<div id="navbar"></div>
 
-<div id="formWrapper" class="container-fluid justify-content-center">
+<div id="formWrapper" class="container-fluid justify-content-center" style="text-align:center">
     <form id="editApplication">
         <div id="sectionOne" class="container">
             <h2><u>SECTION 1</u></h2>
@@ -68,11 +71,11 @@
                     <div class="form-group">
                         <label for="emergencyAddress">Address:</label>
                         <textarea id="emergencyAddress" class="form-control"></textarea>
-
-                        <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
-                        <textarea id="remuneration" class="form-control"></textarea>
                     </div>
                 </div>
+
+                <label for="remuneration">List all remuneration, including honorarium and funding costs, expected to be received during sabbatical leave</label>
+                <textarea id="remuneration" class="form-control"></textarea>
             </div>
             <h2><u>SECTION 2:</u></h2>
 
@@ -112,59 +115,50 @@
                     <textarea id="researchOutput3" class="form-control"></textarea>
                 </div>
 
-                <div class="col-lg-6">
+            </div>
+            <div class="col-lg-4 col-md-offset-4">
 
+                <p>Please provide period of sabbatical leave requested and justification:</p>
+                <label for="leaveStartDate">Start Date</label>
+                <input type="date" id="leaveStartDate" class="form-control">
 
-                    <label for="leaveStartDate">Please provide period of sabbatical leave requested and justification:</label>
-                    <input type="date" id="leaveStartDate" class="form-control">
+                <label for="leaveEndDate">End date:</label>
+                <input type="date" id="leaveEndDate" class="form-control">
 
-                    <label for="leaveEndDate">End Date:</label>
-                    <input type="date" id="leaveEndDate" class="form-control">
-
-                    <textarea id="leaveJustification" class="form-control"></textarea>
-                </div>
+                Justification for leave:
+                <textarea id="leaveJustification" class="form-control"></textarea>
             </div>
 
-            <div class="questionsGroup">
 
-                <p>
-                    <b>
-                        Please note that if you intend to take the summer vacation off before a sabbatical, it
-                        can only start after all the College examination boards have been completed
-                    </b>
-                </p>
+            <p>
+                <b>
+                    Please note that if you intend to take the summer vacation off before a sabbatical, it
+                    can only start after all the College examination boards have been completed
+                </b>
+            </p>
 
-                <div class="row">
-                    <div class="col-lg-6">
-                        <label for="leaveObjectives">Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars):</label>
-                        <textarea id="leaveObjectives" class="form-control"></textarea>
+            <label for="leaveObjectives">Objectives of the proposed leave (This should be suitable for lay audience (max 200 chars):</label>
+            <textarea id="leaveObjectives" class="form-control"></textarea>
 
-                        <label for="collegeStrategicAlign">Outline how the work relates to College strategic objectives (max 200 words):</label>
-                        <textarea id="collegeStrategicAlign" class="form-control"></textarea>
+            <label for="collegeStrategicAlign">Outline how the work relates to College strategic objectives (max 200 words):</label>
+            <textarea id="collegeStrategicAlign" class="form-control"></textarea>
 
-                        <label for="anticipatedOutputs">Detail anticipated outputs and outcomes (max 200 words):</label>
-                        <textarea id="anticipatedOutputs" class="form-control"></textarea>
-                    </div>
-                    <div class="col-lg-6">
+            <label for="anticipatedOutputs">Detail anticipated outputs and outcomes (max 200 words):</label>
+            <textarea id="anticipatedOutputs" class="form-control"></textarea>
 
-                        <label for="programmeOutline">Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words):</label>
-                        <textarea id="programmeOutline" class="form-control"></textarea>
+            <label for="programmeOutline">Outline a programme for the proposed use of time or other resources identifying measurable milestones and timescales (max 200 words):</label>
+            <textarea id="programmeOutline" class="form-control"></textarea>
 
-                        <label for="appliedGrants">List research grants being applied for in relation to the sabbatical leave:</label>
-                        <textarea id="appliedGrants" class="form-control"></textarea>
+            <label for="appliedGrants">List research grants being applied for in relation to the sabbatical leave:</label>
+            <textarea id="appliedGrants" class="form-control"></textarea>
 
-                        <label for="professionalDevelopmentOutline">Outline how the sabbatical supports your professional development:</label>
-                        <textarea id="professionalDevelopmentOutline" class="form-control"></textarea>
-                    </div>
-                </div>
+            <label for="professionalDevelopmentOutline">Outline how the sabbatical supports your professional development:</label>
+            <textarea id="professionalDevelopmentOutline" class="form-control"></textarea>
 
-            </div>
-
-            <div class="container" style="text-align:center">
-                <button id="submitForm">Submit</button>
-            </div>
+            <button id="submitForm">Submit</button>
         </div>
     </form>
 </div>
+<div id="footer"></div>
 </body>
 </html>
