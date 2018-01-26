@@ -1,5 +1,6 @@
 package com.sabbreview.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -65,6 +66,21 @@ public class Application
     return state;
   }
 
+  public List<FieldInstance> getFields() {
+    return fields;
+  }
+
+  public Application setFields(List<FieldInstance> fields) {
+    this.fields = fields;
+    return this;
+  }
+
+
+  public Application addFieldInstance(FieldInstance fieldInstance) {
+    if(this.getFields() == null) this.fields = new ArrayList<>();
+    this.fields.add(fieldInstance);
+    return this;
+  }
   @Override public String toString() {
     return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + ", state=" + state
         + '}';
