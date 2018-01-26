@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.ApplicationController;
+import com.sabbreview.controller.AssignmentController;
 import com.sabbreview.controller.FieldController;
 import com.sabbreview.controller.RoleController;
 import com.sabbreview.controller.TemplateController;
@@ -58,6 +59,7 @@ public class SabbReview {
     RoleController.attach();
     FieldController.attach();
     TemplateController.attach();
+    AssignmentController.attach();
 
     options("*", ((request, response) -> ""));
 

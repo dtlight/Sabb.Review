@@ -1,47 +1,51 @@
 $(document).ready(function(){
-    $("#submitForm").click( function(){
+    $(function() {
+        $('#navbar').load('navbar.html');
+        $('#footer').load('footer.html');
 
-        alert("hiworld!");
+        //Need to load existing fields in here.
+    });
 
-        //---SECTION 1 VARS---//
-        var name = $("#name");
-        var department = $("#department");
-        var appointmentDate = $("#appointmentDate");
+    $("#submitForm").submit(function (e) {
+        /*$('#name');
+        $('#department');
+        $('#address');
 
-        //'Contact details during leave'
-        var presentPost = $("#presentPost");
-        var address = $("#address");
-        var email = $("#email");
+        $('#appointmentDate');
+        $('#presentPost');
+        $('#email');
 
-        //Emergency contact details
-        var emergencyName = $("#emergencyContactName");
-        var emergencyTel = $("#emergencyTelephoneNo");
-        var emergencyAddress  = $("#emergencyAddress");
-        var remuneration = $("#remuneration");
+        $('#emergencyContactName');
+        $('#emergencyTelephoneNo');
+        $('#emergencyEmail');
 
-        //---SECTION 2 VARS---//
-        var termsCount = $("#termsCount");
-        var lastSabbaticalDate  = $("#lastSabbaticalDate");
-        var lastSabbaticalReport = $("#lastSabbaticalReport");
+        $('#emergencyAddress');
+        $('#remuneration');
+        $('#termsCount');
 
-        //'Last three research outputs'
-        var outputOne = $("#researchOutput1");
-        var outputTwo = $("#researchOutput2");
-        var outputThree = $("#researchOutput3");
+        $('#lastSabbaticalDate');
+        $('#sabbaticalObjectives');
+        $('#lastSabbaticalReport');
 
-        var sabbaticalJustification = $("#leaveJustification");
-        var sabbaticalStartDate = $("#leaveStartDate");
-        var sabbaticalEndDate  = $("#leaveEndDate");
+        $('#researchOutput1');
+        $('#researchOutput2');
+        $('#researchOutput3');
 
-        var objectives = $("#leaveObjectives");
-        var collegeStrategyDesc = $("#collegeStrategicAlign");
-        var anticipatedOutputs = $("#anticipatedOutputs");
+        $('#leaveStartDate');
+        $('#leaveEndDate');
+        $('#leaveJustification');
 
-        var sabbaticalprogram = $("#programmeOutline");
-        var grants = $("#appliedGrants");
-        var professionalDevelopmentDesc = $("#professionalDevelopmentOutline");
+        $('#leaveObjectives');
+        $('#collegeStrategicAlign');
+        $('#anticipatedOutputs');
+        $('#programmeOutline');
+        $('#appliedGrants');
+        $('#professionalDevelopmentOutline');
 
-        //TODO - Add signature box code.
+
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });*/
     });
 
 });
