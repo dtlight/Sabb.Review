@@ -24,9 +24,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
+import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
@@ -44,6 +46,9 @@ public class SabbReview {
     staticFiles.location("static");
 
     before((req, res) -> {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST");
+      res.header("Access-Control-Allow-Headers", "*");
       acceptAuthentication(req);
       res.type("application/json");
     });
@@ -51,12 +56,18 @@ public class SabbReview {
     ApplicationController.attach();
     UserController.attach();
     RoleController.attach();
-
     FieldController.attach();
     TemplateController.attach();
 
+    options("*", ((request, response) -> ""));
+
     notFound((request, response) -> gson.toJson(new NotFound()));
 
+    after("*", ((request, response) -> {
+      if(getEntityManager().isOpen() && getEntityManager().getTransaction().isActive()) {
+        em.getTransaction().rollback();
+      }
+    }));
   }
 
 
@@ -99,7 +110,7 @@ public class SabbReview {
 
   private static void acceptAuthentication(Request req) {
     String token = req.headers("Authorization");
-    if (token == null) {
+    if (token == null || !token.contains(".")) {
       req.attribute("isAuthenticated", false);
     } else {
       try {

@@ -46,8 +46,9 @@ public class UserController extends Controller {
           (e.getCause().getMessage().contains("duplicate") ?
               "There is already a user with that email address" :
               null));
-    } catch (ValidationException e) {
+    } catch (Exception e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
     return new TransactionState<>(user, TransactionStatus.STATUS_OK);
@@ -83,6 +84,10 @@ public class UserController extends Controller {
     } catch (UnsupportedEncodingException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Internal Exception");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
     return new TransactionState<>(new Token(token), TransactionStatus.STATUS_OK);
 

@@ -97,8 +97,18 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
+  public AcceptanceState getState() {
+    return state;
+  }
+
+  public Assignment setState(AcceptanceState state) {
+    this.state = state;
+    return this;
+  }
+
   @Override public String toString() {
     return "Assignment{" + "id=" + id + ", owner=" + owner + ", application=" + application
-        + ", role=" + role + ", comments=" + comments + ", dueDate=" + dueDate + '}';
+        + ", role=" + role + ", comments=" + comments + ", state=" + state + ", dueDate=" + dueDate
+        + '}';
   }
 }
