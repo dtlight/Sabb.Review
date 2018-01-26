@@ -51,11 +51,11 @@ public class AssignmentController extends Controller {
         }
     }
 
-    public static TransactionState<Assignment> setAcceptanceState(Application applicationID, AcceptanceState acceptanceState){
+    public static TransactionState<Assignment> setAcceptanceState(String applicationid, AcceptanceState acceptanceState){
         Assignment assignment;
         try{
             em.getTransaction().begin();
-            assignment = em.find(Assignment.id, applicationID); //change id to static in Assignment model?
+            assignment = em.find(Assignment.class, applicationid);
             assignment.setState(acceptanceState);
             em.getTransaction().commit();
             return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
@@ -75,7 +75,6 @@ public class AssignmentController extends Controller {
         put("/api/assignment", (req, res) -> requireAuthentication(req,
                 (principle -> toJson(changeAssignment(principle, fromJson(req.body(), Assignment.class))))));
 
-        put("/api/assignment/:id/state/:state", (req, res) -> toJson(ApplicationController
-                .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
+        put("/api/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
     }
 }
