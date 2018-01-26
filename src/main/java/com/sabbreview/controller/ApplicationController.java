@@ -81,9 +81,6 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-
-//improve to add multi[ple fields
-
   private static TransactionState<Application> setAcceptanceState(String applicationID,
       AcceptanceState acceptanceState) {
     Application application;
