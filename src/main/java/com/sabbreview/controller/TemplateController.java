@@ -40,10 +40,10 @@ public class TemplateController extends Controller {
 
 
   public static void attach() {
-    post("/api/template", (req, res) -> requireAuthentication(req,
+    post("/template", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createTemplate(principle, fromJson(req.body(), Template.class))))));
 
-    delete("/api/template/:id", (req, res) -> requireAuthentication(req,
+    delete("/template/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteTemplate(principle, req.params(":id"))))));
   }
 }

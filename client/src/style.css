@@ -1,0 +1,16 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 30px;
+  z-index: 10;
+  line-height: 30px;
+}
+
+
+/*
+  Temporary change bootstrap navbar background to logo background colour
+*/
+.bg-dark {
+    background-color: #252f3c!important;
+}

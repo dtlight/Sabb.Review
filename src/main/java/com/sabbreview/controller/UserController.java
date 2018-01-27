@@ -109,18 +109,18 @@ public class UserController extends Controller {
   }
 
   public static void attach() {
-    delete("/api/user",
+    delete("/user",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(UserController.deleteUser(principle))));
 
-    post("/api/user",
+    post("/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
     get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
-    post("/api/login", (req, res) -> toJson(UserController
+    post("/login", (req, res) -> toJson(UserController
         .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
 
-    get("/api/user", (req, res) -> requireAuthentication(req,
+    get("/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
   }
 }

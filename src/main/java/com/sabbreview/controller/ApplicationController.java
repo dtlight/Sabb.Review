@@ -99,17 +99,17 @@ public class ApplicationController extends Controller {
   }
 
   public static void attach() {
-    delete("/api/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+    delete("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController.deleteApplication(principle, req.params(":id")))));
 
-    post("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController
             .createApplication(principle, fromJson(req.body(), Application.class)))));
 
-    get("/api/application/:id",
+    get("/application/:id",
         (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    put("/api/application/:id/state/:state", (req, res) -> toJson(ApplicationController
+    put("/application/:id/state/:state", (req, res) -> toJson(ApplicationController
         .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
 
   }
