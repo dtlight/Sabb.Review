@@ -115,7 +115,7 @@ public class UserController extends Controller {
     post("/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
-    get("/api/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
+    get("/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
     post("/login", (req, res) -> toJson(UserController
         .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
