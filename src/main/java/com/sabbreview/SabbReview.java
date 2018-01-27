@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
@@ -52,7 +53,6 @@ public class SabbReview {
       res.header("Access-Control-Allow-Headers", "*");
     });
 
-
     ApplicationController.attach();
     UserController.attach();
     RoleController.attach();
@@ -61,7 +61,15 @@ public class SabbReview {
     TemplateController.attach();
 
     options("*", (req, res) -> "");
+
     notFound((request, response) -> gson.toJson(new NotFound()));
+
+    after("*", ((request, response) -> {
+      if(getEntityManager().isOpen() && getEntityManager().getTransaction().isActive()) {
+        em.getTransaction().rollback();
+      }
+    }));
+
 
   }
 
