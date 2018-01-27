@@ -8,7 +8,7 @@ import axios from 'axios';
 
 
 // When testing use: axios.defaults.baseURL = 'http://localhost:4567/api';
-axios.defaults.baseURL = '/api';
+axios.defaults.baseURL = 'https://api.sabb.review';
 
 axios.interceptors.request.use(function (config) {
   if(window.localStorage.getItem("token")) {

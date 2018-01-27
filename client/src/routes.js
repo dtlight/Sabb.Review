@@ -1,6 +1,9 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom'
 import Auth from './views/auth/'
+import Home from './views/home/'
+import Apply from './views/apply/'
+import Review from './views/review/'
 import Header from './components/header.js'
 import Footer from './components/footer.js'
 
@@ -20,7 +23,13 @@ export default class Routes extends React.Component {
                         <Redirect to="/auth/" />
                       );
                     }} />
-                    <PrivateRoute exact path='/' component={PlaceHolder} />
+                    <PrivateRoute exact path='/' component={Home} />
+                    <PrivateRoute path='/apply' component={Apply} />
+                    <PrivateRoute path='/review' component={Review} />
+                    <Route path="*" render={()=>{
+                      return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
+                    }} />
+
                   </Switch>
                 </div>
                 </span>
