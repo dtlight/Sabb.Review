@@ -14,7 +14,6 @@ import static spark.Spark.halt;
 class Controller {
   static EntityManager em = SabbReview.getEntityManager();
 
-
   static String toJson(TransactionState transactionState) {
     return SabbReview.gson.toJson(transactionState);
   }
