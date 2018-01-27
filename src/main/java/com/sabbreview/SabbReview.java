@@ -27,6 +27,7 @@ import javax.persistence.Persistence;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
+import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
@@ -58,6 +59,7 @@ public class SabbReview {
     FieldController.attach();
     TemplateController.attach();
 
+    options("*", (req, res) -> "");
     notFound((request, response) -> gson.toJson(new NotFound()));
 
   }
