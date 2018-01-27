@@ -28,6 +28,7 @@ import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
 import static spark.Spark.port;
+import static spark.Spark.staticFiles;
 
 
 public class SabbReview {
@@ -40,10 +41,13 @@ public class SabbReview {
 
     port(getHerokuAssignedPort());
 
+    staticFiles.location("static");
 
     before((req, res) -> {
       acceptAuthentication(req);
       res.type("application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "*");
     });
 
 
