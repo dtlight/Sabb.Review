@@ -49,6 +49,7 @@ public class SabbReview {
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Methods", "*");
+      res.header("Access-Control-Allow-Headers", "*");
     });
 
 
