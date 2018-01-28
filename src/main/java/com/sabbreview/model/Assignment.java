@@ -46,10 +46,7 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
-  public Assignment setState(AcceptanceState state) {
-    this.state = state;
-    return this;
-  }
+
 
   public User getAssignee() {
     return assignee;

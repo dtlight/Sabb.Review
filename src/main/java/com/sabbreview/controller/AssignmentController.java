@@ -1,11 +1,10 @@
 package com.sabbreview.controller;
 
+import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Assignment;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
 
 import javax.persistence.RollbackException;
 
@@ -60,13 +59,13 @@ public class AssignmentController extends Controller {
 
   public static void attach() {
     
-    delete("/api/assignment/:id", (req, res) -> requireAuthentication(req,
+    delete("/assignment/:id", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(AssignmentController.deleteAssignment(principle, req.params(":id")))));
 
-    post("/api/assignment", (req, res) -> requireAuthentication(req,
+    post("/assignment", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createAssignment(principle, fromJson(req.body(), Assignment.class))))));
 
-    put("/api/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"), 
+    put("/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"),
         AcceptanceState.valueOf(req.params(":state")))));
     }
 }
