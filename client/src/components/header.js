@@ -22,11 +22,13 @@ export default class extends React.Component {
     return (
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <Link to="/" className="navbar-brand">
-          <img style={{"height": "40px"}} alt="logo" src="https://res.cloudinary.com/postman/image/upload/w_152,h_56,c_fit,f_auto,t_team_logo/v1/team/e4b14c733efa3519b29546c649c4271e6a71ecb5cd8f64876e312e436497cd1e"/>
+          <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
         </Link>
-        <button class="navbar-toggler" type="button" onClick={this.toggleNav} aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <IfLoggedIn>
+          <button class="navbar-toggler" type="button" onClick={this.toggleNav} aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </IfLoggedIn>
 
         <div onClick={this.hideNav} class={(this.state.navExpanded)?"collapse navbar-collapse show":"collapse navbar-collapse"} id="navbarSupportedContent">
           <IfLoggedIn>
@@ -64,5 +66,6 @@ let IfLoggedIn = withRouter((props) => {
 
 let NavLink = withRouter((props) => {
   const { location } = props;
-  return (<li className={(location.pathname===props.to)?"active nav-item":"nav-item"} {...props}><Link className="nav-link" to={props.to}>{props.children}</Link></li>)
+  return (<li className={((props.exact && location.pathname === props.to)
+      || (!props.exact && location.pathname.startsWith(props.to)))?"active nav-item":"nav-item"} {...props}><Link className="nav-link" to={props.to}>{props.children}</Link></li>)
 });

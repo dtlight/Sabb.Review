@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom'
 import Auth from './views/auth/'
 import Home from './views/home/'
-import Apply from './views/apply/'
+import {Introduction, EditExisting} from './views/apply/'
 import Review from './views/review/'
 import Header from './components/header.js'
 import Footer from './components/footer.js'
@@ -24,7 +24,8 @@ export default class Routes extends React.Component {
                       );
                     }} />
                     <PrivateRoute exact path='/' component={Home} />
-                    <PrivateRoute path='/apply' component={Apply} />
+                    <PrivateRoute exact path='/apply' component={Introduction} />
+                    <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                     <PrivateRoute path='/review' component={Review} />
                     <Route path="**" render={(props) =>{
                       return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
