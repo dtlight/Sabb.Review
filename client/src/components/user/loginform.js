@@ -9,11 +9,12 @@ export default class Login extends React.Component {
         super(props);
         this.props = props;
         this.state = {
-          password: "",
-          isError: false,
-          isSuccess: false,
-          isLoading: false
-        }
+            emailAddress: "",
+            password: "",
+            isError: false,
+            isSuccess: false,
+            isLoading: false
+        };
         if(props.location && props.location.state && props.location.state.newUser) {
           this.state.emailAddress = props.location.state.newUser;
           this.state.postReg = true;
@@ -28,7 +29,10 @@ export default class Login extends React.Component {
         isError: false,
         isLoading: true
       });
-      axios.post(`/login?emailAddress=${this.state.emailAddress}&password=${this.state.password}`)
+      axios.post(`/login`, {
+          emailAddress: this.state.emailAddress,
+          password: this.state.password
+      })
       .then(function (response) {
         if(response.data.state !== "STATUS_ERROR") {
           window.localStorage.setItem('token', response.data.value.token);
@@ -97,7 +101,7 @@ export default class Login extends React.Component {
                         buttonContent
                       }
                     </button>
-                    <Link to="/auth/register" class="btn btn-lg btn-link btn-block">Register</Link>
+                    <Link to="/auth/register" class="btn btn-lg btn-link btn-block">or Register</Link>
                     </form>
                   </div>
                 </div>);

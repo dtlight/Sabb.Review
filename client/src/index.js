@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './style.css';
 import './vendor/bootstrap.min.css';
 import registerServiceWorker from './registerServiceWorker';
 import Router from './routes.js';
 import axios from 'axios';
+import './style.css';
 
-
-// When testing use: axios.defaults.baseURL = 'http://localhost:4567/api';
 axios.defaults.baseURL = 'https://api.sabb.review';
 
 axios.interceptors.request.use(function (config) {

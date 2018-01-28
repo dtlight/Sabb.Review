@@ -252,3 +252,4 @@ SabbReview.iml
 src/main/resources/META-INF/persistence.xml
 # src/main/resources/static
 .DS_Store
+client/build

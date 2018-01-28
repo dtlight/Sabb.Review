@@ -13,8 +13,8 @@ export default class Routes extends React.Component {
         <span>
             <Router {...this.props}>
               <span>
-              <Header />
-                <div style={{"marginTop": "20px"}} className="container">
+              <Header isLoggedIn={isLoggedIn()}/>
+                <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
                   <Switch>
                     <Route path='/auth/' component={Auth} />
                     <Route exact path='/logout' render={({history}) => {
@@ -26,7 +26,7 @@ export default class Routes extends React.Component {
                     <PrivateRoute exact path='/' component={Home} />
                     <PrivateRoute path='/apply' component={Apply} />
                     <PrivateRoute path='/review' component={Review} />
-                    <Route path="*" render={()=>{
+                    <Route path="**" render={(props) =>{
                       return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
                     }} />
 
@@ -38,7 +38,6 @@ export default class Routes extends React.Component {
         </span>);
     }
 }
-
 
 const PrivateRoute = (props) => {
   if(isLoggedIn()) {
@@ -57,5 +56,3 @@ const PrivateRoute = (props) => {
 let isLoggedIn = () => {
   return window.localStorage.getItem("token") !== null;
 }
-
-const PlaceHolder = (props) => {  return (<h1> Placeholder </h1>); };

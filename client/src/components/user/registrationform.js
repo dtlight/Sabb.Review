@@ -120,6 +120,7 @@ export default class Register extends React.Component {
                       buttonContent
                     }
                   </button>
+                  <Link to="/auth/" class="btn btn-lg btn-link btn-block">or Sign In</Link>
 
                     </form>
                   </div>
