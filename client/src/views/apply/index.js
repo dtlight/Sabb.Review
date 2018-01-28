@@ -1,23 +1,24 @@
 import React from 'react'
-
-export default class extends React.Component {
+import {Link} from 'react-router-dom'
+import {CreateApplication} from '../../components/application/index.js'
+export class Introduction extends React.Component {
   render() {
     return (<div>
               <h1 class="display-4">Start a New Application</h1>
-              <p class="lead">To start an appraisal and view the status existing applications, please review the table below.</p>
+              <p class="lead">To start the sabbatical application process, please fill out the form below.</p>
+              <hr />
+              <CreateApplication />
+           </div>)
+  }
+}
+
+export class EditExisting extends React.Component {
+  render() {
+    return (<div>
+              <h1 class="display-4">Edit Application</h1>
+              <p class="lead">Please fill out the required fields below. You can save your application to return to it later or submit to forward the application for review.</p>
               <hr />
               <form>
-
-                <div class="form-group">
-                  <label for="exampleFormControlSelect1">Current Department</label>
-                  <select class="form-control" id="exampleFormControlSelect1">
-                    <option>Computer Science</option>
-                    <option>Mathematics</option>
-                    <option>English</option>
-                    <option>Liberal Arts</option>
-                  </select>
-                </div>
-
                 <div class="form-group">
                   <label for="exampleFormControlInput1">Present Post</label>
                   <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="" />
@@ -45,8 +46,8 @@ export default class extends React.Component {
                 </div>
 
                 <div class="form-group">
-                  <input type="submit" class="btn btn-primary btn-lg" value="Submit" style={{"marginRight": "10px"}}/>
-                  <input type="submit" class="btn btn-secondary btn-lg" value="Save"/>
+                  <input type="submit" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}}/>
+                  <input type="submit" class="btn btn-secondary" value="Save"/>
                 </div>
             </form>
            </div>)
