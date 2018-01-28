@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
   @Id @SequenceGenerator(name = "ass_id_gen")
   public int id;
 
-  @ManyToOne(targetEntity = User.class) private transient User owner;
+  @ManyToOne(targetEntity = User.class) private transient User assignee;
 
   @ManyToOne private Application application;
 
@@ -31,8 +31,8 @@ import javax.persistence.SequenceGenerator;
   public Assignment() {
   }
 
-  public Assignment(User owner, Application application, Role role) {
-    this.owner = owner;
+  public Assignment(User assignee, Application application, Role role) {
+    this.assignee = assignee;
     this.application = application;
     this.role = role;
   }
@@ -46,12 +46,17 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
-  public User getOwner() {
-    return owner;
+  public Assignment setState(AcceptanceState state) {
+    this.state = state;
+    return this;
   }
 
-  public Assignment setOwner(User owner) {
-    this.owner = owner;
+  public User getAssignee() {
+    return assignee;
+  }
+
+  public Assignment setAssignee(User owner) {
+    this.assignee = owner;
     return this;
   }
 
@@ -97,8 +102,17 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
+  public AcceptanceState getState() {
+    return state;
+  }
+
+  public Assignment setState(AcceptanceState state) {
+    this.state = state;
+    return this;
+  }
+
   @Override public String toString() {
-    return "Assignment{" + "id=" + id + ", owner=" + owner + ", application=" + application
-        + ", role=" + role + ", comments=" + comments + ", dueDate=" + dueDate + '}';
+    return "Assignment{" + "id=" + id + ", owner=" + assignee + ", application=" + application
+        + ", role=" + role + ", comments=" + comments + ", state=" + state + ", dueDate=" + dueDate + '}';
   }
 }

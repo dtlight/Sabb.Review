@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.ApplicationController;
+import com.sabbreview.controller.AssignmentController;
 import com.sabbreview.controller.FieldController;
 import com.sabbreview.controller.RoleController;
 import com.sabbreview.controller.TemplateController;
@@ -46,6 +47,9 @@ public class SabbReview {
     staticFiles.location("static");
 
     before((req, res) -> {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST");
+      res.header("Access-Control-Allow-Headers", "*");
       acceptAuthentication(req);
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
@@ -56,9 +60,11 @@ public class SabbReview {
     ApplicationController.attach();
     UserController.attach();
     RoleController.attach();
-
     FieldController.attach();
     TemplateController.attach();
+    AssignmentController.attach();
+
+    options("*", ((request, response) -> ""));
 
     options("*", (req, res) -> "");
 
@@ -69,8 +75,6 @@ public class SabbReview {
         em.getTransaction().rollback();
       }
     }));
-
-
   }
 
 
@@ -113,7 +117,7 @@ public class SabbReview {
 
   private static void acceptAuthentication(Request req) {
     String token = req.headers("Authorization");
-    if (token == null) {
+    if (token == null || !token.contains(".")) {
       req.attribute("isAuthenticated", false);
     } else {
       try {
