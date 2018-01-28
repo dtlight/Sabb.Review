@@ -97,16 +97,16 @@ public class FieldController extends Controller {
 
 
   public static void attach() {
-    post("/api/field", (req, res) -> requireAuthentication(req,
+    post("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createField(principle, fromJson(req.body(), Field.class))))));
 
-    post("/api/field/:id/option", (req, res) -> requireAuthentication(req,
+    post("/field/:id/option", (req, res) -> requireAuthentication(req,
         (principle -> toJson(addOption(principle, req.params(":id"), fromJson(req.body(), FieldOption.class))))));
 
-    delete("/api/field/:id", (req, res) -> requireAuthentication(req,
+    delete("/field/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteField(principle, req.params(":id"))))));
 
-    get("/api/field/:id", (req, res) -> requireAuthentication(req,
+    get("/field/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getField(principle, req.params(":id"))))));
   }
 }

@@ -66,10 +66,10 @@ public class RoleController extends Controller {
   }
 
   public static void attach() {
-    delete("/api/role/:id", (req, res) -> requireAuthentication(req,
+    delete("/role/:id", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(RoleController.removeRole(principle, req.params("id")))));
 
-    post("/api/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+    post("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         RoleController.createRole(principle, fromJson(req.body(), Role.class)))));
   }
 }

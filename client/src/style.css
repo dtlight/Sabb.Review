@@ -1,0 +1,32 @@
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  height: 30px;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #252f3b !important;
+
+}
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 1rem;
+  min-height: 100%;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+
+.navbar {
+  z-index: 100;
+}
+
+.jumbotron-sm {
+  padding-top: 27px;
+  padding-bottom: 19px;
+}

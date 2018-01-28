@@ -1,0 +1,20 @@
+{
+  "short_name": "SabbReview",
+  "name": "SabbReview",
+  "icons": [
+    {
+        "src": "/brand/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },
+    {
+        "src": "/brand/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+    }
+],
+"start_url": "/",
+"theme_color": "#252f3b",
+"background_color": "#252f3b",
+"display": "standalone"
+}
