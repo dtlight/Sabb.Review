@@ -47,9 +47,6 @@ public class SabbReview {
     staticFiles.location("static");
 
     before((req, res) -> {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST");
-      res.header("Access-Control-Allow-Headers", "*");
       acceptAuthentication(req);
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
