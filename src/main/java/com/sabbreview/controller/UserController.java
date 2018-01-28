@@ -63,11 +63,11 @@ public class UserController extends Controller {
   }
 
 
-  private static TransactionState<Token> generateSession(String emailAddress, String password) {
+  private static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
     try {
-      User user = em.find(User.class, emailAddress);
-      if (user != null && user.verifyPassword(password)) {
+      User user = em.find(User.class, uap.getEmailAddress());
+      if (user != null && user.verifyPassword(uap.getPassword())) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DAY_OF_YEAR, 3);
@@ -118,9 +118,40 @@ public class UserController extends Controller {
     get("/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
     post("/login", (req, res) -> toJson(UserController
-        .generateSession(req.queryParams("emailAddress"), req.queryParams("password"))));
+        .generateSession(fromJson(req.body(), UserAuthenticationParameters.class))));
 
     get("/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
   }
+
+  private class UserAuthenticationParameters {
+    String emailAddress = "";
+    String password = "";
+
+    public UserAuthenticationParameters() {
+    }
+
+    public String getEmailAddress() {
+      return emailAddress;
+    }
+
+    public UserAuthenticationParameters setEmailAddress(String emailAddress) {
+      this.emailAddress = emailAddress;
+      return this;
+    }
+
+    public String getPassword() {
+      return password;
+    }
+
+    public UserAuthenticationParameters setPassword(String password) {
+      this.password = password;
+      return this;
+    }
+
+    @Override public String toString() {
+      return super.toString();
+    }
+  }
 }
+
