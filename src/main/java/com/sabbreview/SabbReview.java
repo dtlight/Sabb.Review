@@ -52,6 +52,9 @@ public class SabbReview {
       res.header("Access-Control-Allow-Headers", "*");
       acceptAuthentication(req);
       res.type("application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "*");
+      res.header("Access-Control-Allow-Headers", "*");
     });
 
     ApplicationController.attach();
@@ -62,6 +65,8 @@ public class SabbReview {
     AssignmentController.attach();
 
     options("*", ((request, response) -> ""));
+
+    options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
 
