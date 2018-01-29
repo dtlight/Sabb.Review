@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ApplicationPanel } from '../../components/home/'
+import { ApplicationCard } from '../../components/home/'
 import './style.css'
 export default class extends React.Component {
   render() {
@@ -20,16 +20,16 @@ export default class extends React.Component {
                 </div>
                 <div class="row applications-collapse">
                   <div class="col-lg-4">
-                    <ApplicationPanel id="test" status="SUCCESS"/>
+                    <ApplicationCard id="test" status="SUCCESS"/>
                   </div>
                   <div class="col-lg-4">
-                    <ApplicationPanel id="test" status="PENDING"/>
+                    <ApplicationCard id="test" status="PENDING"/>
                   </div>
                   <div class="col-lg-4">
-                    <ApplicationPanel id="test" status="REFUSED"/>
+                    <ApplicationCard id="test" status="REFUSED"/>
                   </div>
                   <div class="col-lg-4">
-                    <ApplicationPanel id="test" status="SUBMITTED"/>
+                    <ApplicationCard id="test" status="SUBMITTED"/>
                   </div>
                 </div>
            </div>)
