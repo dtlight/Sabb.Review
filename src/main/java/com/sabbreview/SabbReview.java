@@ -7,11 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
-import com.sabbreview.controller.ApplicationController;
-import com.sabbreview.controller.FieldController;
-import com.sabbreview.controller.RoleController;
-import com.sabbreview.controller.TemplateController;
-import com.sabbreview.controller.UserController;
+import com.sabbreview.controller.*;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
@@ -24,9 +20,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
+import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
@@ -46,17 +44,30 @@ public class SabbReview {
     before((req, res) -> {
       acceptAuthentication(req);
       res.type("application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "*");
+      res.header("Access-Control-Allow-Headers", "*");
     });
 
     ApplicationController.attach();
+    DepartmentController.attach();
     UserController.attach();
     RoleController.attach();
-
     FieldController.attach();
     TemplateController.attach();
+    AssignmentController.attach();
+
+    options("*", ((request, response) -> ""));
+
+    options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
 
+    after("*", ((request, response) -> {
+      if(getEntityManager().isOpen() && getEntityManager().getTransaction().isActive()) {
+        em.getTransaction().rollback();
+      }
+    }));
   }
 
 
@@ -99,7 +110,7 @@ public class SabbReview {
 
   private static void acceptAuthentication(Request req) {
     String token = req.headers("Authorization");
-    if (token == null) {
+    if (token == null || !token.contains(".")) {
       req.attribute("isAuthenticated", false);
     } else {
       try {
