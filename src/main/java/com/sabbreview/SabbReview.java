@@ -7,12 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.UserAdadpter;
-import com.sabbreview.controller.ApplicationController;
-import com.sabbreview.controller.AssignmentController;
-import com.sabbreview.controller.FieldController;
-import com.sabbreview.controller.RoleController;
-import com.sabbreview.controller.TemplateController;
-import com.sabbreview.controller.UserController;
+import com.sabbreview.controller.*;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
@@ -55,6 +50,7 @@ public class SabbReview {
     });
 
     ApplicationController.attach();
+    DepartmentController.attach();
     UserController.attach();
     RoleController.attach();
     FieldController.attach();
