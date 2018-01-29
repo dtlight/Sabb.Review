@@ -196,19 +196,19 @@ public class ApplicationController extends Controller {
     get("/application/:id",
         (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    put("/api/application/:applicationid/template/:templateid",
+    put("/application/:applicationid/template/:templateid",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController
             .useTemplate(principle, req.params("applicationid"), req.params("templateid")))));
 
-    post("/api/application/template/:templateid", (req, res) -> requireAuthentication(req,
+    post("/application/template/:templateid", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(
             ApplicationController.useTemplate(principle, null, req.params("templateid")))));
 
-    put("/api/application/:id/state/:state", (req, res) -> toJson(
+    put("/application/:id/state/:state", (req, res) -> toJson(
         ApplicationController.setAcceptanceState(req.params(":id"), req.params(":state"))));
 
 
-    put("/api/fieldinstance/:id/value/:value", (req, res) -> requireAuthentication(req,
+    put("/fieldinstance/:id/value/:value", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(ApplicationController
             .changeFieldValue(principle, req.params(":id"), req.params("value")))));
   }
