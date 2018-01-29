@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './vendor/bootstrap.min.css';
 import registerServiceWorker from './registerServiceWorker';
 import Router from './routes.js';
 import axios from 'axios';
+import './scss/_style.scss';
 import './style.css';
 
 axios.defaults.baseURL = 'https://api.sabb.review';
