@@ -19,7 +19,7 @@ import javax.persistence.OneToMany;
 
   FieldType type;
 
-  @OneToMany(cascade = CascadeType.REMOVE)
+  @OneToMany(cascade = CascadeType.ALL)
   List<FieldOption> fieldOptions;
 
   public String getId() {
