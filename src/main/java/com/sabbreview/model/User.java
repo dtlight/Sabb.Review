@@ -16,19 +16,8 @@ import javax.persistence.OneToMany;
 
   public Boolean isAdmin;
 
-  private User belongsTo;
-
   @OneToMany private List<Assignment> assignments = new ArrayList<>();
   @OneToMany(mappedBy="applicant") private List<Application> applications = new ArrayList<>();
-
-    public User getDepartment() {
-        return belongsTo;
-    }
-
-    public User setDepartment(User belongsTo) {
-        this.belongsTo = belongsTo;
-        return this;
-    }
 
   public User() {}
 
