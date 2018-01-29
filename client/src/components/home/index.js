@@ -30,7 +30,7 @@ let applicationStates = {
 
 
 
-export class ApplicationPanel extends React.Component {
+export class ApplicationCard extends React.Component {
   constructor(props) {
     super(props);
     this.props = props;
