@@ -1,4 +1,5 @@
 package com.sabbreview.controller;
 
-public class DepartmentController {
+public class DepartmentController extends Controller {
+
 }
