@@ -1,14 +1,16 @@
 package com.sabbreview.model;
 
-public class Department extends Model {
+import javax.persistence.Entity;
 
-    private String HOD;
+@Entity(name = "department") public class Department extends Model {
 
-    public String getHOD() {
+    private User HOD;
+
+    public User getHOD() {
         return HOD;
     }
 
-    public Department setHOD(String HOD) {
+    public Department setHOD(User HOD) {
         this.HOD = HOD;
         return this;
     }
