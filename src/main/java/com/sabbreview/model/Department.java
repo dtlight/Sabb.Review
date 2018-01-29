@@ -28,7 +28,13 @@ import javax.persistence.Id;
 
     public void setId(String id) {
         this.id = id;
-
     }
 
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id='" + id + '\'' +
+                ", HOD=" + HOD +
+                '}';
+    }
 }
