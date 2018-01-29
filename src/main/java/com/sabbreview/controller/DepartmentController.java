@@ -46,7 +46,7 @@ public class DepartmentController extends Controller {
     }
 
     public static void attach() {
-        delete("/department/depID", (req, res) -> requireAuthentication(req,
+        delete("/department/:depID", (req, res) -> requireAuthentication(req,
                 (principle) -> toJson(DepartmentController.deleteDepartment(principle, req.params("depID")))));
 
         post("/department", (req, res) -> requireAuthentication(req, (principle) -> toJson(
