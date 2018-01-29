@@ -2,6 +2,7 @@ import React from 'react';
 import './style.css'
 import axios from 'axios';
 import {Link, Redirect} from 'react-router-dom'
+import { Button, FormGroup, Input } from 'reactstrap';
 
 export default class Register extends React.Component {
 
@@ -79,8 +80,8 @@ export default class Register extends React.Component {
                   return false;
                 }}>
                 <h1 className="display-4" style={{"paddingBottom": "10px"}}>Register</h1>
-                <div class="form-group">
-                  <input type="email"
+                <FormGroup>
+                  <Input type="email"
                     class="form-control form-control-lg"
                     placeholder="Email Address"
                     className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
@@ -92,7 +93,7 @@ export default class Register extends React.Component {
                     }}
                     value={this.state.emailAddress} />
                   <hr />
-                  <input type="password"
+                  <Input type="password"
                       class="form-control form-control-lg"
                       placeholder="Password"
                       className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
@@ -103,7 +104,7 @@ export default class Register extends React.Component {
                         })
                       }}
                       value={this.state.password}/>
-                  <input type="password"
+                  <Input type="password"
                         class="form-control form-control-lg"
                         placeholder="Repeat Password"
                         className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
@@ -114,13 +115,13 @@ export default class Register extends React.Component {
                           })
                         }}
                         value={this.state.repeatPassword}/>
-                  </div>
-                  <button onClick={this.register} value="Register" class="btn btn-lg btn-secondary btn-block">
+                  </FormGroup>
+                  <Button  size="lg" color="secondary" block onClick={this.register}>
                     {
                       buttonContent
                     }
-                  </button>
-                  <Link to="/auth/" class="btn btn-lg btn-link btn-block">or Sign In</Link>
+                  </Button>
+                  <Button size="lg" color="link" block><Link to="/auth/">or Sign In</Link></Button>
 
                     </form>
                   </div>

@@ -1,51 +1,55 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom'
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem } from 'reactstrap';
+
 
 export default class extends React.Component {
   constructor (props) {
     super(props);
     this.props = props;
-    this.state = { navExpanded: false }
+    this.state = { navExpanded: true }
     this.toggleNav = this.toggleNav.bind(this);
-    this.hideNav = this.hideNav.bind(this);
   }
 
   toggleNav() {
     this.setState({ navExpanded: !this.state.navExpanded });
   }
 
-  hideNav() {
-    this.setState({ navExpanded: false });
-  }
-
   render() {
     return (
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-        <Link to="/" className="navbar-brand">
-          <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
+      <Navbar dark color="primary" expand="lg">
+        <Link to="/">
+           <NavbarBrand >
+            <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
+          </NavbarBrand>
         </Link>
         <IfLoggedIn>
-          <button class="navbar-toggler" type="button" onClick={this.toggleNav} aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+          <NavbarToggler onClick={this.toggleNav} />
         </IfLoggedIn>
 
-        <div onClick={this.hideNav} class={(this.state.navExpanded)?"collapse navbar-collapse show":"collapse navbar-collapse"} id="navbarSupportedContent">
+        <Collapse isOpen={this.state.navExpanded} navbar>
           <IfLoggedIn>
-            <ul class="navbar-nav mr-auto">
+            <Nav className="mr-auto" navbar>
               <NavLink to="/" exact>Home</NavLink>
               <NavLink to="/apply">Apply</NavLink>
               <NavLink to="/review">Review</NavLink>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item  ">
-                <Link to="/logout" class="nav-link">Logout</Link>
-              </li>
-            </ul>
+            </Nav>
+            <Nav className="ml-auto" navbar>
+                <NavLink to="/logout">Logout</NavLink>
+            </Nav>
           </IfLoggedIn>
-
-        </div>
-      </nav>
+        </Collapse>
+      </Navbar>
     )
   }
 }

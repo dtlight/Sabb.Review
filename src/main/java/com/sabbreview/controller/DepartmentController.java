@@ -51,5 +51,6 @@ public class DepartmentController extends Controller {
 
         post("/department", (req, res) -> requireAuthentication(req, (principle) -> toJson(
                 DepartmentController.createDepartment(principle, fromJson(req.body(), Department.class)))));
+
     }
 }
