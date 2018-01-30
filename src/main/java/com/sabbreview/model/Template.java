@@ -1,7 +1,10 @@
 package com.sabbreview.model;
 
+import org.eclipse.persistence.annotations.Noncacheable;
+
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

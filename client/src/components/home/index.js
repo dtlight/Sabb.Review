@@ -1,5 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Card, Badge, CardText, CardBody,
+  CardTitle, CardSubtitle, Button } from 'reactstrap';
+
 
 let applicationStates = {
   PENDING: {
@@ -43,39 +46,17 @@ export class ApplicationCard extends React.Component {
 
   render() {
     return (
-      <div style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} class={`card border-${applicationStates[this.state.status].colours}`}>
-        <div class="card-body">
-          <h5 class="card-title">Application to the Computer Science dept. <span class={`badge badge-${applicationStates[this.state.status].colours}`}>{applicationStates[this.state.status].humanStatus}</span></h5>
-          <p class="card-subtitle mb-2 text-muted">{this.state.applicationDate}</p>
-          <p class="card-text">{applicationStates[this.state.status].body}</p>
+      <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
+        <CardBody>
+          <CardTitle><h5>Application to the Computer Science dept. <Badge color={applicationStates[this.state.status].colours}>{applicationStates[this.state.status].humanStatus}</Badge></h5></CardTitle>
+          <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
+          <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
-            <Link  style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>Edit Application</Link>
+            <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>Edit Application</Link>
             <Link class="text-danger float-right" style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} to={`/apply/${this.state.id}`}>Withdraw</Link>
           </div>
-        </div>
-      </div>
-    )
-  }
-}
-
-
-export class NoApplications extends React.Component {
-  constructor(props) {
-    super(props);
-    this.props = props;
-  }
-
-  render() {
-    return (
-      <div class="card card-success" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Card title </h5>
-          <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
     )
   }
 }

@@ -1,5 +1,6 @@
 package com.sabbreview.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,12 +14,12 @@ public class FieldInstance extends Model {
   @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   Field field;
 
   String value; // Only for text (not date/multichoice etc...)
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   FieldOption option;
 
   public FieldInstance() {

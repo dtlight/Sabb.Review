@@ -2,6 +2,7 @@ import React from 'react';
 import {Link, Redirect} from 'react-router-dom'
 import './style.css'
 import axios from 'axios';
+import { Button, FormGroup, Input } from 'reactstrap';
 
 export default class Login extends React.Component {
 
@@ -73,8 +74,8 @@ export default class Login extends React.Component {
                       Please login with your new account
                   </div>
                   <h1 className="display-4" style={{"paddingBottom": "10px"}}>Login</h1>
-                  <div class="form-group">
-                    <input type="email"
+                  <FormGroup>
+                    <Input type="email"
                       className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
                                 :"form-control form-control-lg"}
                       placeholder="Email Address"
@@ -84,7 +85,7 @@ export default class Login extends React.Component {
                         })
                       }}
                       value={this.state.emailAddress} />
-                    <input type="password"
+                    <Input type="password"
                       class=""
                       placeholder="Password"
                       className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
@@ -95,13 +96,13 @@ export default class Login extends React.Component {
                         })
                       }}
                       value={this.state.password}/>
-                    </div>
-                    <button onClick={this.login} value="Sign In" class="btn btn-lg btn-primary btn-block">
+                    </FormGroup>
+                    <Button onClick={this.login} size="lg" color="primary" block>
                       {
                         buttonContent
                       }
-                    </button>
-                    <Link to="/auth/register" class="btn btn-lg btn-link btn-block">or Register</Link>
+                    </Button>
+                    <Button size="lg" color="link" block><Link to="/auth/register">or Register</Link></Button>
                     </form>
                   </div>
                 </div>);

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
+import {Input} from 'reactstrap';
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export class CreateApplication extends React.Component {
     this.setState({
       isLoading: true
     })
-    axios.post(`/application`)
+    axios.post(`/application/template/1`)
       .then(function (response) {
         if(response.data.state !== "STATUS_ERROR") {
           this.setState({
@@ -63,4 +64,64 @@ export class CreateApplication extends React.Component {
       );
     }
   }
+}
+
+export class EditApplication extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.state = {
+      fieldInstances: []
+    }
+  }
+
+  componentDidMount() {
+    axios.get(`/application/${this.props.id}`).then(({data})=> {
+      this.setState((state) => {
+        for(var fieldInstance of data.value.fields) {
+          state.fieldInstances.push(fieldInstance);
+        }
+        return state;
+      })
+    })
+  }
+
+  render() {
+    if(this.state.fieldInstances) {
+      let fieldInstances = [];
+      for (var fieldInstance of this.state.fieldInstances) {
+          fieldInstances.push(<FieldInstance fieldInstance={fieldInstance}/>);
+      }
+      return (
+        <form>
+          {fieldInstances}
+
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}}/>
+            <input type="submit" class="btn btn-secondary" value="Save"/>
+          </div>
+      </form>
+      );
+  } else {
+    return "Loading ...";
+  }
+}
+}
+
+let FieldInstance = (props) => {
+  //Assume multichoice to starts
+  let options = [];
+  console.log(props.fieldInstance);
+
+  for (let option of props.fieldInstance.field.fieldOptions) {
+    options.push(<option value={option.id}>{option.title}</option>);
+  }
+  return (
+    <div class="form-group">
+      <label>{props.fieldInstance.field.title}</label>
+      <Input type="select">
+        {options}
+      </Input>
+    </div>
+  );
 }

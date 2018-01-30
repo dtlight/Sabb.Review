@@ -7,6 +7,10 @@ import Review from './views/review/'
 import Header from './components/header.js'
 import Footer from './components/footer.js'
 
+
+import TemplateBuilder from './views/admin/template/';
+
+
 export default class Routes extends React.Component {
     render() {
       return (
@@ -27,6 +31,8 @@ export default class Routes extends React.Component {
                     <PrivateRoute exact path='/apply' component={Introduction} />
                     <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                     <PrivateRoute path='/review' component={Review} />
+                    {/*}<PrivateRoute path='/admin/template' component={TemplateBuilder} />*/}
+                    <PrivateRoute path='/admin/template/:id' component={TemplateBuilder} />
                     <Route path="**" render={(props) =>{
                       return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
                     }} />

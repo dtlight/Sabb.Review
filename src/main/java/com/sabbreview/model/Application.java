@@ -2,6 +2,7 @@ package com.sabbreview.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,7 @@ public class Application
 
   @ManyToOne() private User applicant = null;
 
-  @OneToMany
+  @OneToMany(cascade = CascadeType.PERSIST)
   public List<FieldInstance> fields;
 
   @Enumerated

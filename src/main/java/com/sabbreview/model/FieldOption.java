@@ -2,10 +2,16 @@ package com.sabbreview.model;
 
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity public class FieldOption extends Model {
+
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  int id;
+
   String title;
   boolean selected;
 
@@ -20,6 +26,15 @@ import javax.persistence.Id;
     return this;
   }
 
+  public int getId() {
+    return id;
+  }
+
+  public FieldOption setId(int id) {
+    this.id = id;
+    return this;
+  }
+
   public boolean isSelected() {
     return selected;
   }
@@ -30,6 +45,7 @@ import javax.persistence.Id;
   }
 
   @Override public String toString() {
-    return "FieldOption{" + "title='" + title + '\'' + ", selected=" + selected + '}';
+    return "FieldOption{" + "id=" + id + ", title='" + title + '\'' + ", selected=" + selected
+        + '}';
   }
 }

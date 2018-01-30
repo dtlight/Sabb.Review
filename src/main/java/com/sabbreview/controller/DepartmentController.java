@@ -2,7 +2,6 @@ package com.sabbreview.controller;
 
 import com.sabbreview.model.Department;
 import com.sabbreview.model.User;
-import com.sabbreview.responses.AuthenticationException;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 
@@ -32,11 +31,7 @@ public class DepartmentController extends Controller {
         try {
             em.getTransaction().begin();
             Department department = em.find(Department.class, depID);
-            if (department.getHOD().getDepartment().equals(principle)) {
-                em.remove(department);
-            } else {
-                throw new AuthenticationException();
-            }
+            em.remove(department);
             em.getTransaction().commit();
             return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {
@@ -51,5 +46,6 @@ public class DepartmentController extends Controller {
 
         post("/department", (req, res) -> requireAuthentication(req, (principle) -> toJson(
                 DepartmentController.createDepartment(principle, fromJson(req.body(), Department.class)))));
+
     }
 }
