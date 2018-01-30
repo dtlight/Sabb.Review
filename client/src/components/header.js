@@ -17,7 +17,7 @@ export default class extends React.Component {
   constructor (props) {
     super(props);
     this.props = props;
-    this.state = { navExpanded: true }
+    this.state = { navExpanded: false }
     this.toggleNav = this.toggleNav.bind(this);
   }
 

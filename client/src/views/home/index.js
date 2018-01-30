@@ -21,18 +21,18 @@ export default class extends React.Component {
                   {/*<button class="btn btn-light">Next Year <i class="fa fa-chevron-right"></i></button>*/}
                 </ButtonGroup>
                 <Row className="row applications-collapse">
-                  <Col lg="4">
+                  <div class="col-lg-4">
                     <ApplicationCard id="test" status="SUCCESS"/>
-                  </Col>
-                  <Col lg="4">
+                  </div>
+                  <div class="col-lg-4">
                     <ApplicationCard id="test" status="PENDING"/>
-                  </Col>
-                  <Col lg="4">
+                  </div>
+                  <div class="col-lg-4">
                     <ApplicationCard id="test" status="REFUSED"/>
-                  </Col>
-                  <Col lg="4">
+                  </div>
+                  <div class="col-lg-4">
                     <ApplicationCard id="test" status="SUBMITTED"/>
-                  </Col>
+                  </div>
                 </Row>
            </div>)
   }

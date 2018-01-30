@@ -46,7 +46,6 @@ public class FieldController extends Controller {
     }
   }
 
-
   private static TransactionState<Field> deleteField(String principle, String id) {
     try {
       em.getTransaction().begin();
@@ -96,6 +95,8 @@ public class FieldController extends Controller {
   }
 
 
+
+
   public static void attach() {
     post("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createField(principle, fromJson(req.body(), Field.class))))));
@@ -107,6 +108,8 @@ public class FieldController extends Controller {
         (principle -> toJson(deleteField(principle, req.params(":id"))))));
 
     get("/field/:id", (req, res) -> requireAuthentication(req,
+        (principle -> toJson(getField(principle, req.params(":id"))))));
+    get("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getField(principle, req.params(":id"))))));
   }
 }

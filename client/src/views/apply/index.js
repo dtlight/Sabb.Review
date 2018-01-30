@@ -1,6 +1,8 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import {CreateApplication} from '../../components/application/index.js'
+import {CreateApplication, EditApplication} from '../../components/application/index.js'
+import axios from 'axios';
+
 export class Introduction extends React.Component {
   render() {
     return (<div>
@@ -13,12 +15,14 @@ export class Introduction extends React.Component {
 }
 
 export class EditExisting extends React.Component {
+
   render() {
     return (<div>
               <h1 class="display-4">Edit Application</h1>
               <p class="lead">Please fill out the required fields below. You can save your application to return to it later or submit to forward the application for review.</p>
               <hr />
-              <form>
+              <EditApplication id={this.props.match.params.id} />
+              {/*<form>
                 <div class="form-group">
                   <label for="exampleFormControlInput1">Present Post</label>
                   <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="" />
@@ -49,7 +53,7 @@ export class EditExisting extends React.Component {
                   <input type="submit" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}}/>
                   <input type="submit" class="btn btn-secondary" value="Save"/>
                 </div>
-            </form>
+            </form>*/}
            </div>)
   }
 }
