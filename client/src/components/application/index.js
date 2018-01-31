@@ -35,6 +35,8 @@ export class CreateApplication extends React.Component {
 
     }.bind(this))
   }
+
+
   render() {
     var buttonContent = (this.state.isLoading)?<i class="fa fa-refresh fa-spin"></i>:"Start Application";
     if(this.state.isSuccess) {
@@ -108,20 +110,46 @@ export class EditApplication extends React.Component {
 }
 }
 
-let FieldInstance = (props) => {
-  //Assume multichoice to starts
-  let options = [];
-  console.log(props.fieldInstance);
+class FieldInstance extends React.Component {
 
-  for (let option of props.fieldInstance.field.fieldOptions) {
-    options.push(<option value={option.id}>{option.title}</option>);
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.updateValue = this.updateValue.bind(this);
   }
-  return (
-    <div class="form-group">
-      <label>{props.fieldInstance.field.title}</label>
-      <Input type="select">
-        {options}
-      </Input>
-    </div>
-  );
+
+  updateValue() {
+
+  }
+
+    render() {
+    //Assume multichoice to starts
+    console.log(this.props.fieldInstance);
+
+    var inner = "";
+    if(this.props.fieldInstance.field.type === "MULTICHOICE") {
+      let options = [];
+      for (let option of this.props.fieldInstance.field.fieldOptions) {
+          options.push(<option value={option.id}>{option.title}</option>);
+      }
+      inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
+
+    } else if(this.props.fieldInstance.field.type === "SINGLECHOICE") {
+      let options = [];
+      for (let option of this.props.fieldInstance.field.fieldOptions) {
+          options.push(<option value={option.id}>{option.title}</option>);
+      }
+      inner = <Input type="select"> {options} </Input>;
+    } else if(this.props.fieldInstance.field.type === "LONGTEXT") {
+      inner = <Input type="textarea"/>;
+    } else {
+      inner = <Input />;
+    }
+
+    return ( <div class="form-group" style={{"paddingBottom": "10px"}}>
+              <label>{this.props.fieldInstance.field.title}</label>
+              {inner}
+            </div>)
+
+  }
 }

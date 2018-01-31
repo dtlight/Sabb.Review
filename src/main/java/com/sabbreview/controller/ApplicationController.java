@@ -117,16 +117,17 @@ public class ApplicationController extends Controller {
       } else {
         application = em.find(Application.class, applicationid);
       }
-      Template template = em.find(Template.class, templateid);
+      Template template = TemplateController.getTemplate(principle, templateid).getValue();
 
       if (application == null || template == null) {
         throw new ValidationException(
             (application == null) ? "Assignment cannot be found" : "Template cannot be found");
       }
 
-      List<Field> fieldList = template.getFieldList();
+      List<Field> fieldList = template.fieldList;
 
       for (Field field : fieldList) {
+        System.out.println(field);
         FieldInstance fieldInstance = new FieldInstance(field);
         em.persist(fieldInstance);
         application.addFieldInstance(fieldInstance);

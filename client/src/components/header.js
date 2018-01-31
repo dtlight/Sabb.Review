@@ -19,11 +19,19 @@ export default class extends React.Component {
     this.props = props;
     this.state = { navExpanded: false }
     this.toggleNav = this.toggleNav.bind(this);
+    this.hideNave = this.hideNave.bind(this);
   }
 
   toggleNav() {
     this.setState({ navExpanded: !this.state.navExpanded });
   }
+
+  hideNave() {
+    if(this.state.navExpanded) {
+      this.setState({ navExpanded: !this.state.navExpanded });
+    }
+  }
+
 
   render() {
     return (
@@ -39,12 +47,12 @@ export default class extends React.Component {
 
         <Collapse isOpen={this.state.navExpanded} navbar>
           <IfLoggedIn>
-            <Nav className="mr-auto" navbar>
+            <Nav className="mr-auto" navbar onClick={this.hideNave}>
               <NavLink to="/" exact>Home</NavLink>
               <NavLink to="/apply">Apply</NavLink>
               <NavLink to="/review">Review</NavLink>
             </Nav>
-            <Nav className="ml-auto" navbar>
+            <Nav className="ml-auto" navbar onClick={this.hideNave}>
                 <NavLink to="/logout">Logout</NavLink>
             </Nav>
           </IfLoggedIn>

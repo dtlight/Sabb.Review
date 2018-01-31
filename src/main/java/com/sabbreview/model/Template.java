@@ -1,18 +1,22 @@
 package com.sabbreview.model;
 
-import org.eclipse.persistence.annotations.Noncacheable;
-
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Cacheable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+
 
 
 @Entity
+@NamedQueries({
+    @NamedQuery( name="gettemplate", query = "SELECT t FROM Template t WHERE t.id = :id")
+})
 public class Template extends Model {
 
   @Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,8 +24,8 @@ public class Template extends Model {
 
   String name;
 
-  @ManyToMany
-  List<Field> fieldList;
+  @ManyToMany(fetch = FetchType.EAGER)
+  public List<Field> fieldList;
 
   public String getId() {
     return id;
