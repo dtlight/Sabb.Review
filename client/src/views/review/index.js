@@ -2,7 +2,7 @@ import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { resetIdCounter } from 'react-tabs';
-import { ApplicationCard } from '../../components/home/'
+import { ApplicationCard } from '../../components/review/'
 import { Jumbotron, Button, ButtonGroup, Row, Col } from 'reactstrap';
 
 export default class extends React.Component {
@@ -34,17 +34,17 @@ export default class extends React.Component {
                 </TabList>
                 <TabPanel>
                 <Row className="row applications-collapse">
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="SUCCESS"/>
+                  <div class="col-lg-12">
+                    <ApplicationCard id="test0" status="SUCCESS"/>
                   </div>
-                  <div class="col-lg-4">
+                  <div class="col-lg-12">
                     <ApplicationCard id="test" status="PENDING"/>
                   </div>
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="REFUSED"/>
+                  <div class="col-lg-12">
+                    <ApplicationCard id="test2" status="REFUSED"/>
                   </div>
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="SUBMITTED"/>
+                  <div class="col-lg-12">
+                    <ApplicationCard id="test3" status="SUBMITTED"/>
                   </div>
                 </Row>
                 </TabPanel>
