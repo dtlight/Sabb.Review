@@ -1,5 +1,5 @@
 import React from 'react'
-import { ApplicationCard } from '../../components/home/'
+import { ApplicationCard } from '../../components/review/'
 import './style.css'
 import {Row} from "reactstrap";
 
@@ -12,16 +12,16 @@ export default class extends React.Component {
               <hr />
               <Row className="row applications-collapse">
                   <div class="col-lg-12">
-                      <ApplicationCard id="test" status="SUCCESS"/>
+                      <ApplicationCard id="test0" status="SUCCESS"/>
                   </div>
                   <div class="col-lg-12">
-                      <ApplicationCard id="test" status="PENDING"/>
+                      <ApplicationCard id="test1" status="PENDING"/>
                   </div>
                   <div class="col-lg-12">
-                      <ApplicationCard id="test" status="REFUSED"/>
+                      <ApplicationCard id="test2" status="REFUSED"/>
                   </div>
                   <div class="col-lg-12">
-                      <ApplicationCard id="test" status="SUBMITTED"/>
+                      <ApplicationCard id="test3" status="SUBMITTED"/>
                   </div>
               </Row>
          </div>)
