@@ -30,55 +30,31 @@ export default class extends React.Component {
                   <Tab>Past Applications</Tab>
                 </TabList>
                 <TabPanel>
-                <Row className="row applications-collapse">
-                  <div class="col-lg-12">
-                    <ApplicationCard id="test0" status="SUCCESS"/>
-                  </div>
-                  <div class="col-lg-12">
-                    <ApplicationCard id="test" status="PENDING"/>
-                  </div>
-                  <div class="col-lg-12">
-                    <ApplicationCard id="test2" status="REFUSED"/>
-                  </div>
-                  <div class="col-lg-12">
-                    <ApplicationCard id="test3" status="SUBMITTED"/>
-                  </div>
-                </Row>
+                  <Row className="row applications-collapse">
+                    <div class="col-lg-12">
+                      <ApplicationCard id="test" status="PENDING"/>
+                    </div>
+                    <div class="col-lg-12">
+                      <ApplicationCard id="test3" status="SUBMITTED"/>
+                    </div>
+                  </Row>
                 </TabPanel>
                 <TabPanel>
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Owner</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Your comment</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Matt</td>
-                        <td>Tun</td>
-                        <td>pus</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Route</td>
-                        <td>Mubub</td>
-                        <td>@rat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>Spark</td>
-                        <td>React</td>
-                        <td>crap</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <Row className="row applications-collapse">
+                    <div class="col-lg-12">
+                      <ApplicationCard id="test3" status="SUBMITTED"/>
+                    </div>
+                  </Row>
                 </TabPanel>
                 <TabPanel>
-                testing out for harambe
+                  <Row className="row applications-collapse">
+                    <div class="col-lg-12">
+                      <ApplicationCard id="test0" status="SUCCESS"/>
+                    </div>
+                    <div class="col-lg-12">
+                      <ApplicationCard id="test2" status="REFUSED"/>
+                    </div>
+                  </Row>
                 </TabPanel>
                 </Tabs>
            </div>);
