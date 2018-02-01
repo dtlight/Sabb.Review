@@ -52,7 +52,6 @@ export class ApplicationCard extends React.Component {
         this.props.onChange();
       }
     });
-    return false;
   }
 
   render() {
@@ -64,7 +63,7 @@ export class ApplicationCard extends React.Component {
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
             <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>Edit Application</Link>
-            <a class="text-danger float-right" style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="" onClick={this.withdrawApplication}>Withdraw</a>
+            <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
       </Card>
