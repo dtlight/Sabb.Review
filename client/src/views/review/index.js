@@ -1,6 +1,9 @@
-import React from 'react'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import React from 'react';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import { resetIdCounter } from 'react-tabs';
+import { ApplicationCard } from '../../components/home/'
+import { Jumbotron, Button, ButtonGroup, Row, Col } from 'reactstrap';
 
 export default class extends React.Component {
   constructor(props, context){
@@ -27,38 +30,23 @@ export default class extends React.Component {
                 <TabList>
                   <Tab>New Applications</Tab>
                   <Tab>Open Applications</Tab>
+                  <Tab>Past Applications</Tab>
                 </TabList>
                 <TabPanel>
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Owner</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Your comment</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <Row className="row applications-collapse">
+                  <div class="col-lg-4">
+                    <ApplicationCard id="test" status="SUCCESS"/>
+                  </div>
+                  <div class="col-lg-4">
+                    <ApplicationCard id="test" status="PENDING"/>
+                  </div>
+                  <div class="col-lg-4">
+                    <ApplicationCard id="test" status="REFUSED"/>
+                  </div>
+                  <div class="col-lg-4">
+                    <ApplicationCard id="test" status="SUBMITTED"/>
+                  </div>
+                </Row>
                 </TabPanel>
                 <TabPanel>
                   <table class="table table-striped">
@@ -92,7 +80,10 @@ export default class extends React.Component {
                     </tbody>
                   </table>
                 </TabPanel>
+                <TabPanel>
+                testing out for harambe
+                </TabPanel>
                 </Tabs>
-           </div>)
+           </div>);
   }
 }
