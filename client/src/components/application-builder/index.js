@@ -22,6 +22,10 @@ let questionTypes = {
       pretty: "Text",
       choice: false
     },
+    "DIVIDER": {
+      pretty: "Divider",
+      choice: false
+    },
     "LONGTEXT": {
       pretty: "Paragraph",
       choice: false
@@ -109,7 +113,6 @@ export class NewQuestion extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.addAnswer = this.addAnswer.bind(this);
     this.submit = this.submit.bind(this);
-
   }
   toggle() {
     this.setState({
@@ -126,6 +129,12 @@ export class NewQuestion extends React.Component {
   }
 
   submit() {
+    if(!questionTypes[this.state.type].choice && this.state.answers.length > 0) {
+      this.setState({
+        answers: []
+      });
+    }
+
     if(this.props.questionId) {
       axios.put(`/field`, {
             "id": this.props.questionId,
@@ -187,7 +196,9 @@ export class NewQuestion extends React.Component {
     }
     let typeOfInputs = [];
     for (var prop in questionTypes) {
-        typeOfInputs.push(<TypeOfInputSelect value={prop}>{questionTypes[prop].pretty}</TypeOfInputSelect>)
+        typeOfInputs.push(<TypeOfInputSelect value={prop}>
+                            {questionTypes[prop].pretty}
+                          </TypeOfInputSelect>)
     }
     console.log("type: "+this.state.type);
     return (

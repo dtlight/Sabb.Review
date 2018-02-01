@@ -39,7 +39,7 @@ export class CreateApplication extends React.Component {
 
   render() {
     var buttonContent = (this.state.isLoading)?<i class="fa fa-refresh fa-spin"></i>:"Start Application";
-    if(this.state.isSuccess) {
+     if(this.state.isSuccess) {
       return (
         <Redirect to={`/apply/${this.state.newApplicationId}`}/>
       );
@@ -73,53 +73,75 @@ export class EditApplication extends React.Component {
     super(props);
     this.props = props;
     this.state = {
-      fieldInstances: []
+      fieldInstances: [],
+      isLoading: true,
+      isError: false
     }
+    this.submitApplication = this.submitApplication.bind(this);
   }
 
   componentDidMount() {
     axios.get(`/application/${this.props.id}`).then(({data})=> {
       this.setState((state) => {
-        for(var fieldInstance of data.value.fields) {
-          state.fieldInstances.push(fieldInstance);
+        if(data.state === "STATUS_ERROR") {
+          state.isError = true
+        } else {
+          for(var fieldInstance of data.value.fields) {
+            state.fieldInstances.push(fieldInstance);
+          }
+          state.isLoading = false;
         }
         return state;
       })
     })
   }
 
+  submitApplication() {//http://{{host}}/application/4/state/accepted
+    axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
+      alert(data);
+      console.log(data);
+    })
+  }
+
   render() {
-    if(this.state.fieldInstances) {
+    if(this.state.isError) {
+      return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
+        Could not load requested application
+      </h1>;
+    } else if(this.state.isLoading) {
+      return <div class="loader">Loading...</div>;
+    } else if(this.state.fieldInstances) {
       let fieldInstances = [];
       for (var fieldInstance of this.state.fieldInstances) {
-          fieldInstances.push(<FieldInstance fieldInstance={fieldInstance}/>);
+          fieldInstances.push(<FieldInstance value={fieldInstance.value} fieldInstance={fieldInstance}/>);
       }
       return (
-        <form>
-          {fieldInstances}
+          <form>
+            {fieldInstances}
 
-          <div class="form-group">
-            <input type="submit" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}}/>
-            <input type="submit" class="btn btn-secondary" value="Save"/>
-          </div>
-      </form>
-      );
-  } else {
-    return "Loading ...";
+            <div class="form-group">
+              <input type="button" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}} onClick={this.submitApplication}/>
+            </div>
+        </form>
+        );
+    }
   }
-}
 }
 
 class FieldInstance extends React.Component {
-
   constructor(props) {
     super(props);
     this.props = props;
+    this.state = {
+      value: props.value
+    }
     this.updateValue = this.updateValue.bind(this);
   }
 
-  updateValue() {
-
+  updateValue(value) {
+    axios.put(`/fieldinstance/${this.props.fieldInstance.id}`, {value: this.state.value}).then(function(data) {
+      console.log(data);
+    });
   }
 
     render() {
@@ -127,7 +149,9 @@ class FieldInstance extends React.Component {
     console.log(this.props.fieldInstance);
 
     var inner = "";
-    if(this.props.fieldInstance.field.type === "MULTICHOICE") {
+    if(this.props.fieldInstance.field.type === "DIVIDER") {
+      return <div><hr /><p class="lead">{this.props.fieldInstance.field.title}</p></div>
+    } else if(this.props.fieldInstance.field.type === "MULTICHOICE") {
       let options = [];
       for (let option of this.props.fieldInstance.field.fieldOptions) {
           options.push(<option value={option.id}>{option.title}</option>);
@@ -143,7 +167,15 @@ class FieldInstance extends React.Component {
     } else if(this.props.fieldInstance.field.type === "LONGTEXT") {
       inner = <Input type="textarea"/>;
     } else {
-      inner = <Input />;
+      inner = <Input
+        value={this.state.value}
+        onChange={(e) => {
+          this.setState({
+            value: e.target.value
+          })
+        }}
+        onBlur={this.updateValue} />
+
     }
 
     return ( <div class="form-group" style={{"paddingBottom": "10px"}}>

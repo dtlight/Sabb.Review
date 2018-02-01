@@ -4,6 +4,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -16,8 +17,8 @@ import javax.persistence.OneToMany;
 
   public Boolean isAdmin;
 
-  @OneToMany private List<Assignment> assignments = new ArrayList<>();
-  @OneToMany(mappedBy="applicant") private List<Application> applications = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL) private List<Assignment> assignments = new ArrayList<>();
+  @OneToMany(mappedBy="applicant", cascade = CascadeType.ALL) private List<Application> applications = new ArrayList<>();
 
   public User() {}
 

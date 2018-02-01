@@ -49,13 +49,11 @@ public class SabbReview {
 
     before((req, res) -> {
       em.getEntityManagerFactory().getCache().evictAll();
-
       acceptAuthentication(req);
-      em = getEntityManager();
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "*");
-      res.header("Access-Control-Allow-Headers", "*");
+      res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE, PUT");
+      res.header("Access-Control-Allow-Headers", "Content-Type, Referer, Origin, User-Agent, Accept, Authorization");
     });
 
     ApplicationController.attach();
