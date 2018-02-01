@@ -23,10 +23,7 @@ export default class extends React.Component {
               <h1 class="display-4">Assigned Reviews</h1>
                 <p class="lead">These applications require your review.</p>
                 <hr/>
-                <Tabs
-                selectedIndex={this.state.tabIndex}
-                onSelect={tabIndex => this.setState({ tabIndex })}
-                >
+                <Tabs>
                 <TabList>
                   <Tab>New Applications</Tab>
                   <Tab>Open Applications</Tab>
