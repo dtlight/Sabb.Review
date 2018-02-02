@@ -2,7 +2,6 @@ package com.sabbreview.controller;
 
 
 import com.sabbreview.model.Assignment;
-import com.sabbreview.model.Field;
 import com.sabbreview.model.FieldInstance;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -61,7 +60,7 @@ public class PDFGeneratorController extends Controller {
         get("/assignment/:id/pdf", (req, res) -> {
             res.raw().setContentType("application/pdf");
             res.raw().getOutputStream().write(getPDF(req.params("id")).toByteArray());
-            return;
+            return "";
         });
     }
 }
