@@ -4,7 +4,6 @@ package com.sabbreview.controller;
 import com.sabbreview.model.Assignment;
 import com.sabbreview.model.Field;
 import com.sabbreview.model.FieldInstance;
-import com.sabbreview.model.PDFGenerator;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -24,23 +23,31 @@ public class PDFGeneratorController extends Controller {
             Assignment assignment = em.find(Assignment.class,assignmentID);
             PDDocument document = new PDDocument();
 
-
-
             List<FieldInstance> fields = assignment.getApplication().fields;
 
             for (FieldInstance field:
                  fields) {
                 PDPage pdPage = new PDPage();
 
-
                 PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
                 contentStream.beginText();
                 contentStream.setLeading(20f);
                 contentStream.newLineAtOffset(25, 725);
 
+                contentStream.showText("ID: "+ assignment.getId());
+                contentStream.newLine();
+                contentStream.showText("Assignee: "+assignment.getAssignee());
+                contentStream.newLine();
+                contentStream.showText("Role: " + assignment.getRole());
+                contentStream.newLine();
+                contentStream.showText("Comments: " +assignment.getComments();
+                contentStream.newLine();
+                contentStream.showText("Due date: "+assignment.getDueDate();
+                contentStream.newLine();
+                contentStream.showText("Current state: "+assignment.getState();
+
                 document.addPage(pdPage);
             }
-
 
             document.save(baos);
             return baos;
