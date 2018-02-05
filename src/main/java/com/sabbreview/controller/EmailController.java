@@ -61,7 +61,7 @@ public class EmailController {
                         throws IOException {
                     String message = new String(body, "UTF-8");
                     if (message.equals("send test")) {
-                        Send("TEST","\uD83D\uDE4B\uD83C\uDFFC\u200D","kaloianbch@gmail.com");
+                        Send("TEST", "\uD83D\uDE4B\uD83C\uDFFC\u200D", "kaloianbch@gmail.com");
                     }
                 }
             };
@@ -69,5 +69,43 @@ public class EmailController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+        /*
+         * Generates a html for use in an email notifications.
+         * @param notificationTextID Name of the text file in /emails/text/, *without* extension.
+         * @param userName Name to put at the top of the email. (e.g "Dear Alex,")
+         */
+    public String generateEmailHTML(String notificationTextID, String name){
+        try {
+            String html = loadFile("..\\..\\..\\resources\\static\\emails\\emailNotification.html");
+
+            //Adding message+name to email
+            html = html.replaceFirst("\\{body}", loadFile( "..\\..\\..\\resources\\static\\emails\\text\\" + notificationTextID));
+            html = html.replaceFirst("\\{name}", name);
+
+            return html;
+        }
+        catch( IOException e ){
+            e.printStackTrace();
+            return "IOexception while generating email HTML!<br><br>" + e.toString();
+        }
+        catch( Exception e){
+            return e.toString();
+        }
+    }
+
+    private String loadFile(String filePath) throws IOException{
+        BufferedReader bf = new BufferedReader(new FileReader(filePath));
+
+        String line = "";
+        StringBuilder text = new StringBuilder();
+
+        while((line = bf.readLine())!= null){
+            text.append(line);
+        }
+
+        bf.close();
+        return text.toString();
     }
 }
