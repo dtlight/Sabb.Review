@@ -39,11 +39,11 @@ public class PDFGeneratorController extends Controller {
                 contentStream.newLine();
                 contentStream.showText("Role: " + assignment.getRole());
                 contentStream.newLine();
-                contentStream.showText("Comments: " +assignment.getComments();
+                contentStream.showText("Comments: " +assignment.getComments());
                 contentStream.newLine();
-                contentStream.showText("Due date: "+assignment.getDueDate();
+                contentStream.showText("Due date: "+assignment.getDueDate());
                 contentStream.newLine();
-                contentStream.showText("Current state: "+assignment.getState();
+                contentStream.showText("Current state: "+assignment.getState());
 
                 document.addPage(pdPage);
             }
