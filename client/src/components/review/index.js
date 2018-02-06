@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Badge, CardText, CardBody,
-    CardTitle, CardSubtitle, Button } from 'reactstrap';
+    CardTitle, CardSubtitle, Button, Row } from 'reactstrap';
+import axios from "axios/index";
 
 
 let applicationStates = {
@@ -58,4 +59,50 @@ export class ApplicationCard extends React.Component {
             </Card>
         )
     }
+}
+
+export class ApplicationList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+            applicationList: [],
+            isLoading: true
+        }
+        this.load = this.load.bind(this);
+    }
+    componentDidMount() {
+        this.load();
+    }
+
+    load() {
+        axios.get(`/user/applications`).then(({data})=> {
+            this.setState({
+                applicationList: data.value,
+                isLoading: false
+            })
+            console.log(data);
+        })
+    }
+
+    render() {
+        if(this.state.isLoading) {
+            return <div class="loader">Loading...</div>;
+        } else {
+            let applicationListView = [];
+            for (let application of this.state.applicationList) {
+                applicationListView.push(
+                    <div class="col-lg-12">
+                        <ApplicationCard id={application.id} status={application.state} onChange={this.load}/>
+                    </div>
+                )
+            }
+            return (
+                <Row className="row applications-collapse">
+                    {applicationListView}
+                </Row>
+            )
+        }
+    }
+
 }
