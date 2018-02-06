@@ -67,7 +67,8 @@ export class ApplicationList extends React.Component {
         this.props = props;
         this.state = {
             applicationList: [],
-            isLoading: true
+            isLoading: true,
+
         }
         this.load = this.load.bind(this);
     }
@@ -76,15 +77,30 @@ export class ApplicationList extends React.Component {
     }
 
     load() {
-        axios.get(`/user/applications`).then(({data})=> {
+        if(this.props.applications) {
             this.setState({
-                applicationList: data.value,
-                isLoading: false
+                applicationList: this.props.applications
             })
-            console.log(data);
-        })
+            if(this.state.isLoading) {
+                this.setState({
+                    isLoading: false
+                })
+            } else {
+                if(this.props.onChange) this.props.onChange();
+                this.setState({
+                    isLoading: false
+                })
+            }
+        } else {
+            axios.get(`/user/applications`).then(({data})=> {
+                this.setState({
+                    applicationList: data.value,
+                    isLoading: false
+                })
+                console.log(data);
+            })
+        }
     }
-
     render() {
         if(this.state.isLoading) {
             return <div class="loader">Loading...</div>;
