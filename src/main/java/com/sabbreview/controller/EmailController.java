@@ -1,6 +1,7 @@
 package com.sabbreview.controller;
 
-import net.sargue.mailgun.*;
+import net.sargue.mailgun.Configuration;
+import net.sargue.mailgun.Mail;
 import com.rabbitmq.client.*;
 
 import java.io.BufferedReader;
@@ -9,93 +10,105 @@ import java.io.IOException;
 
 public class EmailController {
 
-    public static String ReadFile(String url) {
-        try {
-            BufferedReader bf = new BufferedReader(new FileReader(url));
-            return bf.readLine();
+    /**
+     * Sends an email using a MailGun SMTP server and sargue's mailgun library
+     * @param subject Subject name of the email being sent.
+     * @param content Content of the email.
+     * @param recipient Recipient's email address.
+     */
+    public static void Send(String subject, String content, String recipient) {
+
+        Configuration configuration = null;     //Sender details
+        try{
+            configuration = new Configuration()
+                    .domain("sabb.review")
+                    .apiKey(loadFile("src/main/resources/static/API-Key.txt"))  //MailGun API key read from file
+                    .from("sabbbot", "postmaster@sabb.review");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        return null;
-    }
 
-    private static Configuration configuration = new Configuration()
-            .domain("sabb.review")
-            .apiKey(ReadFile("src/main/resources/static/API-Key.txt"))
-            .from("sabbbot", "postmaster@sabb.review");
-
-    public static void Send(String subject, String content, String receiver) {
         Mail.using(configuration)
-                .to(receiver)
+                .to(recipient)
                 .subject(subject)
                 .text(content)
                 .build()
                 .send();
     }
 
-    public static void RecieveFromQueue() {
-        String uri = System.getenv(ReadFile("src/main/resources/static/RabbitMQ_URL.txt"));
-        if (uri == null) uri = ReadFile("src/main/resources/static/RabbitMQ_URL.txt");
+    /**
+     * Continuously attempts to pull messages from the RabbitMQ server. Upon receiving specific messages it will call the
+     * Send() and pass it an email address received with the message, a template for the body of the email being sent and
+     * an appropriate subject.<br><br>
+     * Message format is <i>NotificationID/Name/Email</i>.<br>
+     * <i>NotificationID</i> determines the contents of the email.<br>
+     * <i>Name</i> is the name of the recipient.<br>
+     * <i>Email</i> is the email address of the recipient.<br>
+     */
+    public static void ReceiveFromQueue() throws Exception{
+
+        String uri = System.getenv(loadFile("src/main/resources/static/RabbitMQ_URL.txt"));     //Server URL read from a file
+        if (uri == null) uri = loadFile("src/main/resources/static/RabbitMQ_URL.txt");
 
         ConnectionFactory factory = new ConnectionFactory();
-
-        try {
-            factory.setUri(uri);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        factory.setUri(uri);
 
         //Recommended settings
         factory.setRequestedHeartbeat(30);
         factory.setConnectionTimeout(30000);
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
 
-        try {
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
+        String queue = "Email Instructions";     //queue name
 
-            String queue = "Email Instructions";     //queue name
-
-            Consumer consumer = new DefaultConsumer(channel) {
-                @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                        throws IOException {
-                    String message = new String(body, "UTF-8");
-                    if (message.equals("send test")) {
-                        Send("TEST", "\uD83D\uDE4B\uD83C\uDFFC\u200D", "kaloianbch@gmail.com");
-                    }
+        Consumer consumer = new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                    throws IOException {
+                String[] message = new String(body, "UTF-8").split("/");
+                if (message.length != 3) {
+                    //TODO
+                } else if (message[0].equals("sendTest")) {
+                    Send("TEST", "\uD83D\uDE4B\uD83C\uDFFC\u200D This is a test email. Feel free to " +
+                            "delete it", message[2]);
+                } else if (message[0].equals("applicationCreation")) {
+                    Send("Application Created",generateEmailHTML(message[0],message[1]) ,message[2]);
+                } else if (message[0].equals("loremIpsum")) {
+                    Send("Lorem",generateEmailHTML(message[0],message[1]) ,message[2]);
+                } else if (message[0].equals("sensitiveNotification")) {
+                    Send("Notification",generateEmailHTML(message[0],message[1]) ,message[2]);
                 }
-            };
-            channel.basicConsume(queue, true, consumer);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+            }
+        };
+        channel.basicConsume(queue, true, consumer);
     }
 
-        /*
+        /**
          * Generates a html for use in an email notifications.
-         * @param notificationTextID Name of the text file in /emails/text/, *without* extension.
-         * @param userName Name to put at the top of the email. (e.g "Dear Alex,")
+         * @param notificationID Name of the text file in /emails/text/, *without* extension.
+         * @param name Name to put at the top of the email. (e.g "Dear Alex,")
          */
-    public String generateEmailHTML(String notificationTextID, String name){
+    public static String generateEmailHTML(String notificationID, String name){
         try {
-            String html = loadFile("..\\..\\..\\resources\\static\\emails\\emailNotification.html");
+            String html = loadFile("src/main/resources/static/emails/notificationTemplate.html");
 
             //Adding message+name to email
-            html = html.replaceFirst("\\{body}", loadFile( "..\\..\\..\\resources\\static\\emails\\text\\" + notificationTextID));
+            html = html.replaceFirst("\\{body}", loadFile( "src/main/resources/static/emails/text/" + notificationID + ".txt"));
             html = html.replaceFirst("\\{name}", name);
 
             return html;
         }
+        //Why Al, why...
         catch( IOException e ){
             e.printStackTrace();
-            return "IOexception while generating email HTML!<br><br>" + e.toString();
+            return "IOException while generating email HTML!<br><br>" + e.toString();
         }
         catch( Exception e){
             return e.toString();
         }
     }
 
-    private String loadFile(String filePath) throws IOException{
+    public static String loadFile(String filePath) throws IOException{
         BufferedReader bf = new BufferedReader(new FileReader(filePath));
 
         String line = "";
