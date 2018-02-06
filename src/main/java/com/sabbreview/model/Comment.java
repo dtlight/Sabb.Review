@@ -14,19 +14,19 @@ public class Comment extends Model {
   private String body;
 
   @ManyToOne
-  private User author;
+  User author;
 
   @ManyToOne
-  private Assignment assignment;
+  Assignment assignment;
 
 
   public Comment() {
   }
 
   public Comment(String body, User author, Assignment assignment) {
-    this.body = body;
-    this.author = author;
-    this.assignment = assignment;
+    setBody(body);
+    setAuthor(author);
+    setAssignment(assignment);
   }
 
   public String getId() {
@@ -42,7 +42,7 @@ public class Comment extends Model {
     return body;
   }
 
-  public Comment setBody(String body) {
+  private Comment setBody(String body) {
     this.body = body;
     return this;
   }
@@ -51,7 +51,7 @@ public class Comment extends Model {
     return author;
   }
 
-  public Comment setAuthor(User author) {
+  private Comment setAuthor(User author) {
     this.author = author;
     return this;
   }
@@ -60,8 +60,9 @@ public class Comment extends Model {
     return assignment;
   }
 
-  public Comment setAssignment(Assignment assignment) {
+  private Comment setAssignment(Assignment assignment) {
     this.assignment = assignment;
+    assignment.comments.add(this);
     return this;
   }
 
