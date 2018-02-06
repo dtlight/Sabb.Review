@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
@@ -22,7 +23,13 @@ public class Template extends Model {
   @Id @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
+  boolean departmentDefault;
+
   String name;
+
+
+  @ManyToOne
+  Department department;
 
   @ManyToMany(fetch = FetchType.EAGER)
   public List<Field> fieldList;
@@ -60,8 +67,29 @@ public class Template extends Model {
     return this;
   }
 
-  @Override public String toString() {
-    return "Template{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", fieldList=" + fieldList
-        + '}';
+  public boolean isDepartmentDefault() {
+    return departmentDefault;
   }
+
+  public Template setDepartmentDefault(boolean departmentDefault) {
+    this.departmentDefault = departmentDefault;
+    return this;
+  }
+
+
+  public Department getDepartment() {
+    return department;
+  }
+
+  public Template setDepartment(Department department) {
+    this.department = department;
+    department.addTemplate(this);
+    return this;
+  }
+
+  /*@Override public String toString() {
+    return "Template{" + "id='" + id + '\'' + ", departmentDefault=" + departmentDefault
+        + ", name='" + name + '\'' + ", department=" + department + ", fieldList=" + fieldList
+        + '}';
+  }*/
 }

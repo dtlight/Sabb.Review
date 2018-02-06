@@ -102,8 +102,8 @@ export default class Login extends React.Component {
                         buttonContent
                       }
                     </Button>
-                    <Button size="lg" color="link" block><Link to="/auth/register">or Register</Link></Button>
                     </form>
+                    <Link to="/auth/register"><Button style={{"margin-top": "0.5rem"}} size="lg" color="link" block>or Register</Button></Link>
                   </div>
                 </div>);
               }
