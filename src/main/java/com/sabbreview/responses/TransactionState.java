@@ -1,8 +1,6 @@
 package com.sabbreview.responses;
 
-import com.sabbreview.model.Model;
-
-public class TransactionState<T extends Model> {
+public class TransactionState<T> {
   private T value;
   private TransactionStatus state;
   private String message;

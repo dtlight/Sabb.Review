@@ -14,7 +14,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 @NamedQueries({
-    @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id")
+    @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id"),
+    @NamedQuery(name="get-all-for-user", query = "select a from applications a where a.applicant.emailAddress = :owner")
+
 })
 @Entity(name = "applications")
 public class Application

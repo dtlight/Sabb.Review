@@ -14,7 +14,7 @@ public class FieldInstance extends Model {
   @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
+  @ManyToOne
   Field field;
 
   String value; // Only for text (not date/multichoice etc...)

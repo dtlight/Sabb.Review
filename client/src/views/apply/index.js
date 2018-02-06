@@ -16,6 +16,13 @@ export class Introduction extends React.Component {
 
 export class EditExisting extends React.Component {
 
+  //Temporary af
+  componentDidMount() {
+    axios.get(`/application/${this.props.match.params.id}`).then(({data})=> {
+      console.log(data);
+    })
+  }
+
   render() {
     return (<div>
               <h1 class="display-4">Edit Application</h1>

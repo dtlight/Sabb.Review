@@ -81,6 +81,9 @@ public class ApplicationController extends Controller {
     try {
       Application application;
       application = em.find(Application.class, applicationID);
+      if(application == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
@@ -111,22 +114,27 @@ public class ApplicationController extends Controller {
       String templateid) {
     try {
       em.getTransaction().begin();
+      User user = em.find(User.class, principle);
+
+
+
       Application application;
       if (applicationid == null) {
         application = new Application();
       } else {
         application = em.find(Application.class, applicationid);
       }
-      Template template = em.find(Template.class, templateid);
-
+      Template template = TemplateController.getTemplate(principle, templateid).getValue();
       if (application == null || template == null) {
         throw new ValidationException(
             (application == null) ? "Assignment cannot be found" : "Template cannot be found");
       }
+      application.setApplicant(user);
 
-      List<Field> fieldList = template.getFieldList();
+      List<Field> fieldList = template.fieldList;
 
       for (Field field : fieldList) {
+        System.out.println(field);
         FieldInstance fieldInstance = new FieldInstance(field);
         em.persist(fieldInstance);
         application.addFieldInstance(fieldInstance);
@@ -140,12 +148,13 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (ValidationException | RollbackException e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
 
   public static TransactionState<FieldInstance> changeFieldValue(String principle,
-      String fieldInstanceId, String value) {
+      String fieldInstanceId, FieldInstanceValue value) {
     try {
       em.getTransaction().begin();
       FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
@@ -159,7 +168,7 @@ public class ApplicationController extends Controller {
 
       switch (fieldType) {
         case TEXT:
-          fieldInstance.setValue(value);
+          fieldInstance.setValue(value.getValue());
           break;
         case DATE:
           //TODO
@@ -208,8 +217,25 @@ public class ApplicationController extends Controller {
         ApplicationController.setAcceptanceState(req.params(":id"), req.params(":state"))));
 
 
-    put("/fieldinstance/:id/value/:value", (req, res) -> requireAuthentication(req,
+    put("/fieldinstance/:id", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(ApplicationController
-            .changeFieldValue(principle, req.params(":id"), req.params("value")))));
+            .changeFieldValue(principle, req.params(":id"), fromJson(req.body(), FieldInstanceValue.class)))));
+  }
+
+  class FieldInstanceValue {
+    String value;
+
+    public String getValue() {
+      return value;
+    }
+
+    public FieldInstanceValue setValue(String value) {
+      this.value = value;
+      return this;
+    }
+
+    @Override public String toString() {
+      return "FieldInstanceValue{" + "value='" + value + '\'' + '}';
+    }
   }
 }

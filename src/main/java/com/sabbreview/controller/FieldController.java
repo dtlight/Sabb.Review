@@ -12,6 +12,7 @@ import javax.persistence.RollbackException;
 import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.Spark.put;
 
 
 public class FieldController extends Controller {
@@ -22,6 +23,19 @@ public class FieldController extends Controller {
       em.persist(field);
       em.getTransaction().commit();
       return new TransactionState<>(field, TransactionStatus.STATUS_OK, "Field created");
+    } catch (RollbackException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+
+  private static TransactionState<Field> editField(String principle, Field field) {
+    try {
+      em.getTransaction().begin();
+      em.merge(field);
+      em.getTransaction().commit();
+      return new TransactionState<>(field, TransactionStatus.STATUS_OK, "Field edited");
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
@@ -74,8 +88,12 @@ public class FieldController extends Controller {
       switch (fieldType) {
         case TEXT:
           throw new ValidationException("Text fields cannot have an option");
+        case LONGTEXT:
+          throw new ValidationException("Text fields cannot have an option");
         case DATE:
           throw new ValidationException("Date fields cannot have an option");
+        case DIVIDER:
+          throw new ValidationException("Dividers cannot have an option");
         default:
           if(em.find(FieldOption.class, fieldOption.getTitle()) == null) {
             em.persist(fieldOption);
@@ -100,6 +118,8 @@ public class FieldController extends Controller {
   public static void attach() {
     post("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createField(principle, fromJson(req.body(), Field.class))))));
+    put("/field", (req, res) -> requireAuthentication(req,
+        (principle -> toJson(editField(principle, fromJson(req.body(), Field.class))))));
 
     post("/field/:id/option", (req, res) -> requireAuthentication(req,
         (principle -> toJson(addOption(principle, req.params(":id"), fromJson(req.body(), FieldOption.class))))));

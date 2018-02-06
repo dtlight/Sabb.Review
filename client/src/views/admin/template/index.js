@@ -33,7 +33,7 @@ export default class extends React.Component {
         <p class="lead">These are the questions that you can ask applicants for sabbatical leave.</p>
         <hr />
         <FieldList id={this.state.id} fields={this.state.fields} onChange={this.load} />
-        <NewQuestion id={this.state.id} onChange={this.load} />
+        <NewQuestion  templateId={this.state.id} onChange={this.load}>Add Question</NewQuestion>
       </div>
     );
   }

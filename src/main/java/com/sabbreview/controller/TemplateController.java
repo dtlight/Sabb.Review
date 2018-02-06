@@ -58,7 +58,7 @@ public class TemplateController extends Controller {
   }
 
 
-  private static TransactionState<Template> getTemplate(String principle, String id) {
+  public static TransactionState<Template> getTemplate(String principle, String id) {
     try {
       Template template = em.find(Template.class, id);
       if(template == null) {
@@ -70,7 +70,6 @@ public class TemplateController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-
 
   private static TransactionState<Template> addField(String principle, String id, Field field) {
     try {
@@ -109,5 +108,7 @@ public class TemplateController extends Controller {
 
     delete("/template/:id/field/:fieldid", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteTemplateField(principle, req.params(":id"), req.params(":fieldid"))))));
+
+
   }
 }
