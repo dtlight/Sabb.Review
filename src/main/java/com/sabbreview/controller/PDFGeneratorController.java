@@ -22,7 +22,7 @@ public class PDFGeneratorController extends Controller {
             Assignment assignment = em.find(Assignment.class,assignmentID);
             PDDocument document = new PDDocument();
 
-            List<FieldInstance> fields = assignment.getApplication().fields;
+            List<FieldInstance> fields = assignment.getApplication().getFields();
 
             for (FieldInstance field:
                  fields) {
