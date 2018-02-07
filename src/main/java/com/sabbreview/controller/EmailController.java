@@ -5,10 +5,11 @@ import net.sargue.mailgun.Mail;
 import com.rabbitmq.client.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class EmailController {
+public class EmailController{
 
     /**
      * Sends an email using a MailGun SMTP server and sargue's mailgun library
@@ -22,7 +23,7 @@ public class EmailController {
         try{
             configuration = new Configuration()
                     .domain("sabb.review")
-                    .apiKey(loadFile("src/main/resources/static/API-Key.txt"))  //MailGun API key read from file
+                    .apiKey(loadFile("API-Key.txt"))  //MailGun API key read from file
                     .from("sabbbot", "postmaster@sabb.review");
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -47,8 +48,8 @@ public class EmailController {
      */
     public static void ReceiveFromQueue() throws Exception{
 
-        String uri = System.getenv(loadFile("src/main/resources/static/RabbitMQ_URL.txt"));     //Server URL read from a file
-        if (uri == null) uri = loadFile("src/main/resources/static/RabbitMQ_URL.txt");
+        String uri = System.getenv(loadFile("RabbitMQ_URL.txt"));     //Server URL read from a file
+        if (uri == null) uri = loadFile("RabbitMQ_URL.txt");
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(uri);
@@ -88,35 +89,39 @@ public class EmailController {
      * @param notificationID Name of the text file in /emails/text/, *without* extension.
      * @param name Name to put at the top of the email. (e.g "Dear Alex,")
      */
-    public static String generateEmailHTML(String notificationID, String name){
+    private static String generateEmailHTML(String notificationID, String name){
         try {
-            String html = loadFile("src/main/resources/static/emails/notificationTemplate.html");
+
+            String html = loadFile("emails\\notificationTemplate.html");
 
             //Adding message+name to email
-            html = html.replaceFirst("\\{body}", loadFile( "src/main/resources/static/emails/text/" + notificationID + ".txt"));
+            html = html.replaceFirst("\\{body}", loadFile("emails\\text\\" + notificationID + ".txt"));
             html = html.replaceFirst("\\{name}", name);
 
             return html;
         }
-        //Why Al, why...
         catch( IOException e ){
             e.printStackTrace();
-            return "IOException while generating email HTML!<br><br>" + e.toString();
-        }
-        catch( Exception e){
-            return e.toString();
+            return "IOException while generating email HTML!<br><br>" + e.toString() + "<br><br>";
         }
     }
 
     /**
-     * Reads the contents of a file into a string with a bufferedReader.
-     * There's no limit to file size, so be careful (don't load giant files!)
-     * @param filePath The path of the file to load, including name & extension.
+     * Reads contents of a file stored in the 'static' folder.
+     * @param filePath The path of the file to load relative to the 'static' folder, including the file extension
      * @return The contents of the file, including line breaks.
      * @throws IOException
      */
     private static String loadFile(String filePath) throws IOException{
-        BufferedReader bf = new BufferedReader(new FileReader(filePath));
+
+        //Removing leading slash if present
+        if( filePath.charAt(0) == '/' || filePath.charAt(0) == '\\' ){
+            filePath = filePath.substring( 1, filePath.length() - 1);
+        }
+
+        String envPath = new File("").getAbsolutePath() + "\\target\\classes\\static\\";
+
+        BufferedReader bf = new BufferedReader(new FileReader(envPath + filePath));
 
         String line = "";
         StringBuilder text = new StringBuilder();

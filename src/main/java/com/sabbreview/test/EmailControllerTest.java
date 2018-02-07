@@ -3,8 +3,15 @@ package com.sabbreview.test;
 import com.rabbitmq.client.*;
 import com.sabbreview.controller.EmailController;
 
-public class RabbitMQTest {
+public class EmailControllerTest {
+
     public static void main(String[] args) throws Exception {
+        //generatePath();
+        //sendEmailTest();
+    }
+
+
+    /*public static void sendEmailTest(){
         String uri = System.getenv(EmailController.loadFile("src/main/resources/static/RabbitMQ_URL.txt"));
         if (uri == null) uri = EmailController.loadFile("src/main/resources/static/RabbitMQ_URL.txt");
 
@@ -33,5 +40,10 @@ public class RabbitMQTest {
         connection.close();
 
         EmailController.ReceiveFromQueue();
+    }*/
+
+    public static void generatePath(){
+        System.out.println(EmailController.generateEmailHTML("loremIpsum", "Alex"));
     }
+
 }
