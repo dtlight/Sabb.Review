@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, Badge, CardText, CardBody,
-  CardTitle, CardSubtitle, Button } from 'reactstrap';
+  CardTitle, CardSubtitle, Button, Row } from 'reactstrap';
+import axios from 'axios';
 
 
 let applicationStates = {
@@ -42,6 +43,15 @@ export class ApplicationCard extends React.Component {
       status: this.props.status,
       applicationDate: "Tuesday, 16th March 2018"
     }
+    this.withdrawApplication = this.withdrawApplication.bind(this);
+  }
+
+  withdrawApplication() {
+    axios.delete(`/application/${this.props.id}`).then(({data})=> {
+      if(this.props.onChange) {
+        this.props.onChange();
+      }
+    });
   }
 
   render() {
@@ -52,11 +62,74 @@ export class ApplicationCard extends React.Component {
           <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
-            <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>Edit Application</Link>
-            <Link class="text-danger float-right" style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} to={`/apply/${this.state.id}`}>Withdraw</Link>
+            <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>View Application</Link>
+            <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
       </Card>
     )
   }
+}
+
+
+export class ApplicationList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.state = {
+      applicationList: [],
+      isLoading: true,
+
+    }
+    this.load = this.load.bind(this);
+  }
+  componentDidMount() {
+    this.load();
+  }
+
+  load() {
+    if(this.props.applications) {
+      this.setState({
+        applicationList: this.props.applications
+      })
+      if(this.state.isLoading) {
+        this.setState({
+          isLoading: false
+        })
+      } else {
+        if(this.props.onChange) this.props.onChange();
+        this.setState({
+          isLoading: false
+        })
+      }
+    } else {
+      axios.get(`/user/applications`).then(({data})=> {
+        this.setState({
+          applicationList: data.value,
+          isLoading: false
+        })
+        console.log(data);
+      })
+    }
+  }
+  render() {
+      if(this.state.isLoading) {
+        return <div class="loader">Loading...</div>;
+      } else {
+        let applicationListView = [];
+        for (let application of this.state.applicationList) {
+          applicationListView.push(
+            <div class="col-lg-4">
+              <ApplicationCard id={application.id} status={application.state} onChange={this.load}/>
+            </div>
+          )
+        }
+        return (
+          <Row className="row applications-collapse">
+            {applicationListView}
+          </Row>
+        )
+      }
+    }
+
 }

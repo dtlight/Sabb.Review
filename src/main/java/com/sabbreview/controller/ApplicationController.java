@@ -3,13 +3,13 @@ package com.sabbreview.controller;
 import com.sabbreview.SabbReview;
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
+import com.sabbreview.model.Department;
 import com.sabbreview.model.Field;
 import com.sabbreview.model.FieldInstance;
 import com.sabbreview.model.FieldOption;
 import com.sabbreview.model.FieldType;
 import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
-import com.sabbreview.responses.AuthenticationException;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
@@ -63,16 +63,12 @@ public class ApplicationController extends Controller {
       String applicationID) {
     try {
       em.getTransaction().begin();
-      Application application = em.find(Application.class, applicationID);
-      if (application.getApplicant().getEmailAddress().equals(principle)) {
-        em.remove(application);
-      } else {
-        throw new AuthenticationException();
-      }
+      em.createNamedQuery("authenticated-delete").setParameter("id", applicationID).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
@@ -81,20 +77,26 @@ public class ApplicationController extends Controller {
     try {
       Application application;
       application = em.find(Application.class, applicationID);
+      if (application == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  private static TransactionState<Application> setAcceptanceState(String applicationID,
-      String acceptanceStateString) {
+
+  private static TransactionState<Application> setAcceptanceState(String principle,
+      String applicationID, String acceptanceStateString) {
     try {
       AcceptanceState acceptanceState =
           AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationID);
       application.setState(acceptanceState);
+      em.persist(application);
+      em.flush();
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (IllegalArgumentException e) {
@@ -107,22 +109,21 @@ public class ApplicationController extends Controller {
     }
   }
 
-  public static TransactionState<Application> useTemplate(String principle, String applicationid,
-      String templateid) {
+
+  private static TransactionState<Application> useTemplate(String principle, String templateid,
+      String departmentid) {
     try {
       em.getTransaction().begin();
-      Application application;
-      if (applicationid == null) {
-        application = new Application();
-      } else {
-        application = em.find(Application.class, applicationid);
-      }
+
+      User user = em.find(User.class, principle);
+      Department department = em.find(Department.class, departmentid);
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
 
-      if (application == null || template == null) {
-        throw new ValidationException(
-            (application == null) ? "Assignment cannot be found" : "Template cannot be found");
-      }
+      Application application = new Application();
+
+      application.setDepartment(department);
+      application.setApplicant(user);
+      application.setState(AcceptanceState.PENDING);
 
       List<Field> fieldList = template.fieldList;
 
@@ -132,21 +133,24 @@ public class ApplicationController extends Controller {
         em.persist(fieldInstance);
         application.addFieldInstance(fieldInstance);
       }
-      if (applicationid == null) {
-        em.persist(application);
-      } else {
-        em.merge(application);
-      }
+      em.persist(application);
+      em.merge(application);
+      em.merge(user);
+      em.merge(department);
+
+
+      em.flush();
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
-    } catch (ValidationException | RollbackException e) {
+    } catch (RollbackException e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
 
   public static TransactionState<FieldInstance> changeFieldValue(String principle,
-      String fieldInstanceId, String value) {
+      String fieldInstanceId, FieldInstanceValue value) {
     try {
       em.getTransaction().begin();
       FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
@@ -160,7 +164,7 @@ public class ApplicationController extends Controller {
 
       switch (fieldType) {
         case TEXT:
-          fieldInstance.setValue(value);
+          fieldInstance.setValue(value.getValue());
           break;
         case DATE:
           //TODO
@@ -197,20 +201,35 @@ public class ApplicationController extends Controller {
     get("/application/:id",
         (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    put("/application/:applicationid/template/:templateid",
+    post("/application/template/:templateid/department/:departmentid",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController
-            .useTemplate(principle, req.params("applicationid"), req.params("templateid")))));
-
-    post("/application/template/:templateid", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(
-            ApplicationController.useTemplate(principle, null, req.params("templateid")))));
-
-    put("/application/:id/state/:state", (req, res) -> toJson(
-        ApplicationController.setAcceptanceState(req.params(":id"), req.params(":state"))));
+            .useTemplate(principle, req.params("templateid"), req.params("departmentid")))));
 
 
-    put("/fieldinstance/:id/value/:value", (req, res) -> requireAuthentication(req,
+    put("/application/:id/state/:state", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(ApplicationController
-            .changeFieldValue(principle, req.params(":id"), req.params("value")))));
+            .setAcceptanceState(principle, req.params(":id"), req.params(":state")))));
+
+
+    put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+        ApplicationController.changeFieldValue(principle, req.params(":id"),
+            fromJson(req.body(), FieldInstanceValue.class)))));
+  }
+
+  class FieldInstanceValue {
+    String value;
+
+    public String getValue() {
+      return value;
+    }
+
+    public FieldInstanceValue setValue(String value) {
+      this.value = value;
+      return this;
+    }
+
+    @Override public String toString() {
+      return "FieldInstanceValue{" + "value='" + value + '\'' + '}';
+    }
   }
 }

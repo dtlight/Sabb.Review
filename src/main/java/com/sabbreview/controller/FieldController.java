@@ -92,6 +92,8 @@ public class FieldController extends Controller {
           throw new ValidationException("Text fields cannot have an option");
         case DATE:
           throw new ValidationException("Date fields cannot have an option");
+        case DIVIDER:
+          throw new ValidationException("Dividers cannot have an option");
         default:
           if(em.find(FieldOption.class, fieldOption.getTitle()) == null) {
             em.persist(fieldOption);

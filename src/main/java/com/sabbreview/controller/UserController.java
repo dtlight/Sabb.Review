@@ -3,6 +3,7 @@ package com.sabbreview.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.sabbreview.SabbReview;
+import com.sabbreview.model.Application;
 import com.sabbreview.model.Token;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
@@ -12,8 +13,10 @@ import com.sabbreview.responses.ValidationException;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
 
 import static spark.Spark.delete;
 import static spark.Spark.get;
@@ -32,14 +35,13 @@ public class UserController extends Controller {
   private static TransactionState<User> registerUser(User user) {
     try {
       user.encryptPassword();
-      em.getTransaction().begin();
       user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       } else {
         em.persist(user);
       }
-      em.getTransaction().commit();
+      return new TransactionState<>(user, TransactionStatus.STATUS_OK);
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
@@ -51,7 +53,6 @@ public class UserController extends Controller {
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-    return new TransactionState<>(user, TransactionStatus.STATUS_OK);
   }
 
   private static TransactionState<User> getUser(String emailAddress) {
@@ -62,7 +63,6 @@ public class UserController extends Controller {
       return new TransactionState<>(user, TransactionStatus.STATUS_OK);
     }
   }
-
 
   private static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
@@ -113,6 +113,20 @@ public class UserController extends Controller {
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
 
+  private static TransactionState<List<Application>> getApplicationsForUser(String principle) {
+    try {
+      TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-for-user", Application.class);
+      applicationTypedQuery.setParameter("owner", principle);
+      List<Application> applicationList = applicationTypedQuery.getResultList();
+      return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    }
+  }
+
+
   public static void attach() {
     delete("/user",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(UserController.deleteUser(principle))));
@@ -120,13 +134,16 @@ public class UserController extends Controller {
     post("/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
-    get("/user/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
+    get("/user/by-id/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
     post("/login", (req, res) -> toJson(UserController
         .generateSession(fromJson(req.body(), UserAuthenticationParameters.class))));
 
     get("/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
+
+    get("/user/applications", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(getApplicationsForUser(principle))));
   }
 
   private class UserAuthenticationParameters {
@@ -136,7 +153,7 @@ public class UserController extends Controller {
     public UserAuthenticationParameters() {
     }
 
-    public String getEmailAddress() {
+    String getEmailAddress() {
       return emailAddress;
     }
 
@@ -145,7 +162,7 @@ public class UserController extends Controller {
       return this;
     }
 
-    public String getPassword() {
+    String getPassword() {
       return password;
     }
 

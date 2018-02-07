@@ -9,8 +9,7 @@ import {
   NavItem,
   UncontrolledDropdown,
   DropdownToggle,
-  DropdownMenu,
-  DropdownItem } from 'reactstrap';
+  DropdownMenu } from 'reactstrap';
 
 
 export default class extends React.Component {
@@ -47,13 +46,28 @@ export default class extends React.Component {
 
         <Collapse isOpen={this.state.navExpanded} navbar>
           <IfLoggedIn>
-            <Nav className="mr-auto" navbar onClick={this.hideNave}>
-              <NavLink to="/" exact>Home</NavLink>
-              <NavLink to="/apply">Apply</NavLink>
-              <NavLink to="/review">Review</NavLink>
+            <Nav className="mr-auto" navbar >
+              <NavLink onClick={this.hideNave} to="/" exact>Home</NavLink>
+              <NavLink onClick={this.hideNave} to="/apply">Apply</NavLink>
+              <NavLink onClick={this.hideNave} to="/review">Review</NavLink>
+
             </Nav>
-            <Nav className="ml-auto" navbar onClick={this.hideNave}>
-                <NavLink to="/logout">Logout</NavLink>
+            <Nav className="ml-auto" navbar>
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Administration
+                </DropdownToggle>
+                <DropdownMenu >
+                  <DropdownItem onClick={this.hideNave} to="/admin/department/2">
+                    View Department
+                  </DropdownItem>
+                  <DropdownItem onClick={this.hideNave} to="/admin/template/">
+                    Edit Templates
+                  </DropdownItem>
+
+                </DropdownMenu>
+              </UncontrolledDropdown>
+                <NavLink onClick={this.hideNave} to="/logout">Logout</NavLink>
             </Nav>
           </IfLoggedIn>
         </Collapse>
@@ -64,7 +78,6 @@ export default class extends React.Component {
 
 let IfLoggedIn = withRouter((props) => {
   let {location} = props;
-  console.log(location);
   if(!location.pathname.startsWith("/auth/")) {
     return (
       props.children
@@ -74,6 +87,13 @@ let IfLoggedIn = withRouter((props) => {
       ""
     );
   }
+});
+
+
+let DropdownItem = withRouter((props) => {
+  const { location } = props;
+ return (<Link className={((props.exact && location.pathname === props.to)
+        || (!props.exact && location.pathname.startsWith(props.to)))?"active dropdown-item":"dropdown-item"} {...props} to={props.to}>{props.children}</Link>);
 });
 
 let NavLink = withRouter((props) => {

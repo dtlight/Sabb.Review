@@ -1,13 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ApplicationCard } from '../../components/home/'
+import {  ApplicationList } from '../../components/home/'
 import './style.css'
-import { Jumbotron, Button, ButtonGroup, Row, Col } from 'reactstrap';
+import { Jumbotron, Button, ButtonGroup} from 'reactstrap';
 
 export default class extends React.Component {
+
   render() {
     return (<div >
-                <Jumbotron className="jumbotron-sm">
+                <Jumbotron className="jumbotron-sm" style={{"paddingTop": "27px", "paddingBottom": "19px", "marginBottom": "1rem"}}>
                     <h1 class="display-4">Welcome to SabbReview</h1>
                     <p class="lead">To view the status existing applications, please review the table below.</p>
                     <hr  />
@@ -20,20 +21,7 @@ export default class extends React.Component {
                   <Button color="light"><i class="fa fa-chevron-left"></i> 2016/17 Academic Year</Button>
                   {/*<button class="btn btn-light">Next Year <i class="fa fa-chevron-right"></i></button>*/}
                 </ButtonGroup>
-                <Row className="row applications-collapse">
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="SUCCESS"/>
-                  </div>
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="PENDING"/>
-                  </div>
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="REFUSED"/>
-                  </div>
-                  <div class="col-lg-4">
-                    <ApplicationCard id="test" status="SUBMITTED"/>
-                  </div>
-                </Row>
+                <ApplicationList />
            </div>)
   }
 }
