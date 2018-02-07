@@ -62,7 +62,7 @@ export class ApplicationCard extends React.Component {
           <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
-            <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>Edit Application</Link>
+            <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>View Application</Link>
             <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
@@ -78,7 +78,8 @@ export class ApplicationList extends React.Component {
     this.props = props;
     this.state = {
       applicationList: [],
-      isLoading: true
+      isLoading: true,
+
     }
     this.load = this.load.bind(this);
   }
@@ -87,15 +88,30 @@ export class ApplicationList extends React.Component {
   }
 
   load() {
-    axios.get(`/user/applications`).then(({data})=> {
+    if(this.props.applications) {
       this.setState({
-        applicationList: data.value,
-        isLoading: false
+        applicationList: this.props.applications
       })
-      console.log(data);
-    })
+      if(this.state.isLoading) {
+        this.setState({
+          isLoading: false
+        })
+      } else {
+        if(this.props.onChange) this.props.onChange();
+        this.setState({
+          isLoading: false
+        })
+      }
+    } else {
+      axios.get(`/user/applications`).then(({data})=> {
+        this.setState({
+          applicationList: data.value,
+          isLoading: false
+        })
+        console.log(data);
+      })
+    }
   }
-
   render() {
       if(this.state.isLoading) {
         return <div class="loader">Loading...</div>;

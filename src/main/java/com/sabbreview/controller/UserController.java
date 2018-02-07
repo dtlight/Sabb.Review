@@ -35,14 +35,13 @@ public class UserController extends Controller {
   private static TransactionState<User> registerUser(User user) {
     try {
       user.encryptPassword();
-      em.getTransaction().begin();
       user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       } else {
         em.persist(user);
       }
-      em.getTransaction().commit();
+      return new TransactionState<>(user, TransactionStatus.STATUS_OK);
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
@@ -54,7 +53,6 @@ public class UserController extends Controller {
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-    return new TransactionState<>(user, TransactionStatus.STATUS_OK);
   }
 
   private static TransactionState<User> getUser(String emailAddress) {
@@ -65,7 +63,6 @@ public class UserController extends Controller {
       return new TransactionState<>(user, TransactionStatus.STATUS_OK);
     }
   }
-
 
   private static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
@@ -121,7 +118,7 @@ public class UserController extends Controller {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-for-user", Application.class);
       applicationTypedQuery.setParameter("owner", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
-      return new TransactionState<List<Application>>(applicationList, TransactionStatus.STATUS_OK);
+      return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       e.printStackTrace();
       rollback();
@@ -156,7 +153,7 @@ public class UserController extends Controller {
     public UserAuthenticationParameters() {
     }
 
-    public String getEmailAddress() {
+    String getEmailAddress() {
       return emailAddress;
     }
 
@@ -165,7 +162,7 @@ public class UserController extends Controller {
       return this;
     }
 
-    public String getPassword() {
+    String getPassword() {
       return password;
     }
 

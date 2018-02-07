@@ -8,7 +8,7 @@ export default class extends React.Component {
 
   render() {
     return (<div >
-                <Jumbotron className="jumbotron-sm">
+                <Jumbotron className="jumbotron-sm" style={{"paddingTop": "27px", "paddingBottom": "19px", "marginBottom": "1rem"}}>
                     <h1 class="display-4">Welcome to SabbReview</h1>
                     <p class="lead">To view the status existing applications, please review the table below.</p>
                     <hr  />
