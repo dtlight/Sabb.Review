@@ -6,9 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sabbreview.adapters.ApplicationAdapter;
+import com.sabbreview.adapters.FieldAdapter;
+import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
 import com.sabbreview.controller.*;
-import com.sabbreview.model.User;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
@@ -42,15 +45,15 @@ public class SabbReview {
     staticFiles.location("static");
 
     before((req, res) -> {
-      em.getEntityManagerFactory().getCache().evictAll();
-
+        em.getEntityManagerFactory().getCache().evictAll();
       acceptAuthentication(req);
-      em = getEntityManager();
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "*");
-      res.header("Access-Control-Allow-Headers", "*");
+      res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE, PUT");
+      res.header("Access-Control-Allow-Headers", "Content-Type, Referer, Origin, User-Agent, Accept, Authorization");
     });
+
+
 
     ApplicationController.attach();
     DepartmentController.attach();
@@ -68,8 +71,11 @@ public class SabbReview {
     notFound((request, response) -> gson.toJson(new NotFound()));
 
     after("*", ((request, response) -> {
-      if(getEntityManager().isOpen() && getEntityManager().getTransaction().isActive()) {
-        em.getTransaction().rollback();
+
+      if(getEntityManager().getTransaction().isActive()) {
+        em.flush();
+        em.getTransaction().commit();
+       // em.getTransaction().rollback();
       }
     }));
   }
@@ -107,6 +113,9 @@ public class SabbReview {
   private static Gson generateGson() {
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
+    gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
+    gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
+    gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
     return gsonBuilder.create();
   }
 
