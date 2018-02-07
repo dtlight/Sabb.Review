@@ -131,7 +131,10 @@ public class EmailController{
             text.append("\n");
         }
 
+
         bf.close();
-        return text.toString();
+
+        //Removing final newline (which is added even if there isn't one in the file)
+        return text.substring(0, text.length() - 2);
     }
 }
