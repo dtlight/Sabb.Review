@@ -83,11 +83,11 @@ public class EmailController {
         channel.basicConsume(queue, true, consumer);
     }
 
-        /**
-         * Generates a html for use in an email notifications.
-         * @param notificationID Name of the text file in /emails/text/, *without* extension.
-         * @param name Name to put at the top of the email. (e.g "Dear Alex,")
-         */
+    /**
+     * Generates a html for use in an email notifications.
+     * @param notificationID Name of the text file in /emails/text/, *without* extension.
+     * @param name Name to put at the top of the email. (e.g "Dear Alex,")
+     */
     public static String generateEmailHTML(String notificationID, String name){
         try {
             String html = loadFile("src/main/resources/static/emails/notificationTemplate.html");
@@ -108,7 +108,14 @@ public class EmailController {
         }
     }
 
-    public static String loadFile(String filePath) throws IOException{
+    /**
+     * Reads the contents of a file into a string with a bufferedReader.
+     * There's no limit to file size, so be careful (don't load giant files!)
+     * @param filePath The path of the file to load, including name & extension.
+     * @return The contents of the file, including line breaks.
+     * @throws IOException
+     */
+    private static String loadFile(String filePath) throws IOException{
         BufferedReader bf = new BufferedReader(new FileReader(filePath));
 
         String line = "";
@@ -116,6 +123,7 @@ public class EmailController {
 
         while((line = bf.readLine())!= null){
             text.append(line);
+            text.append("\n");
         }
 
         bf.close();
