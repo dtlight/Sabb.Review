@@ -32,7 +32,7 @@ public class EmailController{
         Mail.using(configuration)
                 .to(recipient)
                 .subject(subject)
-                .text(content)
+                .html(content)
                 .build()
                 .send();
     }
@@ -48,8 +48,10 @@ public class EmailController{
      */
     public static void ReceiveFromQueue() throws Exception{
 
-        String uri = System.getenv(loadFile("RabbitMQ_URL.txt"));     //Server URL read from a file
-        if (uri == null) uri = loadFile("RabbitMQ_URL.txt");
+        //Server URL read from a file
+        //String uri = loadFile("RabbitMQ_URL.txt");
+        String uri = "amqp://jprtmyha:Dd4MTFz_us4HC473xZypPXp4Aco86Zt0@llama.rmq.cloudamqp.com/jprtmyha";
+
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(uri);
@@ -110,7 +112,7 @@ public class EmailController{
      * Reads contents of a file stored in the 'static' folder.
      * @param filePath The path of the file to load relative to the 'static' folder, including the file extension
      * @return The contents of the file, including line breaks.
-     * @throws IOException
+     * @throws IOException If something goes wrong reading the given file.
      */
     private static String loadFile(String filePath) throws IOException{
 
@@ -135,6 +137,6 @@ public class EmailController{
         bf.close();
 
         //Removing final newline (which is added even if there isn't one in the file)
-        return text.substring(0, text.length() - 2);
+        return text.substring(0, text.length() - 1);
     }
 }
