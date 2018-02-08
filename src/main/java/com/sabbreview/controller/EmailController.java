@@ -114,7 +114,7 @@ public class EmailController{
      * @return The contents of the file, including line breaks.
      * @throws IOException If something goes wrong reading the given file.
      */
-    private static String loadFile(String filePath) throws IOException{
+    public static String loadFile(String filePath) throws IOException{
 
         //Removing leading slash if present
         if( filePath.charAt(0) == '/' || filePath.charAt(0) == '\\' ){
