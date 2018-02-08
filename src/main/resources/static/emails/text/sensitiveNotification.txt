@@ -1,0 +1,6 @@
+Dear {name},<br>
+<br>
+<p>
+There has been an update to your sabbatical application.<br>
+<a href="https://sabb.review">Click here to view your application</a>
+<p>
