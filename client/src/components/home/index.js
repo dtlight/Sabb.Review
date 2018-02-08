@@ -41,7 +41,8 @@ export class ApplicationCard extends React.Component {
     this.state = {
       id: this.props.id,
       status: this.props.status,
-      applicationDate: "Tuesday, 16th March 2018"
+      applicationDate: "Tuesday, 16th March 2018",
+        department: this.props.department
     }
     this.withdrawApplication = this.withdrawApplication.bind(this);
   }
@@ -58,7 +59,7 @@ export class ApplicationCard extends React.Component {
     return (
       <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
         <CardBody>
-          <CardTitle><h5>Application to the Computer Science dept. <Badge color={applicationStates[this.state.status].colours}>{applicationStates[this.state.status].humanStatus}</Badge></h5></CardTitle>
+          <CardTitle><h5>Application to the {this.state.department} dept. <Badge color={applicationStates[this.state.status].colours}>{applicationStates[this.state.status].humanStatus}</Badge></h5></CardTitle>
           <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
@@ -120,7 +121,7 @@ export class ApplicationList extends React.Component {
         for (let application of this.state.applicationList) {
           applicationListView.push(
             <div class="col-lg-4">
-              <ApplicationCard id={application.id} status={application.state} onChange={this.load}/>
+              <ApplicationCard id={application.id} status={application.state} department={application.department} onChange={this.load}/>
             </div>
           )
         }

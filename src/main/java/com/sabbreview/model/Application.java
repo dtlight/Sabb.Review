@@ -61,6 +61,9 @@ public class Application
 
   public void setApplicant(User applicant) {
     this.applicant = applicant;
+    if(applicant.applications == null) {
+      applicant.applications = new ArrayList<>();
+    }
     applicant.applications.add(this);
   }
 

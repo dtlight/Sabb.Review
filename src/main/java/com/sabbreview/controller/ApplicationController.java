@@ -95,7 +95,7 @@ public class ApplicationController extends Controller {
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationID);
       application.setState(acceptanceState);
-      em.persist(application);
+      em.merge(application); //need to iterate through user, find acc state, and change
       em.flush();
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
@@ -120,7 +120,6 @@ public class ApplicationController extends Controller {
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
 
       Application application = new Application();
-
       application.setDepartment(department);
       application.setApplicant(user);
       application.setState(AcceptanceState.PENDING);
@@ -142,7 +141,7 @@ public class ApplicationController extends Controller {
       em.flush();
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
-    } catch (RollbackException e) {
+    } catch (Exception e) {
       rollback();
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");

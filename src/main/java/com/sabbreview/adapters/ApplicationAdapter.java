@@ -18,6 +18,8 @@ public class ApplicationAdapter implements JsonSerializer<Application> {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("id", src.getId());
     jsonObject.addProperty("state", src.getState().name());
+    jsonObject.addProperty("department", src.getDepartment().getName());
+
     JsonArray fields = new JsonArray();
     for (FieldInstance fieldInstances : src.getFields()) {
       Field field = fieldInstances.getField();

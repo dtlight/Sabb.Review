@@ -29,11 +29,11 @@ public class Department extends Model {
     User HOD;
 
     @OneToMany
-    List<Template> templateList;
+    List<Template> templateList = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval=true )
-    List<Application> applications;
+    List<Application> applications = new ArrayList<>();
 
 
     public User getHOD() {

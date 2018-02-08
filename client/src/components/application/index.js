@@ -20,25 +20,26 @@ export class CreateApplication extends React.Component {
     this.selectDepartment = this.selectDepartment.bind(this);
   }
   createApplication() {
-    this.setState({
-      isCreating: true
-    })
-    axios.post(`/application/template/1/department/${this.state.selectedDepartment}`)
-      .then(function (response) {
-        if(response.data.state !== "STATUS_ERROR") {
-          this.setState({
-            isSuccess: true,
-            isCreating: false,
-            newApplicationId: response.data.value.id
-          })
-        } else {
-          this.setState({
-            isError: true,
-            isCreating: false
-          })
-        }
+      this.setState({
+        isCreating: true
+      })
+      axios.post(`/application/template/1/department/${this.state.selectedDepartment}`)
+        .then(function (response) {
+          if(response.data.state !== "STATUS_ERROR") {
+            this.setState({
+              isSuccess: true,
+              isCreating: false,
+              newApplicationId: response.data.value.id
+            })
+          } else {
+            this.setState({
+              isError: true,
+              isCreating: false
+            })
+          }
 
-    }.bind(this))
+      }.bind(this))
+
   }
   componentWillMount() {
     this.loadDepartments();
@@ -49,7 +50,7 @@ export class CreateApplication extends React.Component {
         this.setState({
           isLoading: false,
           departmentList: data.value,
-          selectedDepartment: data.value[0][0]
+          selectedDepartment: (!data.value[0])?-1:data.value[0][0]
         });
       })
     }

@@ -58,9 +58,10 @@ export default class extends React.Component {
                   Administration
                 </DropdownToggle>
                 <DropdownMenu >
-                  <DropdownItem onClick={this.hideNave} to="/admin/department/2">
-                    View Department
-                  </DropdownItem>
+                    <DropdownItem onClick={this.hideNave} exact to="/admin/">
+                        View Departments
+                    </DropdownItem>
+
                   <DropdownItem onClick={this.hideNave} to="/admin/template/">
                     Edit Templates
                   </DropdownItem>

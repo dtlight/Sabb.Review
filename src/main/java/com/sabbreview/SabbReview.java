@@ -30,6 +30,7 @@ import java.net.URI;
 import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import static spark.Spark.after;
@@ -63,21 +64,6 @@ public class SabbReview {
     });
 
 
-    /*em.getTransaction().begin();
-    User user = new User("matthew@bargrove.com", "password");
-    user.encryptPassword();
-    em.persist(user);
-    Template template = new Template().setName("Default");
-    em.persist(template);
-    Department department = new Department().setName("Computer Science");
-    department.addTemplate(template);
-    template.setDepartment(department);
-    em.merge(template);
-    department.setHOD(user);
-    em.persist(department);
-    em.flush();
-    em.getTransaction().commit();*/
-
     ApplicationController.attach();
     DepartmentController.attach();
     UserController.attach();
@@ -96,8 +82,7 @@ public class SabbReview {
 
       if(getEntityManager().getTransaction().isActive()) {
         em.flush();
-        em.getTransaction().commit();
-       // em.getTransaction().rollback();
+        em.getTransaction().rollback();
       }
     }));
   }
@@ -120,7 +105,7 @@ public class SabbReview {
       HashMap<String, String> persistenceMap = new HashMap<>();
       String[] userDetails = uri.getUserInfo().split(":");
       String jdbcURL = String
-          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s", uri.getHost(), uri.getPort(),
+          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s&sslmode=require", uri.getHost(), uri.getPort(),
               uri.getPath(), userDetails[0], userDetails[1]);
       persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
@@ -129,7 +114,9 @@ public class SabbReview {
     } else {
       entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     }
-    return entityManagerFactory.createEntityManager();
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    entityManager.setFlushMode(FlushModeType.COMMIT);
+    return entityManager;
   }
 
   private static Gson generateGson() {
