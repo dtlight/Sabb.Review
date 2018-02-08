@@ -250,6 +250,8 @@ Temporary Items
 SabbReview.iml
 .idea/
 src/main/resources/META-INF/persistence.xml
+src/main/resources/static/API-Key.txt
+src/main/resources/static/RabbitMQ_URL.txt
 # src/main/resources/static
 .DS_Store
 client/build
