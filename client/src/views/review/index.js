@@ -42,7 +42,7 @@ export default class extends React.Component {
                 <TabPanel>
                   <Row className="row applications-collapse">
                     <div class="col-lg-12">
-                      <ApplicationCard id="test3" status="SUBMITTED"/>
+                      <ApplicationCard id="test6" status="SUBMITTED"/>
                     </div>
                   </Row>
                 </TabPanel>
@@ -52,7 +52,7 @@ export default class extends React.Component {
                       <ApplicationCard id="test0" status="SUCCESS"/>
                     </div>
                     <div class="col-lg-12">
-                      <ApplicationCard id="test2" status="REFUSED"/>
+                      <ApplicationCard id="test9" status="REFUSED"/>
                     </div>
                   </Row>
                 </TabPanel>
