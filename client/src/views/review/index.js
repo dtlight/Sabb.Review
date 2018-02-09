@@ -2,8 +2,8 @@ import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { resetIdCounter } from 'react-tabs';
-import { ApplicationCard } from '../../components/review/'
-import { Jumbotron, Button, ButtonGroup, Row, Col } from 'reactstrap';
+import {  ApplicationList } from '../../components/review/'
+import { Row } from 'reactstrap';
 
 export default class extends React.Component {
   constructor(props, context){
@@ -31,29 +31,17 @@ export default class extends React.Component {
                 </TabList>
                 <TabPanel>
                   <Row className="row applications-collapse">
-                    <div class="col-lg-12">
-                      <ApplicationCard id="test" status="PENDING"/>
-                    </div>
-                    <div class="col-lg-12">
-                      <ApplicationCard id="test3" status="SUBMITTED"/>
-                    </div>
+                      <ApplicationList />
                   </Row>
                 </TabPanel>
                 <TabPanel>
                   <Row className="row applications-collapse">
-                    <div class="col-lg-12">
-                      <ApplicationCard id="test6" status="SUBMITTED"/>
-                    </div>
+                      <ApplicationList />
                   </Row>
                 </TabPanel>
                 <TabPanel>
                   <Row className="row applications-collapse">
-                    <div class="col-lg-12">
-                      <ApplicationCard id="test0" status="SUCCESS"/>
-                    </div>
-                    <div class="col-lg-12">
-                      <ApplicationCard id="test9" status="REFUSED"/>
-                    </div>
+                      <ApplicationList />
                   </Row>
                 </TabPanel>
                 </Tabs>
