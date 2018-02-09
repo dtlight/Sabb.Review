@@ -9,6 +9,7 @@
         <modules>
                 <module>backend</module>
                 <module>util</module>
+                <module>mail</module>
         </modules>
     <packaging>pom</packaging>
     <build>

@@ -24,7 +24,6 @@ public class UserController extends Controller {
     EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
   }
 
-
   public static TransactionState<User> registerUser(User user) {
     try {
       user.encryptPassword();
@@ -61,15 +60,19 @@ public class UserController extends Controller {
     String token;
     try {
       User user = em.find(User.class, uap.getEmailAddress());
-      if (user != null && user.verifyPassword(uap.getPassword())) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_YEAR, 3);
-        Algorithm algorithm = Algorithm.HMAC256("secret");
-        token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
-            .withExpiresAt(calendar.getTime()).sign(algorithm);
+      if(System.getenv("SECRET_TOKEN") == null) {
+        throw new Exception("Could not securely create session");
       } else {
-        throw new ValidationException();
+        if (user != null && user.verifyPassword(uap.getPassword())) {
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(new Date());
+          calendar.add(Calendar.DAY_OF_YEAR, 3);
+          Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECRET_TOKEN"));
+          token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
+              .withExpiresAt(calendar.getTime()).sign(algorithm);
+        } else {
+          throw new ValidationException();
+        }
       }
     } catch (ValidationException e) {
       rollback();
@@ -108,7 +111,7 @@ public class UserController extends Controller {
 
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
-      TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-for-user", Application.class);
+      TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
       applicationTypedQuery.setParameter("owner", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
       return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
