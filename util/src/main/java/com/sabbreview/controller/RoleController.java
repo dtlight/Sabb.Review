@@ -9,12 +9,9 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
-import static spark.Spark.delete;
-import static spark.Spark.post;
-
 public class RoleController extends Controller {
 
-  private static TransactionState<Role> createRole(String principle, Role role) {
+  public static TransactionState<Role> createRole(String principle, Role role) {
     try {
       User userPrinciple = em.find(User.class, principle);
       if (userPrinciple != null && userPrinciple.isAdmin) {
@@ -36,7 +33,7 @@ public class RoleController extends Controller {
     }
   }
 
-  private static TransactionState<Role> removeRole(String principle, String id) {
+  public static TransactionState<Role> removeRole(String principle, String id) {
     try {
       User userPrinciple = em.find(User.class, principle);
       if (userPrinciple.isAdmin) {
@@ -63,13 +60,5 @@ public class RoleController extends Controller {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Role does not exist");
     }
-  }
-
-  public static void attach() {
-    delete("/role/:id", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(RoleController.removeRole(principle, req.params("id")))));
-
-    post("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        RoleController.createRole(principle, fromJson(req.body(), Role.class)))));
   }
 }

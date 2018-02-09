@@ -36,7 +36,7 @@ public class TemplateAdapter implements JsonSerializer<Template> {
     user.addProperty("isAdmin", (src.getAdmin() == null)?false:src.getAdmin());
 
     JsonArray applicationsJsonArray =  new JsonArray();
-    for (Application application:
+    for (ApplicationEndpoint application:
          src.getApplications()) {
       System.out.println(application);
 

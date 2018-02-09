@@ -8,10 +8,6 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
-import static spark.Spark.delete;
-import static spark.Spark.post;
-import static spark.Spark.put;
-
 public class AssignmentController extends Controller {
 
   public static TransactionState<Assignment> createAssignment(String principle, Assignment assignment) {
@@ -54,18 +50,5 @@ public class AssignmentController extends Controller {
             rollback();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
-    }
-
-
-  public static void attach() {
-    
-    delete("/assignment/:id", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(AssignmentController.deleteAssignment(principle, req.params(":id")))));
-
-    post("/assignment", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(createAssignment(principle, fromJson(req.body(), Assignment.class))))));
-
-    put("/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"),
-        AcceptanceState.valueOf(req.params(":state")))));
     }
 }

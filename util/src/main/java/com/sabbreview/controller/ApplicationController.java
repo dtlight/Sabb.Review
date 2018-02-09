@@ -1,6 +1,5 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.SabbReview;
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Department;
@@ -15,19 +14,11 @@ import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
-
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.put;
 
 public class ApplicationController extends Controller {
 
-  private static EntityManager em = SabbReview.getEntityManager();
-
-  private static TransactionState<Application> createApplication(String principle,
+  public static TransactionState<Application> createApplication(String principle,
       Application application) {
     try {
       if (application == null) {
@@ -59,7 +50,7 @@ public class ApplicationController extends Controller {
     }
   }
 
-  private static TransactionState<Application> deleteApplication(String principle,
+  public static TransactionState<Application> deleteApplication(String principle,
       String applicationID) {
     try {
       em.getTransaction().begin();
@@ -73,7 +64,7 @@ public class ApplicationController extends Controller {
     }
   }
 
-  private static TransactionState<Application> getApplication(String applicationID) {
+  public static TransactionState<Application> getApplication(String applicationID) {
     try {
       Application application;
       application = em.find(Application.class, applicationID);
@@ -87,7 +78,7 @@ public class ApplicationController extends Controller {
     }
   }
 
-  private static TransactionState<Application> setAcceptanceState(String principle,
+  public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
     try {
       AcceptanceState acceptanceState =
@@ -110,7 +101,7 @@ public class ApplicationController extends Controller {
   }
 
 
-  private static TransactionState<Application> useTemplate(String principle, String templateid,
+  public static TransactionState<Application> useTemplate(String principle, String templateid,
       String departmentid) {
     try {
       em.getTransaction().begin();
@@ -188,34 +179,7 @@ public class ApplicationController extends Controller {
     }
   }
 
-
-  public static void attach() {
-    delete("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController.deleteApplication(principle, req.params(":id")))));
-
-    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController
-            .createApplication(principle, fromJson(req.body(), Application.class)))));
-
-    get("/application/:id",
-        (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
-
-    post("/application/template/:templateid/department/:departmentid",
-        (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController
-            .useTemplate(principle, req.params("templateid"), req.params("departmentid")))));
-
-
-    put("/application/:id/state/:state", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(ApplicationController
-            .setAcceptanceState(principle, req.params(":id"), req.params(":state")))));
-
-
-    put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController.changeFieldValue(principle, req.params(":id"),
-            fromJson(req.body(), FieldInstanceValue.class)))));
-  }
-
-  class FieldInstanceValue {
+  public class FieldInstanceValue {
     String value;
 
     public String getValue() {

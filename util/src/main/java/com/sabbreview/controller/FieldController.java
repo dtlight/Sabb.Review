@@ -9,15 +9,10 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.put;
-
 
 public class FieldController extends Controller {
 
-  private static TransactionState<Field> createField(String principle, Field field) {
+  public static TransactionState<Field> createField(String principle, Field field) {
     try {
       em.getTransaction().begin();
       em.persist(field);
@@ -30,7 +25,7 @@ public class FieldController extends Controller {
   }
 
 
-  private static TransactionState<Field> editField(String principle, Field field) {
+  public static TransactionState<Field> editField(String principle, Field field) {
     try {
       em.getTransaction().begin();
       em.merge(field);
@@ -43,7 +38,7 @@ public class FieldController extends Controller {
   }
 
 
-  private static TransactionState<Field> getField(String principle, String id) {
+  public static TransactionState<Field> getField(String principle, String id) {
     try {
       Field field = em.find(Field.class, id);
       if(field == null) {
@@ -60,7 +55,7 @@ public class FieldController extends Controller {
     }
   }
 
-  private static TransactionState<Field> deleteField(String principle, String id) {
+  public static TransactionState<Field> deleteField(String principle, String id) {
     try {
       em.getTransaction().begin();
       Field template = em.find(Field.class, id);
@@ -76,7 +71,7 @@ public class FieldController extends Controller {
     }
   }
 
-  private static TransactionState<Field> addOption(String principle, String id,
+  public static TransactionState<Field> addOption(String principle, String id,
       FieldOption fieldOption) {
     try {
       em.getTransaction().begin();
@@ -110,26 +105,5 @@ public class FieldController extends Controller {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getValidationField());
     }
-  }
-
-
-
-
-  public static void attach() {
-    post("/field", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(createField(principle, fromJson(req.body(), Field.class))))));
-    put("/field", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(editField(principle, fromJson(req.body(), Field.class))))));
-
-    post("/field/:id/option", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(addOption(principle, req.params(":id"), fromJson(req.body(), FieldOption.class))))));
-
-    delete("/field/:id", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(deleteField(principle, req.params(":id"))))));
-
-    get("/field/:id", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(getField(principle, req.params(":id"))))));
-    get("/field", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(getField(principle, req.params(":id"))))));
   }
 }

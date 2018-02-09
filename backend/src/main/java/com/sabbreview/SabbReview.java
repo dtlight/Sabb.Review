@@ -10,43 +10,35 @@ import com.sabbreview.adapters.ApplicationAdapter;
 import com.sabbreview.adapters.FieldAdapter;
 import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
-import com.sabbreview.controller.*;
-import com.sabbreview.model.*;
+import com.sabbreview.endpoints.ApplicationEndpoint;
+import com.sabbreview.endpoints.AssignmentEndpoint;
+import com.sabbreview.endpoints.DepartmentEndpoint;
+import com.sabbreview.endpoints.FieldEndpoint;
+import com.sabbreview.endpoints.RoleEndpoint;
+import com.sabbreview.endpoints.TemplateEndpoint;
+import com.sabbreview.endpoints.UserEndpoint;
+import com.sabbreview.model.Application;
+import com.sabbreview.model.Field;
+import com.sabbreview.model.Template;
+import com.sabbreview.model.User;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
 
-import java.net.URI;
-import java.util.HashMap;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
-
-import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
 import static spark.Spark.options;
 import static spark.Spark.port;
-import static spark.Spark.staticFiles;
-
 
 public class SabbReview {
-  private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
-  private static final String DB_ENV_VARIABLE = "DATABASE_URL";
   public static Gson gson = generateGson();
-  private static EntityManager em = getEntityManager();
 
   public static void main(String... args) {
-
     port(getHerokuAssignedPort());
 
-    staticFiles.location("static");
-
     before((req, res) -> {
-        em.getEntityManagerFactory().getCache().evictAll();
       acceptAuthentication(req);
       res.type("application/json");
       res.header("Access-Control-Allow-Origin", "*");
@@ -54,31 +46,19 @@ public class SabbReview {
       res.header("Access-Control-Allow-Headers", "Content-Type, Referer, Origin, User-Agent, Accept, Authorization");
     });
 
-    ApplicationController.attach();
-    DepartmentController.attach();
-    UserController.attach();
-    RoleController.attach();
-    FieldController.attach();
-    TemplateController.attach();
-    AssignmentController.attach();
-    PDFGeneratorController.attach();
-
-    options("*", ((request, response) -> ""));
+    ApplicationEndpoint.attach();
+    DepartmentEndpoint.attach();
+    UserEndpoint.attach();
+    RoleEndpoint.attach();
+    FieldEndpoint.attach();
+    TemplateEndpoint.attach();
+    AssignmentEndpoint.attach();
+    //PDFGeneratorController.attach();
 
     options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
-
-    after("*", ((request, response) -> {
-
-      if(getEntityManager().getTransaction().isActive()) {
-        em.flush();
-        em.getTransaction().rollback();
-      }
-    }));
   }
-
-
 
   private static int getHerokuAssignedPort() {
     ProcessBuilder processBuilder = new ProcessBuilder();
@@ -88,27 +68,6 @@ public class SabbReview {
     return 4567;
   }
 
-
-  public static EntityManager getEntityManager() {
-    EntityManagerFactory entityManagerFactory;
-    if (System.getenv(DB_ENV_VARIABLE) != null) {
-      URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
-      HashMap<String, String> persistenceMap = new HashMap<>();
-      String[] userDetails = uri.getUserInfo().split(":");
-      String jdbcURL = String
-          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s&sslmode=require", uri.getHost(), uri.getPort(),
-              uri.getPath(), userDetails[0], userDetails[1]);
-      persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
-      persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
-      entityManagerFactory =
-          Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
-    } else {
-      entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    }
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-    entityManager.setFlushMode(FlushModeType.COMMIT);
-    return entityManager;
-  }
 
   private static Gson generateGson() {
     GsonBuilder gsonBuilder = new GsonBuilder();

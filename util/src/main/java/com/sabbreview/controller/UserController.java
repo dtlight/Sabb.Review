@@ -2,7 +2,6 @@ package com.sabbreview.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.sabbreview.SabbReview;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Token;
 import com.sabbreview.model.User;
@@ -14,13 +13,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
 
 public class UserController extends Controller {
   private static final String EMAIL_REGEX;
@@ -29,10 +24,8 @@ public class UserController extends Controller {
     EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
   }
 
-  private static EntityManager em = SabbReview.getEntityManager();
 
-
-  private static TransactionState<User> registerUser(User user) {
+  public static TransactionState<User> registerUser(User user) {
     try {
       user.encryptPassword();
       user.setAdmin(true); //TODO GET RID OF THIS (obviously)
@@ -55,7 +48,7 @@ public class UserController extends Controller {
     }
   }
 
-  private static TransactionState<User> getUser(String emailAddress) {
+  public static TransactionState<User> getUser(String emailAddress) {
     User user = em.find(User.class, emailAddress);
     if (user == null) {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not find user");
@@ -64,7 +57,7 @@ public class UserController extends Controller {
     }
   }
 
-  private static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
+  public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
     try {
       User user = em.find(User.class, uap.getEmailAddress());
@@ -93,7 +86,7 @@ public class UserController extends Controller {
 
   }
 
-  private static TransactionState<User> deleteUser(String principle) {
+  public static TransactionState<User> deleteUser(String principle) {
     try {
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
@@ -113,7 +106,7 @@ public class UserController extends Controller {
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
 
-  private static TransactionState<List<Application>> getApplicationsForUser(String principle) {
+  public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-for-user", Application.class);
       applicationTypedQuery.setParameter("owner", principle);
@@ -126,27 +119,7 @@ public class UserController extends Controller {
     }
   }
 
-
-  public static void attach() {
-    delete("/user",
-        (req, res) -> requireAuthentication(req, (principle) -> toJson(UserController.deleteUser(principle))));
-
-    post("/user",
-        (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
-
-    get("/user/by-id/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
-
-    post("/login", (req, res) -> toJson(UserController
-        .generateSession(fromJson(req.body(), UserAuthenticationParameters.class))));
-
-    get("/user", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(UserController.getUser(principle))));
-
-    get("/user/applications", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(getApplicationsForUser(principle))));
-  }
-
-  private class UserAuthenticationParameters {
+  public class UserAuthenticationParameters {
     String emailAddress = "";
     String password = "";
 
