@@ -120,5 +120,4 @@ export class ApplicationList extends React.Component {
             )
         }
     }
-
 }
