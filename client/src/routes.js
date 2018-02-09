@@ -8,8 +8,9 @@ import Header from './components/header.js'
 import Footer from './components/footer.js'
 
 
-import TemplateBuilder from './views/admin/template/';
-
+import {TemplateList, ViewTemplate} from './views/admin/template/';
+import Admin from './views/admin/home/';
+import {DepartmentInfo} from './views/admin/department/';
 
 export default class Routes extends React.Component {
     render() {
@@ -32,7 +33,11 @@ export default class Routes extends React.Component {
                     <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                     <PrivateRoute path='/review' component={Review} />
                     {/*}<PrivateRoute path='/admin/template' component={TemplateBuilder} />*/}
-                    <PrivateRoute path='/admin/template/:id' component={TemplateBuilder} />
+                    <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
+                    <PrivateRoute exact path='/admin/template/' component={TemplateList} />
+                      <PrivateRoute exact path='/admin/' component={Admin} />
+
+                    <PrivateRoute path='/admin/template/:id' component={ViewTemplate} />
                     <Route path="**" render={(props) =>{
                       return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
                     }} />

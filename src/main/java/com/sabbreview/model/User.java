@@ -4,7 +4,9 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -16,8 +18,8 @@ import javax.persistence.OneToMany;
 
   public Boolean isAdmin;
 
-  @OneToMany private List<Assignment> assignments = new ArrayList<>();
-  @OneToMany(mappedBy="applicant") private List<Application> applications = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL) List<Assignment> assignments = new ArrayList<>();
+  @OneToMany(mappedBy="applicant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval=true ) List<Application> applications = new ArrayList<>();
 
   public User() {}
 
@@ -30,9 +32,17 @@ import javax.persistence.OneToMany;
     return emailAddress;
   }
 
+
+  public void addApplication(Application application) {
+    this.applications.add(application);
+    application.applicant = this;
+  }
+
   public void addAssignment(Assignment assignment) {
     this.assignments.add(assignment);
+    assignment.assignee = this;
   }
+
 
   private User setPassword(String password) {
     this.password = password;
@@ -61,19 +71,10 @@ import javax.persistence.OneToMany;
     return assignments;
   }
 
-  public User setAssignments(List<Assignment> assignments) {
-    this.assignments = assignments;
-    return this;
-  }
-
   public List<Application> getApplications() {
     return applications;
   }
 
-  public User setApplications(List<Application> applications) {
-    this.applications = applications;
-    return this;
-  }
 
   public boolean verifyPassword(String password) {
     return BCrypt.checkpw(password, this.password);

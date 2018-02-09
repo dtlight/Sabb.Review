@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link, Redirect} from 'react-router-dom';
 import {ListGroup,
    ListGroupItem,
    Card,
@@ -10,16 +11,23 @@ import {ListGroup,
    ModalFooter,
    ModalBody,
    Button,
+   ButtonGroup,
    ModalHeader,
    Input,
    InputGroupAddon,
    InputGroup,
+   Table,
+   Badge,
     Label} from 'reactstrap';
 import axios from 'axios';
 
 let questionTypes = {
     "TEXT": {
       pretty: "Text",
+      choice: false
+    },
+    "DIVIDER": {
+      pretty: "Divider",
       choice: false
     },
     "LONGTEXT": {
@@ -109,7 +117,6 @@ export class NewQuestion extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.addAnswer = this.addAnswer.bind(this);
     this.submit = this.submit.bind(this);
-
   }
   toggle() {
     this.setState({
@@ -126,6 +133,12 @@ export class NewQuestion extends React.Component {
   }
 
   submit() {
+    if(!questionTypes[this.state.type].choice && this.state.answers.length > 0) {
+      this.setState({
+        answers: []
+      });
+    }
+
     if(this.props.questionId) {
       axios.put(`/field`, {
             "id": this.props.questionId,
@@ -187,7 +200,9 @@ export class NewQuestion extends React.Component {
     }
     let typeOfInputs = [];
     for (var prop in questionTypes) {
-        typeOfInputs.push(<TypeOfInputSelect value={prop}>{questionTypes[prop].pretty}</TypeOfInputSelect>)
+        typeOfInputs.push(<TypeOfInputSelect value={prop}>
+                            {questionTypes[prop].pretty}
+                          </TypeOfInputSelect>)
     }
     console.log("type: "+this.state.type);
     return (
@@ -296,4 +311,101 @@ let Field = (props) => {
     </ListGroup>
     </Card>
   )
+}
+
+export class AssignTemplate extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.state = {
+      assignee: ""
+    }
+    this.toggle = this.toggle.bind(this);
+  }
+
+  create() {
+    axios.post(`/application/template`)
+      .then(function (response) {
+        if(response.data.state !== "STATUS_ERROR") {
+          this.setState({
+            isSuccess: true,
+            isCreating: false,
+            newApplicationId: response.data.value.id
+          })
+        } else {
+          this.setState({
+            isError: true,
+            isCreating: false
+          })
+        }
+
+    }.bind(this))
+  }
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+  render() {
+    let before;
+    if(this.props.assigned){
+      before = <Input placeholder="Assignee" />;
+    } else {
+      before = "";
+    }
+    return (
+      <div className={this.props.className}>
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader toggle={this.toggle}>{this.props.children}</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <label>Assignee</label>
+              <Input onChange={(e) => {
+                this.setState({
+                  assignee: e.target.value
+                })
+              }} value={this.state.assignee} />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.create}>Assign Appraisal Template</Button>
+          </ModalFooter>
+        </Modal>
+        <Button color="dark" onClick={this.toggle}>{this.props.children}</Button>
+      </div>
+    )
+  }
+
+
+}
+
+export class TemplateTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.state = {
+    }
+  }
+
+  render() {
+    return (
+      <Table>
+        <thead>
+          <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Actions</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#1</td>
+            <td>Main Template <Badge color="secondary">Default</Badge></td>
+            <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link to="./1"><Button color="secondary">Edit Template</Button></Link></ButtonGroup></td>
+          </tr>
+
+        </tbody>
+      </Table>
+    )
+  }
 }
