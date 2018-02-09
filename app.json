@@ -12,7 +12,7 @@
   },
   "addons": [
     "heroku-postgresql",
-    "CloudAMQP"
+    "cloudamqp"
   ],
   "buildpacks": [
     {
