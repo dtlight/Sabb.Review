@@ -1,5 +1,5 @@
 package com.sabbreview.model;
 
 public enum FieldType {
-  TEXT, DATE, MULTICHOICE, SINGLECHOICE
+  TEXT, LONGTEXT, DATE, MULTICHOICE, SINGLECHOICE, DIVIDER
 }

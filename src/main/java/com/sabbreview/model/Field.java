@@ -15,12 +15,11 @@ import javax.persistence.OneToMany;
   @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
-  String title;
+  private String title;
 
-  FieldType type;
+  private FieldType type;
 
-  @OneToMany(cascade = CascadeType.REMOVE)
-  List<FieldOption> fieldOptions;
+  @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
   public String getId() {
     return id;

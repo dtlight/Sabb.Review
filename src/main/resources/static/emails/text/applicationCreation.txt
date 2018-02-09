@@ -1,0 +1,2 @@
+Your sabbatical leave application has been created successfully.<br>
+You can view the status of your applications <a href="">here</a>.

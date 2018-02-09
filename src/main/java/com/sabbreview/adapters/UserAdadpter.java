@@ -20,13 +20,13 @@ public class UserAdadpter implements JsonSerializer<User> {
     user.addProperty("isAdmin", (src.getAdmin() == null)?false:src.getAdmin());
 
     JsonArray applicationsJsonArray =  new JsonArray();
+
+
     for (Application application:
          src.getApplications()) {
-      System.out.println(application);
-
-      applicationsJsonArray.add(application.getId());
+      applicationsJsonArray.add(context.serialize(application));
     }
-    user.add("applications", applicationsJsonArray);
+   user.add("applications", applicationsJsonArray);
 
 
     JsonArray assignmentsJsonArray =  new JsonArray();

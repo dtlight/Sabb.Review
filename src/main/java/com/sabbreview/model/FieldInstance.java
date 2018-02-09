@@ -1,37 +1,40 @@
 package com.sabbreview.model;
 
-import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 @Entity
 public class FieldInstance extends Model {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  int id;
+  String id;
 
   @ManyToOne
   Field field;
 
   String value; // Only for text (not date/multichoice etc...)
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   FieldOption option;
 
-  @OneToMany
-  List<FieldOption> options;
+  public FieldInstance() {
 
+  }
 
-  public int getId() {
+  public FieldInstance(Field field) {
+    setField(field);
+  }
+
+  public String getId() {
     return id;
   }
 
-  public FieldInstance setId(int id) {
+  public FieldInstance setId(String id) {
     this.id = id;
     return this;
   }
@@ -63,17 +66,8 @@ public class FieldInstance extends Model {
     return this;
   }
 
-  public List<FieldOption> getOptions() {
-    return options;
-  }
-
-  public FieldInstance setOptions(List<FieldOption> options) {
-    this.options = options;
-    return this;
-  }
-
   @Override public String toString() {
-    return "FieldInstance{" + "id=" + id + ", field=" + field + ", value='" + value + '\''
-        + ", option=" + option + ", options=" + options + '}';
+    return "FieldInstance{" + "id='" + id + '\'' + ", field=" + field + ", value='" + value + '\''
+        + ", option=" + option + '}';
   }
 }

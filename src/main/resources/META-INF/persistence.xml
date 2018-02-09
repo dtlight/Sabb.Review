@@ -9,6 +9,7 @@
         <class>com.sabbreview.model.Role</class>
         <class>com.sabbreview.model.Comment</class>
         <class>com.sabbreview.model.Field</class>
+        <class>com.sabbreview.model.Department</class>
         <class>com.sabbreview.model.FieldInstance</class>
         <class>com.sabbreview.model.FieldOption</class>
         <class>com.sabbreview.model.FieldType</class>
@@ -17,8 +18,12 @@
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/SabbReview?user=cs2855"/>
             <property name="javax.persistence.jdbc.driver " value="org.postgresql.Driver"/>
             <property name="eclipselink.target-database" value="PostgreSQL" />
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
+            <property name="eclipselink.query-results-cache" value="false"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.logging.level.sql" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -6,13 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sabbreview.adapters.ApplicationAdapter;
+import com.sabbreview.adapters.FieldAdapter;
+import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
-import com.sabbreview.controller.ApplicationController;
-import com.sabbreview.controller.FieldController;
-import com.sabbreview.controller.RoleController;
-import com.sabbreview.controller.TemplateController;
-import com.sabbreview.controller.UserController;
-import com.sabbreview.model.User;
+import com.sabbreview.controller.*;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
@@ -22,11 +21,14 @@ import java.net.URI;
 import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
+import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
+import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
@@ -44,18 +46,36 @@ public class SabbReview {
     staticFiles.location("static");
 
     before((req, res) -> {
+        em.getEntityManagerFactory().getCache().evictAll();
       acceptAuthentication(req);
       res.type("application/json");
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE, PUT");
+      res.header("Access-Control-Allow-Headers", "Content-Type, Referer, Origin, User-Agent, Accept, Authorization");
     });
 
     ApplicationController.attach();
+    DepartmentController.attach();
     UserController.attach();
     RoleController.attach();
     FieldController.attach();
     TemplateController.attach();
+    AssignmentController.attach();
+    PDFGeneratorController.attach();
+
+    options("*", ((request, response) -> ""));
+
+    options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
 
+    after("*", ((request, response) -> {
+
+      if(getEntityManager().getTransaction().isActive()) {
+        em.flush();
+        em.getTransaction().rollback();
+      }
+    }));
   }
 
 
@@ -76,7 +96,7 @@ public class SabbReview {
       HashMap<String, String> persistenceMap = new HashMap<>();
       String[] userDetails = uri.getUserInfo().split(":");
       String jdbcURL = String
-          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s", uri.getHost(), uri.getPort(),
+          .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s&sslmode=require", uri.getHost(), uri.getPort(),
               uri.getPath(), userDetails[0], userDetails[1]);
       persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
       persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
@@ -85,12 +105,17 @@ public class SabbReview {
     } else {
       entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
     }
-    return entityManagerFactory.createEntityManager();
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    entityManager.setFlushMode(FlushModeType.COMMIT);
+    return entityManager;
   }
 
   private static Gson generateGson() {
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
+    gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
+    gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
+    gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
     return gsonBuilder.create();
   }
 
@@ -98,7 +123,7 @@ public class SabbReview {
 
   private static void acceptAuthentication(Request req) {
     String token = req.headers("Authorization");
-    if (token == null) {
+    if (token == null || !token.contains(".")) {
       req.attribute("isAuthenticated", false);
     } else {
       try {

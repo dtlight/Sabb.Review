@@ -14,14 +14,14 @@ import javax.persistence.SequenceGenerator;
   @Id @SequenceGenerator(name = "ass_id_gen")
   public int id;
 
-  @ManyToOne(targetEntity = User.class) private transient User assignee;
+  @ManyToOne(targetEntity = User.class)  transient User assignee;
 
-  @ManyToOne private Application application;
+  @ManyToOne Application application;
 
-  @ManyToOne private Role role;
+  @ManyToOne Role role;
 
   @OneToMany(targetEntity = Comment.class)
-  private List<Comment> comments;
+  List<Comment> comments;
 
   @Enumerated
   private AcceptanceState state = AcceptanceState.PENDING;
@@ -32,9 +32,9 @@ import javax.persistence.SequenceGenerator;
   }
 
   public Assignment(User assignee, Application application, Role role) {
-    this.assignee = assignee;
-    this.application = application;
-    this.role = role;
+    setAssignee(assignee);
+    setApplication(application);
+    setRole(role);
   }
 
   public int getId() {
@@ -46,17 +46,13 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
-  public Assignment setState(AcceptanceState state) {
-    this.state = state;
-    return this;
-  }
-
   public User getAssignee() {
     return assignee;
   }
 
   public Assignment setAssignee(User owner) {
     this.assignee = owner;
+    owner.assignments.add(this);
     return this;
   }
 
@@ -66,6 +62,7 @@ import javax.persistence.SequenceGenerator;
 
   public Assignment setApplication(Application application) {
     this.application = application;
+    application.assignments.add(this);
     return this;
   }
 
@@ -102,8 +99,17 @@ import javax.persistence.SequenceGenerator;
     return this;
   }
 
+  public AcceptanceState getState() {
+    return state;
+  }
+
+  public Assignment setState(AcceptanceState state) {
+    this.state = state;
+    return this;
+  }
+
   @Override public String toString() {
     return "Assignment{" + "id=" + id + ", owner=" + assignee + ", application=" + application
-        + ", role=" + role + ", comments=" + comments + ", dueDate=" + dueDate + '}';
+        + ", role=" + role + ", comments=" + comments + ", state=" + state + ", dueDate=" + dueDate + '}';
   }
 }

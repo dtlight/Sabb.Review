@@ -3,12 +3,20 @@ package com.sabbreview.controller;
 import com.sabbreview.SabbReview;
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
+import com.sabbreview.model.Department;
+import com.sabbreview.model.Field;
+import com.sabbreview.model.FieldInstance;
+import com.sabbreview.model.FieldOption;
+import com.sabbreview.model.FieldType;
+import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
-import com.sabbreview.responses.AuthenticationException;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
+import com.sabbreview.responses.ValidationException;
 
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
 import static spark.Spark.delete;
 import static spark.Spark.get;
@@ -55,26 +63,23 @@ public class ApplicationController extends Controller {
       String applicationID) {
     try {
       em.getTransaction().begin();
-      Application application = em.find(Application.class, applicationID);
-      if(application.getApplicant().getEmailAddress().equals(principle)) {
-        em.remove(application);
-      } else {
-        throw new AuthenticationException();
-      }
+      em.createNamedQuery("authenticated-delete").setParameter("id", applicationID).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
 
   private static TransactionState<Application> getApplication(String applicationID) {
-    Application application;
     try {
-      em.getTransaction().begin();
+      Application application;
       application = em.find(Application.class, applicationID);
-      em.getTransaction().commit();
+      if (application == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
@@ -82,36 +87,148 @@ public class ApplicationController extends Controller {
     }
   }
 
-//improve to add multi[ple fields
-
-  private static TransactionState<Application> setAcceptanceState(String applicationID,
-      AcceptanceState acceptanceState) {
-    Application application;
+  private static TransactionState<Application> setAcceptanceState(String principle,
+      String applicationID, String acceptanceStateString) {
     try {
+      AcceptanceState acceptanceState =
+          AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
       em.getTransaction().begin();
-      application = em.find(Application.class, applicationID);
+      Application application = em.find(Application.class, applicationID);
       application.setState(acceptanceState);
+      em.merge(application); //need to iterate through user, find acc state, and change
+      em.flush();
       em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Invalid Acceptance State");
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
+
+  private static TransactionState<Application> useTemplate(String principle, String templateid,
+      String departmentid) {
+    try {
+      em.getTransaction().begin();
+
+      User user = em.find(User.class, principle);
+      Department department = em.find(Department.class, departmentid);
+      Template template = TemplateController.getTemplate(principle, templateid).getValue();
+
+      Application application = new Application();
+      application.setDepartment(department);
+      application.setApplicant(user);
+      application.setState(AcceptanceState.PENDING);
+
+      List<Field> fieldList = template.fieldList;
+
+      for (Field field : fieldList) {
+        System.out.println(field);
+        FieldInstance fieldInstance = new FieldInstance(field);
+        em.persist(fieldInstance);
+        application.addFieldInstance(fieldInstance);
+      }
+      em.persist(application);
+      em.merge(application);
+      em.merge(user);
+      em.merge(department);
+
+
+      em.flush();
+      em.getTransaction().commit();
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+  public static TransactionState<FieldInstance> changeFieldValue(String principle,
+      String fieldInstanceId, FieldInstanceValue value) {
+    try {
+      em.getTransaction().begin();
+      FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
+
+      if (fieldInstance == null) {
+        throw new ValidationException("Field Instance does not exist");
+      }
+
+      Field fieldOf = fieldInstance.getField();
+      FieldType fieldType = fieldOf.getType();
+
+      switch (fieldType) {
+        case TEXT:
+          fieldInstance.setValue(value.getValue());
+          break;
+        case DATE:
+          //TODO
+          break;
+        case MULTICHOICE:
+          FieldOption option = em.find(FieldOption.class, value);
+          if (option != null && fieldOf.getFieldOptions().contains(option)) {
+            fieldInstance.setOption(option);
+          } else {
+            throw new ValidationException("Field option does not exist for this field");
+          }
+      }
+
+      em.merge(fieldInstance);
+      em.getTransaction().commit();
+
+
+      return new TransactionState<>(fieldInstance, TransactionStatus.STATUS_OK);
+    } catch (ValidationException | RollbackException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
 
   public static void attach() {
-    delete("/api/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+    delete("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController.deleteApplication(principle, req.params(":id")))));
 
-    post("/api/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController
             .createApplication(principle, fromJson(req.body(), Application.class)))));
 
-    get("/api/application/:id",
+    get("/application/:id",
         (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
 
-    put("/api/application/:id/state/:state", (req, res) -> toJson(ApplicationController
-        .setAcceptanceState(req.params(":id"), AcceptanceState.valueOf(req.params(":state")))));
+    post("/application/template/:templateid/department/:departmentid",
+        (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController
+            .useTemplate(principle, req.params("templateid"), req.params("departmentid")))));
 
+
+    put("/application/:id/state/:state", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(ApplicationController
+            .setAcceptanceState(principle, req.params(":id"), req.params(":state")))));
+
+
+    put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+        ApplicationController.changeFieldValue(principle, req.params(":id"),
+            fromJson(req.body(), FieldInstanceValue.class)))));
+  }
+
+  class FieldInstanceValue {
+    String value;
+
+    public String getValue() {
+      return value;
+    }
+
+    public FieldInstanceValue setValue(String value) {
+      this.value = value;
+      return this;
+    }
+
+    @Override public String toString() {
+      return "FieldInstanceValue{" + "value='" + value + '\'' + '}';
+    }
   }
 }
