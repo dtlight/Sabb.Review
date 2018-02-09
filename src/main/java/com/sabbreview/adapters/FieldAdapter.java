@@ -17,6 +17,8 @@ public class FieldAdapter  implements JsonSerializer<Field> {
     object.addProperty("id", src.getId());
     object.addProperty("title", src.getTitle());
     object.addProperty("type", src.getType().name());
+    object.add("fieldOptions", context.serialize(src.getFieldOptions()));
+
     return object;
   }
 }
