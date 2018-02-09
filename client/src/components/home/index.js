@@ -48,7 +48,7 @@ export class ApplicationCard extends React.Component {
   }
 
   withdrawApplication() {
-    axios.delete(`/application/${this.props.id}`).then(({data})=> {
+    axios.delete(`/application/${this.state.id}`).then(({data})=> {
       if(this.props.onChange) {
         this.props.onChange();
       }

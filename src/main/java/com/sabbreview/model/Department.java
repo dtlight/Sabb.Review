@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @NamedQueries({
     @NamedQuery(name="get_all_departments", query = "SELECT d.id, d.name from departments d")
@@ -31,6 +32,8 @@ public class Department extends Model {
     @OneToMany
     List<Template> templateList = new ArrayList<>();
 
+    @OneToOne
+    Template defaultTemplate;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval=true )
     List<Application> applications = new ArrayList<>();

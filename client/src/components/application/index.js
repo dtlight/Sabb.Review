@@ -217,7 +217,14 @@ class FieldInstance extends React.Component {
       }
       inner = <Input type="select"> {options} </Input>;
     } else if(this.props.fieldInstance.field.type === "LONGTEXT") {
-      inner = <Input type="textarea"/>;
+      inner = <Input type="textarea"
+                     value={this.state.value}
+                     onChange={(e) => {
+                         this.setState({
+                             value: e.target.value
+                         })
+                     }}
+                     onBlur={this.updateValue}/>;
     } else {
       inner = <Input
         value={this.state.value}

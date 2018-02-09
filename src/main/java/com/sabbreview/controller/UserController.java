@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.sabbreview.SabbReview;
 import com.sabbreview.model.Application;
+import com.sabbreview.model.Assignment;
 import com.sabbreview.model.Token;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
@@ -115,9 +116,24 @@ public class UserController extends Controller {
 
   private static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
-      TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-for-user", Application.class);
+      TypedQuery<Application> applicationTypedQuery = em.createNamedQuery(
+          "get-all-applications-for-user", Application.class);
       applicationTypedQuery.setParameter("owner", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
+      return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    }
+  }
+
+  private static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
+    try {
+      TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery(
+          "get-all-assignments-for-user", Assignment.class);
+      assignmentTypedQuery.setParameter("owner", principle);
+      List<Assignment> applicationList = assignmentTypedQuery.getResultList();
       return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       e.printStackTrace();
@@ -144,6 +160,9 @@ public class UserController extends Controller {
 
     get("/user/applications", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(getApplicationsForUser(principle))));
+
+    get("/user/assignments", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(getAssignmentsForUser(principle))));
   }
 
   private class UserAuthenticationParameters {
