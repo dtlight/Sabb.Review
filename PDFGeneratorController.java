@@ -59,7 +59,7 @@ public class PDFGeneratorController extends Controller {
     }
 
     public static void attach() {
-        get("/assignment/:id/pdf", (req, res) -> {
+        get("/application/:id/pdf", (req, res) -> {
             res.raw().setContentType("application/pdf");
             res.raw().getOutputStream().write(getPDF(req.params("id")).toByteArray());
             return "";
