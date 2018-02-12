@@ -32,8 +32,6 @@ let applicationStates = {
     }
 }
 
-
-
 export class ApplicationCard extends React.Component {
     constructor(props) {
         super(props);
@@ -60,7 +58,6 @@ export class ApplicationCard extends React.Component {
         )
     }
 }
-
 export class ApplicationList extends React.Component {
     constructor(props) {
         super(props);
@@ -92,7 +89,7 @@ export class ApplicationList extends React.Component {
                 })
             }
         } else {
-            axios.get(`/user/applications`).then(({data})=> {
+            axios.get(`/assignment`).then(({data})=> {
                 this.setState({
                     applicationList: data.value,
                     isLoading: false

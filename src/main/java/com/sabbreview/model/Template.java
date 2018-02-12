@@ -23,8 +23,6 @@ public class Template extends Model {
   @Id @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
-  boolean departmentDefault;
-
   String name;
 
 
@@ -67,14 +65,6 @@ public class Template extends Model {
     return this;
   }
 
-  public boolean isDepartmentDefault() {
-    return departmentDefault;
-  }
-
-  public Template setDepartmentDefault(boolean departmentDefault) {
-    this.departmentDefault = departmentDefault;
-    return this;
-  }
 
 
   public Department getDepartment() {
@@ -87,9 +77,8 @@ public class Template extends Model {
     return this;
   }
 
-  /*@Override public String toString() {
-    return "Template{" + "id='" + id + '\'' + ", departmentDefault=" + departmentDefault
-        + ", name='" + name + '\'' + ", department=" + department + ", fieldList=" + fieldList
-        + '}';
-  }*/
+  @Override public String toString() {
+    return "Template{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", department="
+        + department + ", fieldList=" + fieldList + '}';
+  }
 }
