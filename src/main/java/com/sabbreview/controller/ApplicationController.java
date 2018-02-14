@@ -188,6 +188,26 @@ public class ApplicationController extends Controller {
     }
   }
 
+  private static TransactionState<Application> addEndComments(String principle,
+                                                                 String[] comments) {
+      em.getTransaction().begin();
+    try {
+      FieldInstance fieldInstance = em.find(FieldInstance.class, endComments);
+
+      if (fieldInstance == null) {
+        Field endComments = new Field();
+        //add the Field to the application
+      }
+      fieldInstance.setValue(comments.getValue());
+
+      em.getTransaction().commit();
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK, ""); //this would change as well I presume
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
 
   public static void attach() {
     delete("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
@@ -213,6 +233,10 @@ public class ApplicationController extends Controller {
     put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController.changeFieldValue(principle, req.params(":id"),
             fromJson(req.body(), FieldInstanceValue.class)))));
+
+    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+            ApplicationController
+                    .addEndComments(principle, fromJson(req.body(), Application.class)))));
   }
 
   class FieldInstanceValue {
