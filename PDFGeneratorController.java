@@ -32,6 +32,7 @@ public class PDFGeneratorController extends Controller {
 
                 PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
                 contentStream.beginText();
+                contentStream.setFont(font, 12);
                 contentStream.setLeading(20f);
                 contentStream.newLineAtOffset(25, 725);
 
