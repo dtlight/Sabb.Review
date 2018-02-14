@@ -47,7 +47,8 @@ public class PDFGeneratorController extends Controller {
                 contentStream.showText("Due date: "+assignment.getDueDate());
                 contentStream.newLine();
                 contentStream.showText("Current state: "+assignment.getState());
-
+                contentStream.endText();
+                contentStream.close()
                 document.addPage(pdPage);
             }
 
