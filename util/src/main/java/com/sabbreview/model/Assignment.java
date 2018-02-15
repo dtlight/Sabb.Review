@@ -7,14 +7,19 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
-
+//elect a from Application a where a.applicant.emailAddress = :owne
+@NamedQueries({
+    @NamedQuery(name="get-all-assignments-for-user", query = "SELECT a from assignments a WHERE a.assignee.emailAddress = :owner")
+})
 @Entity(name = "assignments") public class Assignment extends Model {
   @Id @SequenceGenerator(name = "ass_id_gen")
   public int id;
 
-  @ManyToOne(targetEntity = User.class)  transient User assignee;
+  @ManyToOne(targetEntity = User.class) User assignee;
 
   @ManyToOne Application application;
 

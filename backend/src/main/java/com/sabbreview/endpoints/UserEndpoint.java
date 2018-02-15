@@ -26,5 +26,8 @@ public class UserEndpoint extends Endpoint {
 
     get("/user/applications", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(getApplicationsForUser(principle))));
+
+    get("/user/assignments", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(getApplicationsForUser(principle))));
   }
 }
