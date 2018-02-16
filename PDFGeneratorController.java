@@ -1,7 +1,7 @@
 package com.sabbreview.controller;
 
 
-import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Application;
 import com.sabbreview.model.FieldInstance;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -16,16 +16,15 @@ import java.util.List;
 import static spark.Spark.get;
 
 public class PDFGeneratorController extends Controller {
- static PDFont font = PDType1Font.HELVETICA;
+    static PDFont font = PDType1Font.HELVETICA;
+
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-           Application application = em.find(Application.class,assignmentID);
+            Application application = em.find(Application.class,assignmentID);
             PDDocument document = new PDDocument();
-
             List<FieldInstance> fields = application.getFields();
-
 
             for (FieldInstance field:
                  fields) {
@@ -37,19 +36,19 @@ public class PDFGeneratorController extends Controller {
                 contentStream.setLeading(20f);
                 contentStream.newLineAtOffset(25, 725);
 
-                contentStream.showText("ID: "+ assignment.getId());
+                contentStream.showText("ID: "+ application.getId());
                 contentStream.newLine();
-                contentStream.showText("Assignee: "+assignment.getAssignee());
+                contentStream.showText("Assignee: "+application.getApplicant());
                 contentStream.newLine();
-                contentStream.showText("Role: " + assignment.getRole());
+                /*
+                contentStream.showText("Comments: " +application.getComments());
                 contentStream.newLine();
-                contentStream.showText("Comments: " +assignment.getComments());
+                contentStream.showText("Due date: "+application.getDueDate());
                 contentStream.newLine();
-                contentStream.showText("Due date: "+assignment.getDueDate());
-                contentStream.newLine();
-                contentStream.showText("Current state: "+assignment.getState());
+                */
+                contentStream.showText("Current state: "+application.getState());
                 contentStream.endText();
-                contentStream.close()
+                contentStream.close();
                 document.addPage(pdPage);
             }
 
