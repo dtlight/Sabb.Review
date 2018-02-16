@@ -1,13 +1,13 @@
 package com.sabbreview.controller;
 
+import com.sabbreview.SabbReview;
 import net.sargue.mailgun.Configuration;
 import net.sargue.mailgun.Mail;
 import com.rabbitmq.client.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.print.URIException;
+import java.io.*;
+import java.net.URISyntaxException;
 
 public class EmailController{
 
@@ -121,9 +121,18 @@ public class EmailController{
             filePath = filePath.substring( 1, filePath.length() - 1);
         }
 
-        String envPath = new File("").getAbsolutePath() + "\\target\\classes\\static\\";
+        String path = "";
+        try {
 
-        BufferedReader bf = new BufferedReader(new FileReader(envPath + filePath));
+            path = EmailController.class.getClassLoader().getResource("/static/" + filePath).getPath();
+            System.out.println("Reading file: " + path);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return "";
+        }
+
+        BufferedReader bf = new BufferedReader(new FileReader(path));
 
         String line = "";
         StringBuilder text = new StringBuilder();
