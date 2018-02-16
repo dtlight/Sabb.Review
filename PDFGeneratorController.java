@@ -24,7 +24,8 @@ public class PDFGeneratorController extends Controller {
            Application application = em.find(Application.class,assignmentID);
             PDDocument document = new PDDocument();
 
-            List<FieldInstance> fields = assignment.getApplication().getFields();
+            List<FieldInstance> fields = application.getFields();
+
 
             for (FieldInstance field:
                  fields) {
