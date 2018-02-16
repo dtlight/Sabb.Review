@@ -21,7 +21,7 @@ public class PDFGeneratorController extends Controller {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            Assignment assignment = em.find(Assignment.class,assignmentID);
+           Application application = em.find(Application.class,assignmentID);
             PDDocument document = new PDDocument();
 
             List<FieldInstance> fields = assignment.getApplication().getFields();
