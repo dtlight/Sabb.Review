@@ -15,7 +15,7 @@ import java.util.List;
 
 import static spark.Spark.get;
 
-public class PDFGeneratorController extends Controller {
+public class PDFGeneratorEndpoint extends Controller {
     static PDFont font = PDType1Font.HELVETICA;
 
     private static ByteArrayOutputStream getPDF(String assignmentID) {
