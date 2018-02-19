@@ -194,11 +194,9 @@ public class ApplicationController extends Controller {
     try {
       FieldInstance fieldInstance = em.find(FieldInstance.class, endComments);
 
-      if (fieldInstance == null) {
-        Field endComments = new Field();
-        //add the Field to the application
+      if(fieldInstance.isEndComment()) {
+        fieldInstance.setValue(comments.getValue());
       }
-      fieldInstance.setValue(comments.getValue());
 
       em.getTransaction().commit();
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, ""); //this would change as well I presume
