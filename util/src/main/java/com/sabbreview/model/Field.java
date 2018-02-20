@@ -19,6 +19,8 @@ import javax.persistence.OneToMany;
 
   private FieldType type;
 
+  private boolean endComment;
+
   @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
   public String getId() {
@@ -32,6 +34,10 @@ import javax.persistence.OneToMany;
 
   public String getTitle() {
     return title;
+  }
+
+  public boolean isEndComment() {
+    return endComment;
   }
 
   public Field setTitle(String title) {
