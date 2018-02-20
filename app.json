@@ -1,0 +1,41 @@
+{
+  "name": "SabbReview",
+  "description": "",
+  "scripts": {},
+  "formation": {
+    "web": {
+      "quantity": 1
+    },
+    "mail": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "heroku-postgresql",
+    "cloudamqp"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/java"
+    }
+  ],
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed JWTs.",
+      "generator": "secret"
+    },
+    "MAILGUN_DOMAIN": {
+      "description": "The MailGun Domain.",
+      "default": "sabb.review"
+    },
+    "MAILGUN_API_KEY": {
+      "description": "The MailGun API Key."
+    },
+    "MAILGUN_FROM_EMAIL": {
+      "description": "The MailGun 'From' Address."
+    },
+    "MAILGUN_FROM_NAME" : {
+      "description": "The MailGun 'From' Name."
+    }
+  }
+}
