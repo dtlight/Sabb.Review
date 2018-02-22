@@ -179,55 +179,6 @@ public class ApplicationController extends Controller {
     }
   }
 
-  private static TransactionState<Application> addEndComments(String principle,
-                                                                 String comments) {
-      em.getTransaction().begin();
-    try {
-      FieldInstance fieldInstance = em.find(FieldInstance.class, endComments);
-
-      if(fieldInstance.getField().isEndComment()) {
-        fieldInstance.setValue(comments);
-      }
-
-      em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK, ""); //this would change as well I presume
-    } catch (Exception e) {
-      rollback();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    }
-  }
-
-
-  public static void attach() {
-    delete("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController.deleteApplication(principle, req.params(":id")))));
-
-    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController
-            .createApplication(principle, fromJson(req.body(), Application.class)))));
-
-    get("/application/:id",
-        (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
-
-    post("/application/template/:templateid/department/:departmentid",
-        (req, res) -> requireAuthentication(req, (principle) -> toJson(ApplicationController
-            .useTemplate(principle, req.params("templateid"), req.params("departmentid")))));
-
-
-    put("/application/:id/state/:state", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(ApplicationController
-            .setAcceptanceState(principle, req.params(":id"), req.params(":state")))));
-
-
-    put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-        ApplicationController.changeFieldValue(principle, req.params(":id"),
-            fromJson(req.body(), FieldInstanceValue.class)))));
-
-    post("/application", (req, res) -> requireAuthentication(req, (principle) -> toJson(
-            ApplicationController.addEndComments(principle, fromJson(req.body(), Application.class)))));
-  }
-
-
   public class FieldInstanceValue {
     String value;
 
