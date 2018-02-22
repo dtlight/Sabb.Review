@@ -88,7 +88,7 @@ public class SabbReview {
     } else {
       try {
         String jwtString = token.split("Bearer ")[1];
-        Algorithm algorithm = Algorithm.HMAC256("secret");
+        Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("sabbreview").build();
         DecodedJWT decodedJWT = verifier.verify(jwtString);
         req.attribute("isAuthenticated", true);
