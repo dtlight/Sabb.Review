@@ -60,7 +60,7 @@ public class UserController extends Controller {
     String token;
     try {
       User user = em.find(User.class, uap.getEmailAddress());
-      if(System.getenv("SECRET_TOKEN") == null) {
+      if(System.getenv("SECURE_KEY") == null) {
         throw new Exception("Could not securely create session");
       } else {
         if (user != null && user.verifyPassword(uap.getPassword())) {
