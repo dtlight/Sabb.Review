@@ -67,7 +67,7 @@ public class UserController extends Controller {
           Calendar calendar = Calendar.getInstance();
           calendar.setTime(new Date());
           calendar.add(Calendar.DAY_OF_YEAR, 3);
-          Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECRET_TOKEN"));
+          Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
           token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
               .withExpiresAt(calendar.getTime()).sign(algorithm);
         } else {
