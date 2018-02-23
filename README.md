@@ -10,23 +10,29 @@ A sabbatical period review system for university staff.
 
 You need [Node JS](https://nodejs.org/en/) to run an npm server.
 
-#### Running
+#### Building & Running
 
-To test the frontend locally, run:
+To test the frontend locally, run (inside 'client'):
 
     npm install
-    npm run
+    npm start
 
+
+You can change which backend the npm server uses by changing the line:
+
+    axios.defaults.baseURL = '';
+
+to whatever server you want.
 
 
 ### Backend
 
 #### Prerequisites
-All dependencies are provided by Maven. To build SabbReview, make sure Maven is installed: https://maven.apache.org/install.html.
+All dependencies are provided by Maven. To build SabbReview, make sure [Maven](https://maven.apache.org/install.html) is installed.
 
-To run the server locally, you'll need the [Heroku CLI tools](https://devcenter.heroku.com/articles/heroku-cli)
+To run the server locally, you'll need the [Heroku CLI tools](https://devcenter.heroku.com/articles/heroku-cli).
 
-#### Building
+#### Building & Running
 
 To install the require dependencies run:
 
@@ -36,14 +42,12 @@ To install the require dependencies run:
 Two resulting jar files (for the modules 'mail' and 'backend') are created inside 'target' in the respective modules.
 (see Procfile for exact paths)
 
-
 To test the server locally, run:
 
     heroku local
 
 
-If you're having issues on Windows, try replacing the respective lines "*-with-dependencies.jar*" in procfile with the actual file name.
-
+If you're having issues running it on Windows, try replacing the respective lines "*-with-dependencies.jar*" in procfile with the actual file name.
 
 
 ## Contributing
