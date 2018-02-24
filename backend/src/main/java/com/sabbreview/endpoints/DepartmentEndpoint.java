@@ -17,7 +17,6 @@ public class DepartmentEndpoint extends Endpoint {
     get("/department/:depID", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(DepartmentController.getDepartment(principle, req.params("depID")))));
 
-
     get("/departments", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(DepartmentController.getDepartments(principle))));
 
@@ -29,7 +28,5 @@ public class DepartmentEndpoint extends Endpoint {
 
     put("/department", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         DepartmentController.updateDepartment(principle, fromJson(req.body(), Department.class)))));
-
-
   }
 }

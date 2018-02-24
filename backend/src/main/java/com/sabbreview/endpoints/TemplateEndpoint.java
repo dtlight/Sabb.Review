@@ -17,13 +17,18 @@ public class TemplateEndpoint extends Endpoint {
   public static void attach() {
     post("/template", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createTemplate(principle, fromJson(req.body(), Template.class))))));
+
     get("/template/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getTemplate(principle, req.params(":id"))))));
+
     post("/template/:id/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(addField(principle, req.params("id"), fromJson(req.body(), Field.class))))));
+
     delete("/template/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteTemplate(principle, req.params(":id"))))));
+
     delete("/template/:id/field/:fieldid", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteTemplateField(principle, req.params(":id"), req.params(":fieldid"))))));
+
   }
 }
