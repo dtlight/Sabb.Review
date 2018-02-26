@@ -23,18 +23,29 @@ public class ApplicationControllerTest {
         Application testApplication = new Application(testuser);
         String id = testApplication.getId();
         TransactionState<Application> ts =
-                ApplicationController.createApplication(testuser.getEmailAddress(), testApplication)
+                ApplicationController.createApplication(testuser.getEmailAddress(), testApplication);
         assertEquals(id, ts.getValue().getId());
         assertEquals(TransactionStatus.STATUS_OK, ts.getState());
     }
 
     @org.junit.Test
     public void deleteApplication() {
-
+        Application testApplication = new Application(testuser);
+        String id = testApplication.getId();
+        TransactionState<Application> ts =
+                ApplicationController.deleteApplication(testuser.getEmailAddress(), id);
+        assertEquals(id, ts.getValue().getId());
+        assertEquals(TransactionStatus.STATUS_OK, ts.getState());
     }
 
     @org.junit.Test
     public void getApplication() {
+        Application testApplication = new Application(testuser);
+        String id = testApplication.getId();
+        TransactionState<Application> ts =
+                ApplicationController.getApplication(id);
+        assertEquals(id, ts.getValue().getId());
+        assertEquals(TransactionStatus.STATUS_OK, ts.getState());
     }
 
     @org.junit.Test
