@@ -1,5 +1,6 @@
 package com.sabbreview.controller;
 
+import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
@@ -50,10 +51,17 @@ public class ApplicationControllerTest {
 
     @org.junit.Test
     public void setAcceptanceState() {
+        Application testApplication = new Application(testuser);
+        String id = testApplication.getId();
+        TransactionState<Application> ts =
+                ApplicationController.setAcceptanceState(testuser.getEmailAddress(), id, testuser.setState);
+        assertEquals(id, ts.getValue().getId());
+        assertEquals(TransactionStatus.STATUS_OK, ts.getState());
     }
 
     @org.junit.Test
     public void useTemplate() {
+
     }
 
     @org.junit.Test
