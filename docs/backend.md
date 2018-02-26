@@ -49,6 +49,11 @@ Key points:
 * [Responses](http://sparkjava.com/documentation#response)
 * [Filters](http://sparkjava.com/documentation#filters)
 
+### Authentiction: JSON Web Tokens, claims, & principles
+
+We're using [JSON Web Tokens](https://github.com/auth0/java-jwt) to manage API request authentication.
+
+Tokens have an attribute isAuthenticated which is initially set in SabbReview.acceptAuthentication().
 
 ### GSON ( & Adapters)
 
@@ -56,8 +61,3 @@ GSON's used to convert back and forth between java objects and JSON.
 We've created [Adapters](../backend/src/main/java/com/sabbreview/adapters) to convert our Util [Models](../util/src/main/java/com/sabbreview/model) to JSON so Spark can make use of them.
 
 The adapters extend GSON's [JSONSerializer](https://google.github.io/gson/apidocs/com/google/gson/JsonSerializer.html)
-
-
-### Util
-
-The uses the old project structure a bit like a utility module.
