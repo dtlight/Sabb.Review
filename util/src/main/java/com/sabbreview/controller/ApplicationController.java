@@ -51,10 +51,10 @@ public class ApplicationController extends Controller {
   }
 
   public static TransactionState<Application> deleteApplication(String principle,
-      String applicationID) {
+                                                                String applicationID) {
     try {
       em.getTransaction().begin();
-      em.createNamedQuery("authenticated-delete").setParameter("id", applicationID).executeUpdate();
+      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
@@ -64,10 +64,11 @@ public class ApplicationController extends Controller {
     }
   }
 
-  public static TransactionState<Application> getApplication(String applicationID) {
+
+  public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
       Application application;
-      application = em.find(Application.class, applicationID);
+      application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
       if (application == null) {
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
       }
@@ -178,6 +179,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
 
   public class FieldInstanceValue {
     String value;
