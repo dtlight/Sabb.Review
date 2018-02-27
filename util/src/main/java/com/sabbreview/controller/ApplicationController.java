@@ -50,6 +50,12 @@ public class ApplicationController extends Controller {
     }
   }
 
+  /**
+   * Deletes an application.
+   * @param principle Principle of the user calling this function..
+   * @param applicationID ID of the application to be deleted.
+   * @return
+   */
   public static TransactionState<Application> deleteApplication(String principle,
                                                                 String applicationID) {
     try {
@@ -64,7 +70,12 @@ public class ApplicationController extends Controller {
     }
   }
 
-
+  /**
+   * Retrieves an application.
+   * @param principle The ID of the user requesting the application.
+   * @param applicationID The application to be returned.
+   * @return The application along with a transaction status message.
+   */
   public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
       Application application;
@@ -78,6 +89,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
 
   public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
