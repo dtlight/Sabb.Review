@@ -53,7 +53,18 @@ Key points:
 
 We're using [JSON Web Tokens](https://github.com/auth0/java-jwt) to manage API request authentication.
 
-Tokens have an attribute isAuthenticated which is initially set in SabbReview.acceptAuthentication().
+Requests have an attribute isAuthenticated which is initially set in SabbReview.acceptAuthentication().
+
+### EntityManager
+
+Sabbreview abstracts from the database using a [JPA Entity manager](https://docs.oracle.com/javaee/7/api/javax/persistence/EntityManager.html) to handle persistence of data.
+
+
+Important:
+The tables in the database and the relationships between them are contained in [models]([Models](../util/src/main/java/com/sabbreview/model), and are listed in persistence.xml.
+
+
+
 
 ### GSON ( & Adapters)
 
