@@ -119,7 +119,8 @@ export class EditApplication extends React.Component {
       fieldInstances: [],
       isLoading: true,
       isError: false,
-      isEditable: false
+      isEditable: false,
+        currentState: ""
     }
     this.submitApplication = this.submitApplication.bind(this);
     this.onStateChange = this.onStateChange.bind(this);
@@ -128,6 +129,7 @@ export class EditApplication extends React.Component {
   componentDidMount() {
     axios.get(`/application/${this.props.id}`).then(({data})=> {
       this.setState((state) => {
+          state.currentState = data.value.state;
         if(data.state === "STATUS_ERROR") {
           state.isError = true
         } else {
@@ -165,7 +167,11 @@ export class EditApplication extends React.Component {
     } else if(this.state.fieldInstances) {
       let fieldInstances = [];
       for (var fieldInstance of this.state.fieldInstances) {
-          fieldInstances.push(<FieldInstance {...fieldInstance}/>);
+          if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
+              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
+          } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
+              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
+          }
       }
       return (
           <form>
