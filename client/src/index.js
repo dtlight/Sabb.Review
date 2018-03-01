@@ -7,8 +7,11 @@ import './scss/_style.scss';
 import './style.css';
 
 
-axios.defaults.baseURL = 'https://sabbreview-stage.herokuapp.com';
-
+if (window.location.hostname === "localhost") {
+  axios.defaults.baseURL = 'http://localhost:4567';
+} else {
+  axios.defaults.baseURL = 'https://api.sabb.review';
+}
 
 axios.interceptors.request.use(function (config) {
   if(window.localStorage.getItem("token")) {
