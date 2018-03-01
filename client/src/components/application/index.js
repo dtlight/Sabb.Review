@@ -165,7 +165,7 @@ export class EditApplication extends React.Component {
     } else if(this.state.fieldInstances) {
       let fieldInstances = [];
       for (var fieldInstance of this.state.fieldInstances) {
-          fieldInstances.push(<FieldInstance value={fieldInstance.value} fieldInstance={fieldInstance}/>);
+          fieldInstances.push(<FieldInstance {...fieldInstance}/>);
       }
       return (
           <form>
@@ -191,32 +191,30 @@ class FieldInstance extends React.Component {
   }
 
   updateValue(value) {
-    axios.put(`/fieldinstance/${this.props.fieldInstance.id}`, {value: this.state.value}).then(function(data) {
+    axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
       console.log(data);
     });
   }
 
     render() {
-    //Assume multichoice to starts
-    console.log(this.props.fieldInstance);
 
     var inner = "";
-    if(this.props.fieldInstance.field.type === "DIVIDER") {
-      return <div><hr /><p class="lead">{this.props.fieldInstance.field.title}</p></div>
-    } else if(this.props.fieldInstance.field.type === "MULTICHOICE") {
+    if(this.props.field.type === "DIVIDER") {
+      return <div><hr /><p class="lead">{this.props.field.title}</p></div>
+    } else if(this.props.field.type === "MULTICHOICE") {
       let options = [];
-      for (let option of this.props.fieldInstance.field.fieldOptions) {
+      for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
 
-    } else if(this.props.fieldInstance.field.type === "SINGLECHOICE") {
+    } else if(this.props.field.type === "SINGLECHOICE") {
       let options = [];
-      for (let option of this.props.fieldInstance.field.fieldOptions) {
+      for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <Input type="select"> {options} </Input>;
-    } else if(this.props.fieldInstance.field.type === "LONGTEXT") {
+    } else if(this.props.field.type === "LONGTEXT") {
       inner = <Input type="textarea"
                      value={this.state.value}
                      onChange={(e) => {
@@ -238,7 +236,7 @@ class FieldInstance extends React.Component {
     }
 
     return ( <div class="form-group" style={{"paddingBottom": "10px"}}>
-              <label>{this.props.fieldInstance.field.title}</label>
+              <label>{this.props.field.title}</label>
               {inner}
             </div>)
 

@@ -15,7 +15,7 @@
         <class>com.sabbreview.model.FieldType</class>
         <class>com.sabbreview.model.Template</class>
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/SabbReview?user=cs2855"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/SabbReview?user=cs2855&amp;password=test123"/>
             <property name="javax.persistence.jdbc.driver " value="org.postgresql.Driver"/>
             <property name="eclipselink.target-database" value="PostgreSQL" />
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />

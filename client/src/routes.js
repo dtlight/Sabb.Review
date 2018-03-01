@@ -4,6 +4,7 @@ import Auth from './views/auth/'
 import Home from './views/home/'
 import {Introduction, EditExisting} from './views/apply/'
 import Review from './views/review/'
+import EndComments from './views/end_comments/'
 import Header from './components/header.js'
 import Footer from './components/footer.js'
 
@@ -32,6 +33,7 @@ export default class Routes extends React.Component {
                     <PrivateRoute exact path='/apply' component={Introduction} />
                     <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                     <PrivateRoute path='/review' component={Review} />
+                    <PrivateRoute path='/end_comments' component={EndComments} />
                     {/*}<PrivateRoute path='/admin/template' component={TemplateBuilder} />*/}
                     <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
                     <PrivateRoute exact path='/admin/template/' component={TemplateList} />
