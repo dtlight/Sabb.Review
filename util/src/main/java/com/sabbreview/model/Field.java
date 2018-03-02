@@ -19,7 +19,7 @@ import javax.persistence.OneToMany;
 
   private FieldType type;
 
-  private boolean endComment;
+  private Boolean showAtEnd = false;
 
   @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
@@ -36,8 +36,8 @@ import javax.persistence.OneToMany;
     return title;
   }
 
-  public boolean isEndComment() {
-    return endComment;
+  public java.lang.Boolean isShowAtEnd() {
+    return showAtEnd;
   }
 
   public Field setTitle(String title) {
