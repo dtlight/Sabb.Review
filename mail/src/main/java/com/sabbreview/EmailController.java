@@ -28,9 +28,6 @@ public class EmailController {
 
   public static void main(String[] args) throws Exception {
 
-    Email email = Email.LOREMIPSUM;
-    System.out.println(email.generateHTML("Alex"));
-
     if (System.getenv() != null) {
       domain = System.getenv(ENV_DOMAIN);
     } else {
@@ -71,8 +68,6 @@ public class EmailController {
    * @param recipient Recipient's email address.
    */
   private static void Send(String subject, String content, String recipient) {
-
-
     Configuration configuration = null;     //Sender details
     configuration =
         new Configuration().domain(domain).apiKey(mailgunApiKey)  //MailGun API key read from file
@@ -91,9 +86,6 @@ public class EmailController {
    * <i>Email</i> is the email address of the recipient.<br>
    */
   private static void receiveFromQueue() throws Exception {
-
-    //Server URL read from a file
-    //String uri = loadFile("RabbitMQ_URL.txt");
     String uri = queueURL;
     ConnectionFactory factory = new ConnectionFactory();
     factory.setUri(uri);
@@ -109,8 +101,7 @@ public class EmailController {
       @Override public void handleDelivery(String consumerTag, Envelope envelope,
           AMQP.BasicProperties properties, byte[] body) throws IOException {
 
-
-        Email currentEmail = Email.LOREMIPSUM;
+        Email currentEmail;
 
         String[] message = new String(body, "UTF-8").split("/");
         if (message.length < 3) {

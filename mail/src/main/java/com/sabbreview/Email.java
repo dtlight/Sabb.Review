@@ -20,20 +20,27 @@ public enum Email {
         this.emailTitle = emailTitle;
     }
 
+    /**
+     * Converts a notification type name into an enum Email Object.
+     * @param emailName Name of the email type (e.g ApplicationCreation).
+     * @return An Email object with the same name.
+     */
     public static Email emailNameToEnum(String emailName){
-        if( emailName.equals(APPLICATIONCREATION.getFileName())){
+
+        emailName = emailName.toUpperCase();
+        if( emailName.equals(APPLICATIONCREATION.getFileName().toUpperCase())){
             return Email.APPLICATIONCREATION;
         }
-        if( emailName.equals(LOREMIPSUM.getFileName())){
+        if( emailName.equals(LOREMIPSUM.getFileName().toUpperCase())){
             return Email.LOREMIPSUM;
         }
-        if( emailName.equals(SENSITIVENOTIFICATION.getFileName())){
+        if( emailName.equals(SENSITIVENOTIFICATION.getFileName().toUpperCase())){
             return Email.SENSITIVENOTIFICATION;
         }
-        if( emailName.equals(ACCOUNTCREATION.getFileName())){
+        if( emailName.equals(ACCOUNTCREATION.getFileName().toUpperCase())){
             return Email.ACCOUNTCREATION;
         }
-        if( emailName.equals(ACCOUNTCLOSED.getFileName())){
+        if( emailName.equals(ACCOUNTCLOSED.getFileName().toUpperCase())){
             return Email.ACCOUNTCLOSED;
         }
 
@@ -46,14 +53,9 @@ public enum Email {
         return this.emailTitle;
     }
 
-   Email(String emailType) {
-       this.fileName = emailType;
-   }
-
     private String getFileName(){
         return this.fileName + ".txt";
     }
-
 
 
     /**
@@ -82,8 +84,9 @@ public enum Email {
 
 
     /**
-     * Generates a html for use in an email notifications.
-     *
+     * Generates the HTML for an email
+     * @param userName The name of the person the email is to be sent to.
+     * @return The full email HTML.
      */
     public String generateHTML(String userName) {
         try {
