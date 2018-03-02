@@ -11,8 +11,6 @@ import spark.Spark;
 
 class Endpoint {
 
-  abstract public static void attach();
-
   static String requireAuthentication(Request req, AuthentcatedRequest result) {
     if (req.attribute("isAuthenticated")) {
       return result.onAccept(req.attribute("principle"));
