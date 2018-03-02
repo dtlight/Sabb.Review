@@ -123,7 +123,6 @@ public enum Email {
                 newPath.append(splitPath[i]).append("/");
             }
 
-            System.out.println(newPath.toString());
 
             //Removing leading slash if present
             if (newPath.charAt(0) == '/' || newPath.charAt(0) == '\\') {
