@@ -3,6 +3,7 @@ import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-d
 import Auth from './views/auth/'
 import Home from './views/home/'
 import {Introduction, EditExisting} from './views/apply/'
+
 import Review from './views/review/'
 import Header from './components/header.js'
 import Footer from './components/footer.js'
@@ -11,6 +12,8 @@ import Footer from './components/footer.js'
 import {TemplateList, ViewTemplate} from './views/admin/template/';
 import Admin from './views/admin/home/';
 import {DepartmentInfo} from './views/admin/department/';
+import {AdminEditApplication} from "./views/admin/application";
+import {ApplicationAdminButtons} from "./components/application";
 
 export default class Routes extends React.Component {
     render() {
@@ -19,31 +22,35 @@ export default class Routes extends React.Component {
             <Router {...this.props}>
               <span>
               <Header isLoggedIn={isLoggedIn()}/>
-                <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
                   <Switch>
-                    <Route path='/auth/' component={Auth} />
-                    <Route exact path='/logout' render={({history}) => {
-                      window.localStorage.removeItem("token")
-                      return (
-                        <Redirect to="/auth/" />
-                      );
-                    }} />
-                    <PrivateRoute exact path='/' component={Home} />
-                    <PrivateRoute exact path='/apply' component={Introduction} />
-                    <PrivateRoute exact path='/apply/:id' component={EditExisting} />
-                    <PrivateRoute path='/review' component={Review} />
-                    {/*}<PrivateRoute path='/admin/template' component={TemplateBuilder} />*/}
+                             <PrivateRoute exact path='/admin/application/:id' component={AdminEditApplication} />
+                     <PrivateRoute exact path='/apply/:id' component={EditExisting} />
+                      <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
+
+                      <Route path='/auth/' component={Auth} />
+                      <Route exact path='/logout' render={({history}) => {
+                        window.localStorage.removeItem("token")
+                       return (
+                          <Redirect to="/auth/" />
+                        );
+                      }} />
+                     <PrivateRoute exact path='/' component={Home} />
+                     <PrivateRoute exact path='/apply' component={Introduction} />
+                      <PrivateRoute path='/review' component={Review} />
+                     {/*}<PrivateRoute path='/admin/template' component={TemplateBuilder} />*/}
+
                     <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
                     <PrivateRoute exact path='/admin/template/' component={TemplateList} />
                       <PrivateRoute exact path='/admin/' component={Admin} />
 
                     <PrivateRoute path='/admin/template/:id' component={ViewTemplate} />
+
+                    </div>
                     <Route path="**" render={(props) =>{
-                      return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
+                        return (<h1 className="display-4"><center><strong>404</strong> - Nicht Found</center></h1>)
                     }} />
 
                   </Switch>
-                </div>
                 </span>
             </Router>
           <Footer />

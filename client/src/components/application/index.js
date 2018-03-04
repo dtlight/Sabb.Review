@@ -1,7 +1,8 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input} from 'reactstrap';
+import {Input, Button} from 'reactstrap';
+import SignatureCanvas from 'react-signature-canvas'
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -111,6 +112,39 @@ export class CreateApplication extends React.Component {
     }
 }
 
+export class ApplicationAdminButtons extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+
+        }
+        this.submitApplication = this.submitApplication.bind(this);
+
+    }
+
+    submitApplication() {//http://{{host}}/application/4/state/accepted
+        axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
+                this.props.onStateChange();
+        })
+    }
+    render() {
+        return (<div style={{
+            "padding": "20px",
+            "marginBottom": "20px",
+            "position": "-webkit-sticky",
+            "position": "sticky",
+            "height": "80px",
+            "top": "0em"}} class="bg-light">
+
+            <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
+            <a href={`${axios.defaults.baseURL}/application/${this.props.id}/pdf`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <Button color="secondary" style={{"marginRight":"10px"}}  onClick={this.submitApplication}>Assign Review</Button>
+
+        </div>);
+    }
+}
+
 export class EditApplication extends React.Component {
   constructor(props) {
     super(props);
@@ -122,7 +156,6 @@ export class EditApplication extends React.Component {
       isEditable: false,
         currentState: ""
     }
-    this.submitApplication = this.submitApplication.bind(this);
     this.onStateChange = this.onStateChange.bind(this);
   }
 
@@ -149,11 +182,7 @@ export class EditApplication extends React.Component {
       isEditable: (newState === "PENDING")
     })
   }
-  submitApplication() {//http://{{host}}/application/4/state/accepted
-    axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
-      this.onStateChange("SUBMITTED");
-    })
-  }
+
 
   render() {
     if(this.state.isError) {
@@ -178,7 +207,11 @@ export class EditApplication extends React.Component {
             {fieldInstances}
 
             <div class="form-group">
-              <input type="button" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}} onClick={this.submitApplication}/>
+                <div class="form-group" style={{"padding": "10px"}}>
+                    <p class="lead">Please draw your signature in the box below</p>
+                <SignatureCanvas penColor='green'
+                                 canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
+                </div>
             </div>
         </form>
         );
