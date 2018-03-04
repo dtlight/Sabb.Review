@@ -3,6 +3,7 @@ import {Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {Input, Button} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
+import {AssignReview} from '../review/'
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -123,9 +124,9 @@ export class ApplicationAdminButtons extends React.Component {
 
     }
 
-    submitApplication() {//http://{{host}}/application/4/state/accepted
+    submitApplication() {
         axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
-                this.props.onStateChange();
+                if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
         })
     }
     render() {
@@ -138,8 +139,8 @@ export class ApplicationAdminButtons extends React.Component {
             "top": "0em"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
-            <a href={`${axios.defaults.baseURL}/application/${this.props.id}/pdf`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
-            <Button color="secondary" style={{"marginRight":"10px"}}  onClick={this.submitApplication}>Assign Review</Button>
+            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
 
         </div>);
     }
@@ -156,34 +157,32 @@ export class EditApplication extends React.Component {
       isEditable: false,
         currentState: ""
     }
-    this.onStateChange = this.onStateChange.bind(this);
+    this.load = this.load.bind(this);
   }
+    componentWillReceiveProps() {
+        this.load();
+    }
+    componentDidMount() {
+        this.load();
+    }
 
-  componentDidMount() {
-    axios.get(`/application/${this.props.id}`).then(({data})=> {
-      this.setState((state) => {
-          state.currentState = data.value.state;
-        if(data.state === "STATUS_ERROR") {
-          state.isError = true
-        } else {
-          state.isEditable = (data.value.state === "PENDING");
-          for(var fieldInstance of data.value.fields) {
-            state.fieldInstances.push(fieldInstance);
-          }
-          state.isLoading = false;
-        }
-        return state;
-      })
-    })
-  }
-
-  onStateChange(newState) {
-    this.setState({
-      isEditable: (newState === "PENDING")
-    })
-  }
-
-
+    load() {
+        axios.get(`/application/${this.props.id}`).then(({data})=> {
+            this.setState((state) => {
+                state.currentState = data.value.state;
+                if(data.state === "STATUS_ERROR") {
+                    state.isError = true
+                } else {
+                    state.isEditable = (data.value.state === "PENDING");
+                    for(var fieldInstance of data.value.fields) {
+                        state.fieldInstances.push(fieldInstance);
+                    }
+                    state.isLoading = false;
+                }
+                return state;
+            })
+        })
+    }
   render() {
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
@@ -206,10 +205,10 @@ export class EditApplication extends React.Component {
           <form>
             {fieldInstances}
 
-            <div class="form-group">
+            <div className={"bg-light"}>
                 <div class="form-group" style={{"padding": "10px"}}>
                     <p class="lead">Please draw your signature in the box below</p>
-                <SignatureCanvas penColor='green'
+                <SignatureCanvas penColor='#252f3c'
                                  canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
                 </div>
             </div>

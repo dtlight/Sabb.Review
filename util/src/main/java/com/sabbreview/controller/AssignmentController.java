@@ -1,7 +1,9 @@
 package com.sabbreview.controller;
 
 import com.sabbreview.model.AcceptanceState;
+import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
+import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
@@ -10,13 +12,18 @@ import javax.persistence.RollbackException;
 
 public class AssignmentController extends Controller {
 
-  public static TransactionState<Assignment> createAssignment(String principle, Assignment assignment) {
+  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String assigneeId) {
     try {
       em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationId);
+      User assignee = em.find(User.class, assigneeId);
+      Assignment assignment = new Assignment();
+      assignment.setApplication(application);
+      assignment.setAssignee(assignee);
       em.persist(assignment);
       em.getTransaction().commit();
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-    } catch (RollbackException e) {
+    } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
     }

@@ -4,6 +4,7 @@ import com.sabbreview.controller.UserController;
 import com.sabbreview.model.User;
 
 import static com.sabbreview.controller.UserController.getApplicationsForUser;
+import static com.sabbreview.controller.UserController.getAssignmentsForUser;
 import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -28,6 +29,6 @@ public class UserEndpoint extends Endpoint {
         (principle) -> toJson(getApplicationsForUser(principle))));
 
     get("/user/assignments", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(getApplicationsForUser(principle))));
+        (principle) -> toJson(getAssignmentsForUser(principle))));
   }
 }

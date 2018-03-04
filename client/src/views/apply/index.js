@@ -15,7 +15,13 @@ export class Introduction extends React.Component {
 }
 
 export class EditExisting extends React.Component {
-
+    constructor(props){
+        super(props);
+        this.props = props;
+        this.state = {
+            newState: null
+        }
+    }
   //Temporary af
   componentDidMount() {
     axios.get(`/application/${this.props.match.params.id}`).then(({data})=> {
@@ -25,13 +31,18 @@ export class EditExisting extends React.Component {
 
   render() {
     return (<div>
-        <ApplicationAdminButtons id={this.props.match.params.id}/>
+        <ApplicationAdminButtons id={this.props.match.params.id} onStateChange={(newState)=>{
+            this.setState({
+                newState: newState
+            })
+        }}/>
         <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
 
         <h1 class="display-4">Edit Application</h1>
               <p class="lead">Please fill out the required fields below. You can save your application to return to it later or submit to forward the application for review.</p>
               <hr />
-              <EditApplication id={this.props.match.params.id} />
+              <EditApplication id={this.props.match.params.id} newState={this.state.newState}/>
+        </div>
            </div>)
   }
 }
