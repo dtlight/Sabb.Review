@@ -36,8 +36,8 @@ public class PDFGeneratorEndpoint {
             contentStream.setFont(font, 12);
             contentStream.setLeading(20f);
             contentStream.newLineAtOffset(25, 725);
+            contentStream.showText("Application #"+application.getId());
 
-            contentStream.showText("ID: "+ application.getId());
             contentStream.newLine();
             contentStream.showText("Assignee: "+application.getApplicant());
             contentStream.newLine();
@@ -64,8 +64,12 @@ public class PDFGeneratorEndpoint {
             fieldContentStream.setFont(font, 12);
             fieldContentStream.setLeading(20f);
             fieldContentStream.newLineAtOffset(25, 725);
+            fieldContentStream.showText("Application Questions");
+            fieldContentStream.newLine();
+
             for (FieldInstance fieldInstance:
                 fields) {
+
                 fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
                 fieldContentStream.newLine();
                 fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
@@ -102,10 +106,9 @@ public class PDFGeneratorEndpoint {
         for (Assignment assignment:
             assignments){
             assignmentContentStream.setFont(font, 15);
-            assignmentContentStream.showText("Assignment "+ assignment.getId());
-            assignmentContentStream.setFont(font, 12);
-            assignmentContentStream.showText("Assignee: "+ assignment.getAssignee().getEmailAddress());
             assignmentContentStream.newLine();
+            assignmentContentStream.showText("Assignment #"+ assignment.getId()+" by "+ assignment.getAssignee().getEmailAddress());
+            assignmentContentStream.setFont(font, 12);
             assignmentContentStream.showText("Status: "+ assignment.getState());
             assignmentContentStream.newLine();
         }

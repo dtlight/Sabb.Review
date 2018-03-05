@@ -170,10 +170,10 @@ export class EditApplication extends React.Component {
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
             this.setState((state) => {
-                state.currentState = data.value.state;
                 if(data.state === "STATUS_ERROR") {
                     state.isError = true
                 } else {
+                    state.currentState = data.value.state;
                     state.isEditable = (data.value.state === "PENDING");
                     for(var fieldInstance of data.value.fields) {
                         state.fieldInstances.push(fieldInstance);
@@ -208,7 +208,7 @@ export class EditApplication extends React.Component {
 
             <div className={"bg-light"}>
                 <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the box below</p>
+                    <p class="lead">Please draw your signature in the area below</p>
                 <SignatureCanvas penColor='#252f3c'
                                  canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
                 </div>
