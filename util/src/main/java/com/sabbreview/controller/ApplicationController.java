@@ -4,6 +4,7 @@ import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
+import com.sabbreview.NotificationService;
 
 import java.util.List;
 import javax.persistence.RollbackException;
@@ -81,7 +82,7 @@ public class ApplicationController extends Controller {
       em.merge(application); //need to iterate through user, find acc state, and change
       em.flush();
       em.getTransaction().commit();
-      new NotificationController().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
+      new NotificationService().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
               "User", application.getApplicant().getEmailAddress());//need to decide on names or not
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (IllegalArgumentException e) {

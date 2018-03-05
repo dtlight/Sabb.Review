@@ -1,13 +1,15 @@
-package com.sabbreview.controller;
+package com.sabbreview;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.sabbreview.model.NotificationID;
+
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class NotificationController extends Controller {
+public class NotificationService {
+
     /**
      * Sends instruction message to queue used by the email module.
      * Message format is <i>NotificationID/Recipient Name/Recipient Email</i>
@@ -16,10 +18,8 @@ public class NotificationController extends Controller {
      * @param recipientEmail
      * @see NotificationID
      */
-
     public void sendNotification(NotificationID notificationID, String recipientName, String recipientEmail){
         try {
-
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(System.getenv("RABBITMQ_URI"));
 

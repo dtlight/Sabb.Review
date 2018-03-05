@@ -1,5 +1,6 @@
 package com.sabbreview.controller;
 
+import com.sabbreview.NotificationService;
 import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
@@ -19,7 +20,7 @@ public class AssignmentController extends Controller {
       assignment.setAssignee(assignee);
       em.persist(assignment);
       em.getTransaction().commit();
-      new NotificationController().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
+      new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       rollback();
@@ -44,14 +45,14 @@ public class AssignmentController extends Controller {
     }
   }
   
-    public static TransactionState<Assignment> setAcceptanceState(String applicationid, AcceptanceState acceptanceState){
+    public static TransactionState<Assignment> setAcceptanceState(String applicationId, AcceptanceState acceptanceState){
         Assignment assignment;
         try{
             em.getTransaction().begin();
-            assignment = em.find(Assignment.class, applicationid);
+            assignment = em.find(Assignment.class, applicationId);
             assignment.setState(acceptanceState);
             em.getTransaction().commit();
-            new NotificationController().sendNotification(NotificationID.valueOf(acceptanceState.toString()),
+            new NotificationService().sendNotification(NotificationID.valueOf(acceptanceState.toString()),
                     "User", assignment.getApplication().getApplicant().getEmailAddress());//need to decide on names or not
             return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
         } catch (RollbackException e) {
