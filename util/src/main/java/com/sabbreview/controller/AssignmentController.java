@@ -8,6 +8,7 @@ import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
+import java.util.List;
 
 public class AssignmentController extends Controller {
 
@@ -47,7 +48,6 @@ public class AssignmentController extends Controller {
      * @return A transactionState containing the acceptanceState
      */
     public static TransactionState<AcceptanceState> getAcceptanceState(String principle, String assignmentID) {
-        Assignment assignment;
         try {
             em.getTransaction().begin();
 
@@ -71,7 +71,6 @@ public class AssignmentController extends Controller {
      * @param acceptanceState The acceptanceState to set.
      */
     public static TransactionState<AcceptanceState> setAcceptanceState(String principle, String assignmentID, AcceptanceState acceptanceState) {
-        Assignment assignment;
         try {
             em.getTransaction().begin();
 
@@ -88,6 +87,56 @@ public class AssignmentController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
+
+
+    /**
+     * Retrieves an application from an assignment
+     * @param principle The user's principle (email address)
+     * @param assignmentID The assignment containing the application.
+     * @return The application assigned.
+     */
+    public static TransactionState<Application> getAssignmentApplication(String principle, String assignmentID) {
+        try {
+            em.getTransaction().begin();
+
+            Application application = em.createNamedQuery("set-assignment-application-acceptance-state", Application.class)
+                    .setParameter("assignmentId", assignmentID)
+                    .setParameter("principle", principle)
+                    .getSingleResult();
+
+            em.getTransaction().commit();
+            return new TransactionState<Application>(application, TransactionStatus.STATUS_OK);
+        } catch (RollbackException e) {
+            rollback();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
+    }
+
+    /**
+     * Retrieves an application from an assignment
+     * @param principle The user's principle (email address)
+     * @param assignmentID The assignment containing the application.
+     * @return The application assigned.
+     */
+    public static TransactionState<List<Assignment>> getAssignedApplications(String principle, String assignmentID) {
+        try {
+            em.getTransaction().begin();
+
+            List<Assignment> assignments = em.createNamedQuery("get-all-assignments-for-user", Assignment.class)
+                    .setParameter("principle", principle)
+                    .getResultList();
+
+            em.getTransaction().commit();
+            return new TransactionState<List<Assignment>>(assignments, TransactionStatus.STATUS_OK);
+        } catch (RollbackException e) {
+            rollback();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
+    }
+
+
+
+
 
 
 }
