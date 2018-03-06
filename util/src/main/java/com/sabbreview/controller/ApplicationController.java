@@ -90,30 +90,6 @@ public class ApplicationController extends Controller {
     }
   }
 
-
-  public static TransactionState<Application> setAcceptanceState(String principle,
-      String applicationID, String acceptanceStateString) {
-    try {
-      AcceptanceState acceptanceState =
-          AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
-      em.getTransaction().begin();
-      Application application = em.find(Application.class, applicationID);
-      application.setState(acceptanceState);
-      em.merge(application); //need to iterate through user, find acc state, and change
-      em.flush();
-      em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
-    } catch (IllegalArgumentException e) {
-      rollback();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
-          "Invalid Acceptance State");
-    } catch (Exception e) {
-      rollback();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    }
-  }
-
-
   public static TransactionState<Application> useTemplate(String principle, String templateid,
       String departmentid) {
     try {
@@ -151,6 +127,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
 
   public static TransactionState<FieldInstance> changeFieldValue(String principle,
       String fieldInstanceId, FieldInstanceValue value) {
@@ -195,7 +172,6 @@ public class ApplicationController extends Controller {
 
   public class FieldInstanceValue {
     String value;
-
     public String getValue() {
       return value;
     }
