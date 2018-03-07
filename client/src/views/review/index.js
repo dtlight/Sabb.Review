@@ -2,7 +2,7 @@ import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { resetIdCounter } from 'react-tabs';
-import {  ApplicationList } from '../../components/review/'
+import {  ApplicationList } from '../../components/home/'
 import { Row } from 'reactstrap';
 
 export default class extends React.Component {

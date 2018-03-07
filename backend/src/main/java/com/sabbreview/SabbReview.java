@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.ApplicationAdapter;
+import com.sabbreview.adapters.AssignmentAdapter;
 import com.sabbreview.adapters.FieldAdapter;
 import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
@@ -15,10 +16,12 @@ import com.sabbreview.endpoints.ApplicationEndpoint;
 import com.sabbreview.endpoints.AssignmentEndpoint;
 import com.sabbreview.endpoints.DepartmentEndpoint;
 import com.sabbreview.endpoints.FieldEndpoint;
+import com.sabbreview.endpoints.PDFGeneratorEndpoint;
 import com.sabbreview.endpoints.RoleEndpoint;
 import com.sabbreview.endpoints.TemplateEndpoint;
 import com.sabbreview.endpoints.UserEndpoint;
 import com.sabbreview.model.Application;
+import com.sabbreview.model.Assignment;
 import com.sabbreview.model.Field;
 import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
@@ -54,7 +57,7 @@ public class SabbReview {
     FieldEndpoint.attach();
     TemplateEndpoint.attach();
     AssignmentEndpoint.attach();
-    //PDFGeneratorController.attach();
+    PDFGeneratorEndpoint.attach();
 
     options("*", (req, res) -> "");
 
@@ -76,6 +79,8 @@ public class SabbReview {
     gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
     gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
     gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
+    gsonBuilder.registerTypeAdapter(Assignment.class, new AssignmentAdapter());
+
     return gsonBuilder.create();
   }
 
@@ -88,7 +93,7 @@ public class SabbReview {
     } else {
       try {
         String jwtString = token.split("Bearer ")[1];
-        Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
+        Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY")) ;
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("sabbreview").build();
         DecodedJWT decodedJWT = verifier.verify(jwtString);
         req.attribute("isAuthenticated", true);

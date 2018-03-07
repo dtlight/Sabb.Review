@@ -41,6 +41,7 @@
     "react-dev-utils": "^5.0.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
+    "react-signature-canvas": "^0.2.4",
     "react-tabs": "^2.2.1",
     "reactstrap": "^5.0.0-alpha.4",
     "sass": "^1.0.0-beta.4",

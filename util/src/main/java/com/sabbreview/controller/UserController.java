@@ -128,7 +128,7 @@ public class UserController extends Controller {
       TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery("get-all-assignments-for-user", Assignment.class);
       assignmentTypedQuery.setParameter("owner", principle);
       List<Assignment> assignmentList = assignmentTypedQuery.getResultList();
-      return new TransactionState(assignmentList, TransactionStatus.STATUS_OK);
+      return new TransactionState<>(assignmentList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       e.printStackTrace();
       rollback();

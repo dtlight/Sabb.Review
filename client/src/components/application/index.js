@@ -1,7 +1,9 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input} from 'reactstrap';
+import {Input, Button} from 'reactstrap';
+import SignatureCanvas from 'react-signature-canvas'
+import {AssignReview} from '../review/'
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -111,6 +113,39 @@ export class CreateApplication extends React.Component {
     }
 }
 
+export class ApplicationAdminButtons extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+
+        }
+        this.submitApplication = this.submitApplication.bind(this);
+
+    }
+
+    submitApplication() {
+        axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
+                if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
+        })
+    }
+    render() {
+        return (<div style={{
+            "padding": "20px",
+            "marginBottom": "20px",
+            "position": "-webkit-sticky",
+            "position": "sticky",
+            "height": "80px",
+            "top": "0em"}} class="bg-light">
+
+            <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
+            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
+
+        </div>);
+    }
+}
+
 export class EditApplication extends React.Component {
   constructor(props) {
     super(props);
@@ -119,40 +154,35 @@ export class EditApplication extends React.Component {
       fieldInstances: [],
       isLoading: true,
       isError: false,
-      isEditable: false
+      isEditable: false,
+        currentState: ""
     }
-    this.submitApplication = this.submitApplication.bind(this);
-    this.onStateChange = this.onStateChange.bind(this);
+    this.load = this.load.bind(this);
   }
+    componentWillReceiveProps() {
+        this.load();
+    }
+    componentDidMount() {
+        this.load();
+    }
 
-  componentDidMount() {
-    axios.get(`/application/${this.props.id}`).then(({data})=> {
-      this.setState((state) => {
-        if(data.state === "STATUS_ERROR") {
-          state.isError = true
-        } else {
-          state.isEditable = (data.value.state === "PENDING");
-          for(var fieldInstance of data.value.fields) {
-            state.fieldInstances.push(fieldInstance);
-          }
-          state.isLoading = false;
-        }
-        return state;
-      })
-    })
-  }
-
-  onStateChange(newState) {
-    this.setState({
-      isEditable: (newState === "PENDING")
-    })
-  }
-  submitApplication() {//http://{{host}}/application/4/state/accepted
-    axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
-      this.onStateChange("SUBMITTED");
-    })
-  }
-
+    load() {
+        axios.get(`/application/${this.props.id}`).then(({data})=> {
+            this.setState((state) => {
+                state.currentState = data.value.state;
+                if(data.state === "STATUS_ERROR") {
+                    state.isError = true
+                } else {
+                    state.isEditable = (data.value.state === "PENDING");
+                    for(var fieldInstance of data.value.fields) {
+                        state.fieldInstances.push(fieldInstance);
+                    }
+                    state.isLoading = false;
+                }
+                return state;
+            })
+        })
+    }
   render() {
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
@@ -165,14 +195,22 @@ export class EditApplication extends React.Component {
     } else if(this.state.fieldInstances) {
       let fieldInstances = [];
       for (var fieldInstance of this.state.fieldInstances) {
-          fieldInstances.push(<FieldInstance value={fieldInstance.value} fieldInstance={fieldInstance}/>);
+          if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
+              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
+          } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
+              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
+          }
       }
       return (
           <form>
             {fieldInstances}
 
-            <div class="form-group">
-              <input type="button" class="btn btn-primary" value="Submit for Review" style={{"marginRight": "10px"}} onClick={this.submitApplication}/>
+            <div className={"bg-light"}>
+                <div class="form-group" style={{"padding": "10px"}}>
+                    <p class="lead">Please draw your signature in the box below</p>
+                <SignatureCanvas penColor='#252f3c'
+                                 canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
+                </div>
             </div>
         </form>
         );
@@ -191,32 +229,30 @@ class FieldInstance extends React.Component {
   }
 
   updateValue(value) {
-    axios.put(`/fieldinstance/${this.props.fieldInstance.id}`, {value: this.state.value}).then(function(data) {
+    axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
       console.log(data);
     });
   }
 
     render() {
-    //Assume multichoice to starts
-    console.log(this.props.fieldInstance);
 
     var inner = "";
-    if(this.props.fieldInstance.field.type === "DIVIDER") {
-      return <div><hr /><p class="lead">{this.props.fieldInstance.field.title}</p></div>
-    } else if(this.props.fieldInstance.field.type === "MULTICHOICE") {
+    if(this.props.field.type === "DIVIDER") {
+      return <div><hr /><p class="lead">{this.props.field.title}</p></div>
+    } else if(this.props.field.type === "MULTICHOICE") {
       let options = [];
-      for (let option of this.props.fieldInstance.field.fieldOptions) {
+      for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
 
-    } else if(this.props.fieldInstance.field.type === "SINGLECHOICE") {
+    } else if(this.props.field.type === "SINGLECHOICE") {
       let options = [];
-      for (let option of this.props.fieldInstance.field.fieldOptions) {
+      for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <Input type="select"> {options} </Input>;
-    } else if(this.props.fieldInstance.field.type === "LONGTEXT") {
+    } else if(this.props.field.type === "LONGTEXT") {
       inner = <Input type="textarea"
                      value={this.state.value}
                      onChange={(e) => {
@@ -238,7 +274,7 @@ class FieldInstance extends React.Component {
     }
 
     return ( <div class="form-group" style={{"paddingBottom": "10px"}}>
-              <label>{this.props.fieldInstance.field.title}</label>
+              <label>{this.props.field.title}</label>
               {inner}
             </div>)
 
