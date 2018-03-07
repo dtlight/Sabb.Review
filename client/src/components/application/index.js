@@ -171,6 +171,9 @@ export class ApplicationAdminButtons extends React.Component {
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
+            <ChangeState const options ={
+                "one", 'two', 'three'
+            }> Change State </ChangeState>
 
         </div>);
     }
