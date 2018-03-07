@@ -63,7 +63,17 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-
+  public static TransactionState<List> getAssignments(String principle,
+      String applicationID) {
+    try {
+      List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+      return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
   public static TransactionState<Application> getApplication(String applicationID) {
     try {
       Application application;
@@ -116,13 +126,15 @@ public class ApplicationController extends Controller {
       application.setState(AcceptanceState.PENDING);
 
       List<Field> fieldList = template.fieldList;
-
-      for (Field field : fieldList) {
-        System.out.println(field);
-        FieldInstance fieldInstance = new FieldInstance(field);
-        em.persist(fieldInstance);
-        application.addFieldInstance(fieldInstance);
+      if(fieldList  != null) {
+        for (Field field : fieldList) {
+          System.out.println(field);
+          FieldInstance fieldInstance = new FieldInstance(field);
+          em.persist(fieldInstance);
+          application.addFieldInstance(fieldInstance);
+        }
       }
+
       em.persist(application);
       em.merge(application);
       em.merge(user);

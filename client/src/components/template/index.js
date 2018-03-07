@@ -20,6 +20,7 @@ import {ListGroup,
    Badge,
     Label} from 'reactstrap';
 import axios from 'axios';
+import {DepartmentList} from "../department/index.js";
 
 let questionTypes = {
     "TEXT": {
@@ -347,36 +348,35 @@ export class AssignTemplate extends React.Component {
     });
   }
   render() {
-    let before;
-    if(this.props.assigned){
-      before = <Input placeholder="Assignee" />;
-    } else {
-      before = "";
-    }
-    return (
-      <div className={this.props.className}>
-        <Modal isOpen={this.state.modal} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}>{this.props.children}</ModalHeader>
-          <ModalBody>
-            <FormGroup>
-              <label>Assignee</label>
-              <Input onChange={(e) => {
-                this.setState({
-                  assignee: e.target.value
-                })
-              }} value={this.state.assignee} />
-            </FormGroup>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.create}>Assign Appraisal Template</Button>
-          </ModalFooter>
-        </Modal>
-        <Button color="dark" onClick={this.toggle}>{this.props.children}</Button>
-      </div>
-    )
+      let before;
+      if (this.props.assigned) {
+          before = <Input placeholder="Assignee"/>;
+      } else {
+          before = "";
+      }
+      return (
+          <div className={this.props.className}>
+              <Modal isOpen={this.state.modal} toggle={this.toggle}>
+                  <ModalHeader toggle={this.toggle}>{this.props.children}</ModalHeader>
+                  <ModalBody>
+                      <FormGroup>
+                          <label>Assignee</label>
+                          <Input onChange={(e) => {
+                              this.setState({
+                                  assignee: e.target.value
+                              })
+                          }} value={this.state.assignee}/>
+                      </FormGroup>
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button color="primary" onClick={this.create}>Assign Appraisal
+                          Template</Button>
+                  </ModalFooter>
+              </Modal>
+              <Button color="dark" onClick={this.toggle}>{this.props.children}</Button>
+          </div>
+      )
   }
-
-
 }
 
 export class TemplateTable extends React.Component {
@@ -403,9 +403,82 @@ export class TemplateTable extends React.Component {
             <td>Main Template <Badge color="secondary">Default</Badge></td>
             <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link to="./1"><Button color="secondary">Edit Template</Button></Link></ButtonGroup></td>
           </tr>
-
+            <CreateTemplate />
         </tbody>
       </Table>
     )
   }
+}
+
+export class CreateTemplate extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+            name: "",
+            deptID: -1,
+            newid: -1
+        };
+        this.toggle = this.toggle.bind(this);
+        this.create = this.create.bind(this);
+    }
+
+    create() {
+        axios.post(`/template/${this.state.name}/department/${this.state.deptID}`)
+            .then(function (response) {
+                if(response.data.state !== "STATUS_ERROR") {
+                    this.setState({
+                        isSuccess: true,
+                        isCreating: false,
+                        newid: response.data.value.id
+                    })
+                } else {
+                    this.setState({
+                        isError: true,
+                        isCreating: false
+                    })
+                }
+
+            }.bind(this))
+    }
+    toggle() {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
+    render() {
+        if(this.state.isSuccess) {
+            return (<Redirect to={`/admin/template/${this.state.newid}`}/>);
+        } else {
+            return (
+                <div className={this.props.className}>
+                    <Modal isOpen={this.state.modal} toggle={this.toggle}>
+                        <ModalHeader toggle={this.toggle}>Create Template</ModalHeader>
+                        <ModalBody>
+                            <FormGroup>
+                                <label>Template Name</label>
+                                <Input onChange={(e) => {
+                                    this.setState({
+                                        name: e.target.value
+                                    })
+                                }} value={this.state.name}/>
+                            </FormGroup>
+                            <FormGroup>
+                                <label>Department</label>
+                                <DepartmentList selectDepartment={(d)=>{
+                                    this.setState({
+                                        deptID: d
+                                    });
+                                }}/>
+                            </FormGroup>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={this.create}>Create Template</Button>
+                        </ModalFooter>
+                    </Modal>
+                    <Button color="dark" onClick={this.toggle}>Create Template</Button>
+                </div>
+            )
+        }
+    }
 }
