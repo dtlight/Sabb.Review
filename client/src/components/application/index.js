@@ -157,6 +157,30 @@ export class ApplicationAdminButtons extends React.Component {
                 if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
         })
     }
+
+    setPending() {
+        axios.put(`/application/${this.props.id}/state/PENDING`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange("PENDING");
+        })
+    }
+
+    setAccepted() {
+        axios.put(`/application/${this.props.id}/state/ACCEPTED`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange("ACCEPTED");
+        })
+    }
+
+    setRefused() {
+        axios.put(`/application/${this.props.id}/state/REFUSED`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange("REFUSED");
+        })
+    }
+
+    setCompleted() {
+        axios.put(`/application/${this.props.id}/state/COMPLETED`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange("COMPLETED");
+        })
+    }
     render() {
         return (<div style={{
             "padding": "20px",
@@ -171,13 +195,22 @@ export class ApplicationAdminButtons extends React.Component {
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
-            <DropdownButton>
-                <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> PENDING </Button>
-                <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> SUBMITTED </Button>
-                <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> ACCEPTED </Button>
-                <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> REFUSED </Button>
-                <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> COMPLETED </Button>
-            </DropdownButton>
+            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                <DropdownToggle caret>
+                    Change State
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Pending </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Submitted </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Accepted </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Refused </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Completed </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
 
         </div>);
     }
