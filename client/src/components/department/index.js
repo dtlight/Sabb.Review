@@ -1,23 +1,55 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Card, Badge, CardText, CardBody,
-  CardTitle, CardSubtitle, Button, Row } from 'reactstrap';
 import axios from 'axios';
 
+export class DepartmentList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+            isError: false,
+            isSuccess: false,
+            isLoading: true,
+            isCreating: false,
+            selectedDepartment: -1,
+            selectedTemplate: -1,
+            departmentList: [],
+            templateList:[]
+        };
+        this.loadDepartments = this.loadDepartments.bind(this);
+    }
+    componentWillMount() {
+        this.loadDepartments();
+    }
 
-export class DepartmentInfo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.props = props;
-  }
+    loadDepartments() {
+        axios.get("/departments").then(({data})=> {
+            if(this.props.onLoaded) this.props.onLoaded();
+            this.setState({
+                isLoading: false,
+                departmentList: data.value,
+                selectedDepartment: (!data.value[0])?-1:data.value[0][0]
+            });
+            this.props.selectDepartment((!data.value[0])?-1:data.value[0][0]);
 
-  toggle() {
-  
-  }
+        })
+    }
 
-  render() {
-    return (
 
-    );
-  }
+    render() {
+        let departmentList = [];
+
+        for (let i = 0; i < this.state.departmentList.length; i++) {
+            const department = this.state.departmentList[i];
+            departmentList.push(
+                <option value={department[0]}>{department[1]}</option>
+            )
+        }
+        return (
+            <select class="form-control" onChange={(e) => {
+                this.props.selectDepartment(e.target.value);
+            }}>
+                {departmentList}
+            </select>
+        )
+    }
 }

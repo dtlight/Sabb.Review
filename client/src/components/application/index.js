@@ -1,9 +1,9 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input, Button} from 'reactstrap';
+import {Input, Button, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
-import {AssignReview} from '../review/'
+import {AssignReview, ViewReviews} from '../review/'
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -15,17 +15,20 @@ export class CreateApplication extends React.Component {
       isLoading: true,
       isCreating: false,
       selectedDepartment: -1,
-      departmentList: []
+        selectedTemplate: -1,
+      departmentList: [],
+        templateList:[]
     }
     this.loadDepartments = this.loadDepartments.bind(this);
     this.createApplication = this.createApplication.bind(this);
     this.selectDepartment = this.selectDepartment.bind(this);
+    this.selectTemplate = this.selectTemplate.bind(this);
   }
   createApplication() {
       this.setState({
         isCreating: true
       })
-      axios.post(`/application/template/1/department/${this.state.selectedDepartment}`)
+      axios.post(`/application/template/${this.state.selectedTemplate}/department/${this.state.selectedDepartment}`)
         .then(function (response) {
           if(response.data.state !== "STATUS_ERROR") {
             this.setState({
@@ -54,14 +57,25 @@ export class CreateApplication extends React.Component {
           departmentList: data.value,
           selectedDepartment: (!data.value[0])?-1:data.value[0][0]
         });
+        this.selectDepartment((!data.value[0])?-1:data.value[0][0]);
       })
     }
 
   selectDepartment(id) {
-    this.setState({
-      selectedDepartment: id
-    })
+      axios.get(`/department/${id}/templates`).then(({data})=> {
+          this.setState({
+              templateList: data.value,
+              selectedDepartment: id
+          });
+      })
   }
+
+    selectTemplate(id) {
+      console.log(id)
+            this.setState({
+                selectedTemplate: id
+            });
+    }
 
   render() {
     if(this.state.isLoading) {
@@ -77,10 +91,15 @@ export class CreateApplication extends React.Component {
           )
         }
 
-        for (let department in this.state.departmentList) {
-          console.log(department);
+        var templateList = [];
 
+        for (var i = 0; i < this.state.templateList.length; i++) {
+            var template = this.state.templateList[i];
+            templateList.push(
+                <option value={template[0]}>{template[1]}</option>
+            )
         }
+
           var buttonContent = (this.state.isCreating)?<i class="fa fa-refresh fa-spin"></i>:"Start Application";
            if(this.state.isSuccess) {
             return (
@@ -90,14 +109,24 @@ export class CreateApplication extends React.Component {
             return (
               <div>
                   <div class="form-group">
-                      <label>Current Department</label>
+                      <label>Select Department</label>
                       <select class="form-control" onChange={(e) => {
                         this.selectDepartment(e.target.value);
                       }}>
                         {departmentList}
                       </select>
                 </div>
-
+                      <div class="form-group">
+                          <label>Select Template</label>
+                          <select class="form-control" onChange={(e) => {
+                              console.log(e)
+                              this.selectTemplate(e.target.value);
+                          }}
+                          disabled={templateList.length===0}>
+                              <option>--</option>
+                              {templateList}
+                          </select>
+                      </div>
                 <p>
                   You are applying for the <strong>2017-18</strong> academic year.
                 </p>
@@ -136,11 +165,13 @@ export class ApplicationAdminButtons extends React.Component {
             "position": "-webkit-sticky",
             "position": "sticky",
             "height": "80px",
-            "top": "0em"}} class="bg-light">
+            "top": "0em",
+            "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
+            <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
 
         </div>);
     }
@@ -158,6 +189,7 @@ export class EditApplication extends React.Component {
         currentState: ""
     }
     this.load = this.load.bind(this);
+    this.getInstances = this.getInstances.bind(this);
   }
     componentWillReceiveProps() {
         this.load();
@@ -169,10 +201,11 @@ export class EditApplication extends React.Component {
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
             this.setState((state) => {
-                state.currentState = data.value.state;
+                state.fieldInstances = [];
                 if(data.state === "STATUS_ERROR") {
                     state.isError = true
                 } else {
+                    state.currentState = data.value.state;
                     state.isEditable = (data.value.state === "PENDING");
                     for(var fieldInstance of data.value.fields) {
                         state.fieldInstances.push(fieldInstance);
@@ -183,6 +216,17 @@ export class EditApplication extends React.Component {
             })
         })
     }
+    getInstances(ro = false) {
+        let fieldInstances = [];
+        for (var fieldInstance of this.state.fieldInstances) {
+            if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
+                fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
+            } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
+                fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
+            }
+        }
+        return fieldInstances;
+    }
   render() {
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
@@ -191,23 +235,21 @@ export class EditApplication extends React.Component {
     } else if(this.state.isLoading) {
       return <div class="loader">Loading...</div>;
     } else if(!this.state.isEditable) {
-      return (<p>This application has been submitted</p>)
+      return (<div>
+          <Alert color="secondary">
+              This application has been submitted.
+          </Alert>
+          {this.getInstances(true)}
+      </div>)
     } else if(this.state.fieldInstances) {
-      let fieldInstances = [];
-      for (var fieldInstance of this.state.fieldInstances) {
-          if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
-              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
-          } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
-              fieldInstances.push(<FieldInstance {...fieldInstance}/>);
-          }
-      }
+
       return (
           <form>
-            {fieldInstances}
+              {this.getInstances()}
 
             <div className={"bg-light"}>
                 <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the box below</p>
+                    <p class="lead">Please draw your signature in the area below</p>
                 <SignatureCanvas penColor='#252f3c'
                                  canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
                 </div>
@@ -242,18 +284,25 @@ class FieldInstance extends React.Component {
     } else if(this.props.field.type === "MULTICHOICE") {
       let options = [];
       for (let option of this.props.field.fieldOptions) {
-          options.push(<option value={option.id}>{option.title}</option>);
+          options.push(<option value={option.id} disabled={this.props.disabled}>{option.title}</option>);
       }
       inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
 
     } else if(this.props.field.type === "SINGLECHOICE") {
       let options = [];
       for (let option of this.props.field.fieldOptions) {
-          options.push(<option value={option.id}>{option.title}</option>);
+          options.push(<option selected={(this.state.value === option.id)} value={option.id}>{option.title}</option>);
       }
-      inner = <Input type="select"> {options} </Input>;
+      inner = <Input type="select" disabled={this.props.disabled}
+                     onChange={(e) => {
+                          this.setState({
+                              value: e.target.value
+                          });
+                         this.updateValue();
+                      }}> {options} </Input>;
     } else if(this.props.field.type === "LONGTEXT") {
       inner = <Input type="textarea"
+                     disabled={this.props.disabled}
                      value={this.state.value}
                      onChange={(e) => {
                          this.setState({
@@ -263,13 +312,14 @@ class FieldInstance extends React.Component {
                      onBlur={this.updateValue}/>;
     } else {
       inner = <Input
-        value={this.state.value}
-        onChange={(e) => {
-          this.setState({
-            value: e.target.value
-          })
-        }}
-        onBlur={this.updateValue} />
+            disabled={this.props.disabled}
+            value={this.state.value}
+            onChange={(e) => {
+                this.setState({
+                   value: e.target.value
+                  })
+            }}
+            onBlur={this.updateValue} />
 
     }
 

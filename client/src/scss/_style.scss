@@ -18,6 +18,11 @@
 .loader:after {
   border-radius: 50%;
 }
+
+.card-link-custom>div:hover {
+  background-color: $light !important;
+}
+
 .loader {
   color: $holloway_orange;
   font-size: 11px;

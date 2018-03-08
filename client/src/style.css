@@ -35,3 +35,8 @@ body {
 .fa {
   padding-right: 5px;
 }
+
+.card {
+  box-shadow: 5px 6px 18px 0px #262f3d26;
+}
+

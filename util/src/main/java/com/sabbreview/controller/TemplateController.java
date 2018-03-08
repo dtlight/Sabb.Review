@@ -1,5 +1,6 @@
 package com.sabbreview.controller;
 
+import com.sabbreview.model.Department;
 import com.sabbreview.model.Field;
 import com.sabbreview.model.Template;
 import com.sabbreview.responses.TransactionState;
@@ -11,13 +12,17 @@ import javax.persistence.RollbackException;
 
 public class TemplateController extends Controller {
 
-  public static TransactionState<Template> createTemplate(String principle, Template template) {
+  public static TransactionState<Template> createTemplate(String principle, String name, String departmentId) {
     try {
       em.getTransaction().begin();
+      Department department = em.find(Department.class, departmentId);
+      Template template = new Template();
+      template.setName(name);
+      template.setDepartment(department);
       em.persist(template);
       em.getTransaction().commit();
       return new TransactionState<>(template, TransactionStatus.STATUS_OK, "Template created");
-    } catch (RollbackException e) {
+    } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
