@@ -20,6 +20,10 @@ export default class Register extends React.Component {
       this.register = this.register.bind(this);
   }
 
+    componentDidMount () {
+        this.email.focus()
+    }
+
   register() {
     this.setState({
       isError: false,
@@ -91,7 +95,9 @@ export default class Register extends React.Component {
                         emailAddress: e.target.value
                       })
                     }}
-                    value={this.state.emailAddress} />
+                         innerRef={el => this.email = el}
+
+                         value={this.state.emailAddress} />
                   <hr />
                   <Input type="password"
                       class="form-control form-control-lg"
