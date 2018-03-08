@@ -169,7 +169,7 @@ export class ApplicationAdminButtons extends React.Component {
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
-            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
 
