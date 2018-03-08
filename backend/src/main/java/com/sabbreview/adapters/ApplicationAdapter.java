@@ -21,18 +21,20 @@ public class ApplicationAdapter implements JsonSerializer<Application> {
     jsonObject.addProperty("department", src.getDepartment().getName());
 
     JsonArray fields = new JsonArray();
-    for (FieldInstance fieldInstances : src.getFields()) {
-      Field field = fieldInstances.getField();
+
+    for (FieldInstance fieldInstance : src.getFields()) {
+      Field field = fieldInstance.getField();
 
       JsonObject fieldInstanceObject = new JsonObject();
-      fieldInstanceObject.addProperty("id", fieldInstances.getId());
-      fieldInstanceObject.addProperty("value", fieldInstances.getValue());
+      fieldInstanceObject.addProperty("id", fieldInstance.getId());
+      fieldInstanceObject.addProperty("value", fieldInstance.getValue());
       fieldInstanceObject.add("field", context.serialize(field));
+      fieldInstanceObject.add("selected", context.serialize(fieldInstance.getSelected()));
+
       fields.add(fieldInstanceObject);
     }
 
     jsonObject.add("fields", fields);
-    //jsonObject.add("applicant", );*/
 
     return jsonObject;
   }

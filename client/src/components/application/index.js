@@ -265,16 +265,32 @@ class FieldInstance extends React.Component {
     super(props);
     this.props = props;
     this.state = {
-      value: props.value
+        value: props.value,
+        selected: props.selected
     }
     this.updateValue = this.updateValue.bind(this);
+    this.updateSingleSelected = this.updateSingleSelected.bind(this);
   }
 
-  updateValue(value) {
-    axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
-      console.log(data);
-    });
+  updateValue() {
+      axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
+          console.log(data);
+      });
   }
+
+
+    updateSingleSelected(select) {
+        axios.put(`/fieldinstance/${this.props.id}`, {value: select}).then(function(data) {
+            console.log(data);
+        }.bind(this));
+    }
+
+    updateMultipleSelected(select) {
+
+        axios.put(`/fieldinstance/${this.props.id}`, {value: select}).then(function(data) {
+            console.log(data);
+        }.bind(this));
+    }
 
     render() {
 
@@ -286,20 +302,24 @@ class FieldInstance extends React.Component {
       for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id} disabled={this.props.disabled}>{option.title}</option>);
       }
-      inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
+      inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p>
+          <Input type="select" multiple onChange={(e) => {
+              console.log(e.target.options)
+          }}> {options} </Input></span>;
 
     } else if(this.props.field.type === "SINGLECHOICE") {
       let options = [];
       for (let option of this.props.field.fieldOptions) {
-          options.push(<option selected={(this.state.value === option.id)} value={option.id}>{option.title}</option>);
+
+          options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <Input type="select" disabled={this.props.disabled}
+                     defaultValue={(this.state.selected)?this.state.selected[0].id:undefined}
                      onChange={(e) => {
-                          this.setState({
-                              value: e.target.value
-                          });
-                         this.updateValue();
-                      }}> {options} </Input>;
+                         this.updateSingleSelected(e.target.value)
+                     }}> {options} </Input>;
+
+
     } else if(this.props.field.type === "LONGTEXT") {
       inner = <Input type="textarea"
                      disabled={this.props.disabled}

@@ -13,7 +13,6 @@ import javax.persistence.Id;
   int id;
 
   String title;
-  boolean selected;
 
   public FieldOption() {}
 
@@ -35,17 +34,8 @@ import javax.persistence.Id;
     return this;
   }
 
-  public boolean isSelected() {
-    return selected;
-  }
-
-  public FieldOption setSelected(boolean selected) {
-    this.selected = selected;
-    return this;
-  }
-
   @Override public String toString() {
-    return "FieldOption{" + "id=" + id + ", title='" + title + '\'' + ", selected=" + selected
+    return "FieldOption{" + "id=" + id + ", title='" + title + '\''
         + '}';
   }
 }

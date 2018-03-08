@@ -187,7 +187,7 @@ export class AssignmentCard extends React.Component {
         return (
             <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.props.status].colours} bg-light`}>
                 <CardBody>
-                    <CardTitle><h5>Review for {this.props.assignee} <Badge color={applicationStates[this.props.status].colours}>{applicationStates[this.props.status].humanStatus}</Badge></h5></CardTitle>
+                    <CardTitle><h5>Review for {this.props.applicant} <Badge color={applicationStates[this.props.status].colours}>{applicationStates[this.props.status].humanStatus}</Badge></h5></CardTitle>
                     <CardSubtitle className="mb-2 text-muted">{this.props.application.department} Dept.</CardSubtitle>
                     <CardText>{applicationStates[this.props.status].body}</CardText>
                     <div class={(applicationStates[this.props.status].buttonsVisible)?"visible":"invisible"}>
@@ -232,7 +232,7 @@ export class AssignmentList extends React.Component {
             let applicationListView = [];
             for (let assignment of this.state.assignmentList) {
                 applicationListView.push(
-                        <AssignmentCard id={assignment.id} status={assignment.state} assignee={assignment.assignee} application={assignment.application} onChange={this.load}/>
+                        <AssignmentCard id={assignment.id} status={assignment.state} assignee={assignment.assignee} applicant={assignment.applicant} application={assignment.application} onChange={this.load}/>
                 )
             }
             return (
