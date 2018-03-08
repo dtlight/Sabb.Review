@@ -200,15 +200,15 @@ export class ApplicationAdminButtons extends React.Component {
                     Change State
                 </DropdownToggle>
                 <DropdownMenu>
-                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Pending </DropdownItem>
+                    <DropdownItem onClick={this.setPending}><i class="fa fa-save"></i> Pending </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Submitted </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Accepted </DropdownItem>
+                    <DropdownItem onClick={this.setAccepted}><i class="fa fa-save"></i> Accepted </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Refused </DropdownItem>
+                    <DropdownItem onClick={this.setRefused}><i class="fa fa-save"></i> Refused </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Completed </DropdownItem>
+                    <DropdownItem onClick={this.setCompleted}><i class="fa fa-save"></i> Completed </DropdownItem>
                 </DropdownMenu>
             </Dropdown>
 
