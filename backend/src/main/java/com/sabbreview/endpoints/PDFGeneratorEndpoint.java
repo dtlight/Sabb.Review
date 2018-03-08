@@ -72,7 +72,11 @@ public class PDFGeneratorEndpoint {
 
                 fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
                 fieldContentStream.newLine();
-                fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
+                if(fieldInstance.getField().getType().toString().contains("text")) {
+                    fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
+                } else {
+                    fieldContentStream.showText("Answer: "+ fieldInstance.getSelected());
+                }
 
                 fieldContentStream.newLine();
             }

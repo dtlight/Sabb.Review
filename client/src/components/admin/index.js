@@ -9,21 +9,31 @@ export class DepartmentList extends React.Component {
     this.state = {
       departments: [],
     };
+      this.loadDepartments = this.loadDepartments.bind(this);
   }
 
   componentWillMount() {
-    axios.get("/departments").then(({data}) => {
-      if(data.state === "STATUS_OK") {
-        this.setState(prevState => {
-          return {
-            departments: data.value
-          }
-        })
-      }
-    });
+      this.loadDepartments();
+
   }
 
-  render() {
+  loadDepartments() {
+      axios.get("/departments").then(({data}) => {
+          if(data.state === "STATUS_OK") {
+              this.setState(prevState => {
+                  return {
+                      departments: data.value
+                  }
+              })
+          }
+      });
+  }
+    componentWillReceiveProps() {
+        this.loadDepartments();
+    }
+
+
+    render() {
     let departments = [];
     for(let v of this.state.departments) {
       departments.push(
