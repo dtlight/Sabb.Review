@@ -314,7 +314,7 @@ class FieldInstance extends React.Component {
           options.push(<option value={option.id}>{option.title}</option>);
       }
       inner = <Input type="select" disabled={this.props.disabled}
-                     defaultValue={(this.state.selected)?this.state.selected[0].id:undefined}
+                     defaultValue={(this.state.selected && this.state.selected[0])?this.state.selected[0].id:undefined}
                      onChange={(e) => {
                          this.updateSingleSelected(e.target.value)
                      }}> {options} </Input>;

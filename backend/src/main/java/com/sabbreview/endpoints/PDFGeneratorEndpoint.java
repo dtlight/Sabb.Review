@@ -33,20 +33,17 @@ public class PDFGeneratorEndpoint {
 
             PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
             contentStream.beginText();
-            contentStream.setFont(font, 12);
+            contentStream.setFont(font, 15);
             contentStream.setLeading(20f);
             contentStream.newLineAtOffset(25, 725);
             contentStream.showText("Application #"+application.getId());
+            contentStream.setFont(font, 12);
+            contentStream.newLine();
 
             contentStream.newLine();
-            contentStream.showText("Assignee: "+application.getApplicant());
+            contentStream.showText("Assignee: "+application.getApplicant().getEmailAddress());
             contentStream.newLine();
-                /*
-                contentStream.showText("Comments: " +application.getComments());
-                contentStream.newLine();
-                contentStream.showText("Due date: "+application.getDueDate());
-                contentStream.newLine();
-                */
+
             contentStream.showText("Current state: "+application.getState());
             contentStream.endText();
             contentStream.close();
@@ -64,20 +61,44 @@ public class PDFGeneratorEndpoint {
             fieldContentStream.setFont(font, 12);
             fieldContentStream.setLeading(20f);
             fieldContentStream.newLineAtOffset(25, 725);
+            fieldContentStream.setFont(font, 15);
             fieldContentStream.showText("Application Questions");
+            fieldContentStream.setFont(font, 12);
+            fieldContentStream.newLine();
             fieldContentStream.newLine();
 
             for (FieldInstance fieldInstance:
                 fields) {
 
-                fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
-                fieldContentStream.newLine();
-                if(fieldInstance.getField().getType().toString().contains("text")) {
-                    fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
-                } else {
-                    fieldContentStream.showText("Answer: "+ fieldInstance.getSelected());
-                }
+                switch (fieldInstance.getField().getType()) {
+                    case LONGTEXT:
+                        fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
+                        fieldContentStream.newLine();
+                        fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
+                        break;
+                    case TEXT:
+                        fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
+                        fieldContentStream.newLine();
+                        fieldContentStream.showText("Answer: "+ fieldInstance.getValue());
+                        break;
+                    case MULTICHOICE:
+                        fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
+                        fieldContentStream.newLine();
+                        fieldContentStream.showText("Answer: "+ fieldInstance.getSelected());
+                        break;
+                    case SINGLECHOICE:
+                        fieldContentStream.showText("Question: "+ fieldInstance.getField().getTitle());
+                        fieldContentStream.newLine();
+                        fieldContentStream.showText("Answer: "+ ((fieldInstance.getSelected() != null
+                            && fieldInstance.getSelected().size() > 0)?fieldInstance.getSelected().get(0).getTitle():""));
+                        break;
 
+                    case DIVIDER:
+                        fieldContentStream.newLine();
+                        fieldContentStream.showText("-> "+ fieldInstance.getField().getTitle());
+                        fieldContentStream.newLine();
+                        break;
+                }
                 fieldContentStream.newLine();
             }
             fieldContentStream.endText();
@@ -113,7 +134,7 @@ public class PDFGeneratorEndpoint {
             assignmentContentStream.newLine();
             assignmentContentStream.showText("Assignment #"+ assignment.getId()+" by "+ assignment.getAssignee().getEmailAddress());
             assignmentContentStream.setFont(font, 12);
-            assignmentContentStream.showText("Status: "+ assignment.getState());
+            assignmentContentStream.showText("  Status: "+ assignment.getState());
             assignmentContentStream.newLine();
         }
         assignmentContentStream.endText();

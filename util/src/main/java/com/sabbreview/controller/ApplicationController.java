@@ -168,6 +168,9 @@ public class ApplicationController extends Controller {
         case TEXT:
           fieldInstance.setValue(value.getValue());
           break;
+        case LONGTEXT:
+          fieldInstance.setValue(value.getValue());
+          break;
         case DATE:
           //TODO
           break;
