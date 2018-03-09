@@ -1,7 +1,7 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input, Button, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Alert} from 'reactstrap';
+import {Input, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
 import {AssignReview, ViewReviews} from '../review/'
 
@@ -146,9 +146,6 @@ export class ApplicationAdminButtons extends React.Component {
     constructor(props) {
         super(props);
         this.props = props;
-        this.state = {
-
-        }
         this.submitApplication = this.submitApplication.bind(this);
 
     }
@@ -156,12 +153,6 @@ export class ApplicationAdminButtons extends React.Component {
     submitApplication() {
         axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
                 if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
-        })
-    }
-
-    setState(selectState) {
-        axios.put(`/application/${this.props.id}/state/${selectState}`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange(selectState);
         })
     }
 
@@ -179,22 +170,7 @@ export class ApplicationAdminButtons extends React.Component {
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                <DropdownToggle caret>
-                    Change State
-                </DropdownToggle>
-                <DropdownMenu>
-                    <DropdownItem onClick={this.setState("PENDING")}><i class="fa fa-save"></i> Pending </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Submitted </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={this.setState("ACCEPTED")}><i class="fa fa-save"></i> Accepted </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={this.setState("REFUSED")}><i class="fa fa-save"></i> Refused </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={this.setState("COMPLETED")}><i class="fa fa-save"></i> Completed </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
+            <DropDownStates application={this.props.id} color="secondary" style={{"marginRight":"10px"}}> </DropDownStates>
 
         </div>);
     }
@@ -281,6 +257,41 @@ export class EditApplication extends React.Component {
         );
     }
   }
+}
+
+class DropDownStates extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    setState(selectState) {
+        axios.put(`/application/${this.props.application}/state/${selectState}`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange(selectState);
+        })
+    }
+
+    render() {
+        return (
+            <ButtonGroup justified>
+                <UncontrolledDropdown>
+                    <DropdownToggle caret>
+                        Change State
+                    </DropdownToggle>
+                    <DropdownMenu>
+                        <DropdownItem onClick={()=> this.setState("PENDING")}> Pending </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("SUBMITTED")}> Submitted </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("REFUSED")}> Refused </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
+                    </DropdownMenu>
+                </UncontrolledDropdown>
+            </ButtonGroup>
+        )
+    }
 }
 
 class FieldInstance extends React.Component {
