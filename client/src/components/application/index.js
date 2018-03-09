@@ -158,29 +158,12 @@ export class ApplicationAdminButtons extends React.Component {
         })
     }
 
-    setPending() {
-        axios.put(`/application/${this.props.id}/state/PENDING`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange("PENDING");
+    setState(selectState) {
+        axios.put(`/application/${this.props.id}/state/${selectState}`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange(selectState);
         })
     }
 
-    setAccepted() {
-        axios.put(`/application/${this.props.id}/state/ACCEPTED`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange("ACCEPTED");
-        })
-    }
-
-    setRefused() {
-        axios.put(`/application/${this.props.id}/state/REFUSED`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange("REFUSED");
-        })
-    }
-
-    setCompleted() {
-        axios.put(`/application/${this.props.id}/state/COMPLETED`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange("COMPLETED");
-        })
-    }
     render() {
         return (<div style={{
             "padding": "20px",
@@ -200,15 +183,15 @@ export class ApplicationAdminButtons extends React.Component {
                     Change State
                 </DropdownToggle>
                 <DropdownMenu>
-                    <DropdownItem onClick={this.setPending}><i class="fa fa-save"></i> Pending </DropdownItem>
+                    <DropdownItem onClick={this.setState("PENDING")}><i class="fa fa-save"></i> Pending </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem onClick={this.submitApplication}><i class="fa fa-save"></i> Submitted </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.setAccepted}><i class="fa fa-save"></i> Accepted </DropdownItem>
+                    <DropdownItem onClick={this.setState("ACCEPTED")}><i class="fa fa-save"></i> Accepted </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.setRefused}><i class="fa fa-save"></i> Refused </DropdownItem>
+                    <DropdownItem onClick={this.setState("REFUSED")}><i class="fa fa-save"></i> Refused </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={this.setCompleted}><i class="fa fa-save"></i> Completed </DropdownItem>
+                    <DropdownItem onClick={this.setState("COMPLETED")}><i class="fa fa-save"></i> Completed </DropdownItem>
                 </DropdownMenu>
             </Dropdown>
 
