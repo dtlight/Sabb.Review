@@ -84,7 +84,7 @@ export class AssignReview extends React.Component {
                 <ModalHeader toggle={this.toggle}>Assign Review</ModalHeader>
                 <ModalBody>
                          <FormGroup>
-              <label>Assignee</label>
+                            <label>Assignee</label>
                       <Input onChange={(e) => {
                           this.setState({
                               assignee: e.target.value
@@ -107,61 +107,72 @@ export class ViewReviews extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            modal: false
+            modal: false,
+            isLoading: true,
+            assignmentList: null
+
         };
+        this.props = props;
 
         this.toggle = this.toggle.bind(this);
-        this.submit = this.submit.bind(this);
+        this.load = this.load.bind(this);
+    }
+
+    load() {
+
+
+
     }
 
     toggle() {
-        this.setState({
-            modal: !this.state.modal,
-            assignee: ""
 
-        });
+        if(!this.state.modal){
+            axios.get(`/application/${this.props.application}/assignments`).then(({data})=> {
+                this.setState({
+                    assignmentList: data.value,
+                    modal:true
+                });
+            })
+        } else {
+            this.setState({
+                assignmentList: null,
+                modal:false
+            });
+        }
     }
 
 
-    submit() {
-        axios.post(`/assignment/application/${this.props.application}/assignee/${this.state.assignee}`)
-            .then(function (response) {
-                if(response.data.state !== "STATUS_ERROR") {
-                    this.setState({
-                        isSuccess: true,
-                        isCreating: false,
-                        modal: false,
-                        assignee: ""
-
-                    })
-                } else {
-                    this.setState({
-                        isError: true,
-                        isCreating: false
-                    })
-                }
-
-            }.bind(this))
-    }
     render() {
-        return (
-            <span>
-                <Button {...this.props} onClick={this.toggle}>{this.props.children}</Button>
-            <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                <ModalHeader toggle={this.toggle}>Assigned Reviews</ModalHeader>
-                <ModalBody>
-                  <ListGroup>
-                    <ListGroupItem>Cras justo odio</ListGroupItem>
-                    <ListGroupItem>Dapibus ac facilisis in</ListGroupItem>
-                    <ListGroupItem>Morbi leo risus</ListGroupItem>
-                    <ListGroupItem>Porta ac consectetur ac</ListGroupItem>
-                    <ListGroupItem>Vestibulum at eros</ListGroupItem>
-                  </ListGroup>
-                  </ModalBody>
+            let body = "";
+            if(this.state.assignmentList) {
+                let reviewItems = [];
+                for (let review of this.state.assignmentList) {
+                    reviewItems.push(
+                        <ListGroupItem>{review[1]}</ListGroupItem>
+                    )
+                }
+                body = <span><ListGroup>
+                    {reviewItems}
+                </ListGroup>
+                <p className={"alert alert-primary"} style={{"display": (this.state.assignmentList.length !== 0)?"none":""}}>No reviews assigned</p>
+                </span>;
+            }
 
-                </Modal>
-            </span>
-        )
+
+            return (
+                <span>
+                    <Button {...this.props} onClick={this.toggle}>{this.props.children}</Button>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>Assigned Reviews</ModalHeader>
+                    <ModalBody>
+                        {body}
+                      </ModalBody>
+
+                    </Modal>
+                </span>
+            )
+
+
     }
 }
 
@@ -176,7 +187,7 @@ export class AssignmentCard extends React.Component {
         return (
             <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.props.status].colours} bg-light`}>
                 <CardBody>
-                    <CardTitle><h5>Review for {this.props.assignee} <Badge color={applicationStates[this.props.status].colours}>{applicationStates[this.props.status].humanStatus}</Badge></h5></CardTitle>
+                    <CardTitle><h5>Review for {this.props.applicant} <Badge color={applicationStates[this.props.status].colours}>{applicationStates[this.props.status].humanStatus}</Badge></h5></CardTitle>
                     <CardSubtitle className="mb-2 text-muted">{this.props.application.department} Dept.</CardSubtitle>
                     <CardText>{applicationStates[this.props.status].body}</CardText>
                     <div class={(applicationStates[this.props.status].buttonsVisible)?"visible":"invisible"}>
@@ -221,7 +232,7 @@ export class AssignmentList extends React.Component {
             let applicationListView = [];
             for (let assignment of this.state.assignmentList) {
                 applicationListView.push(
-                        <AssignmentCard id={assignment.id} status={assignment.state} assignee={assignment.assignee} application={assignment.application} onChange={this.load}/>
+                        <AssignmentCard id={assignment.id} status={assignment.state} assignee={assignment.assignee} applicant={assignment.applicant} application={assignment.application} onChange={this.load}/>
                 )
             }
             return (

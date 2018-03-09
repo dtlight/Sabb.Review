@@ -57,7 +57,8 @@ export class ApplicationCard extends React.Component {
 
   render() {
     return (
-      <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
+      <Link to={`/apply/${this.state.id}`} className={"card-link card-link-custom"}>
+          <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
         <CardBody>
           <CardTitle><h5>Application to the {this.state.department} dept. <Badge color={applicationStates[this.state.status].colours}>{applicationStates[this.state.status].humanStatus}</Badge></h5></CardTitle>
           <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
@@ -67,7 +68,7 @@ export class ApplicationCard extends React.Component {
             <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
-      </Card>
+      </Card></Link>
     )
   }
 }

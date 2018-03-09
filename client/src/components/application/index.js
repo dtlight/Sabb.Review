@@ -1,7 +1,7 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input, Button, Dropdown, DropdownToggle, DropdownItem, DropdownMenu} from 'reactstrap';
+import {Input, Button, Dropdown, DropdownToggle, DropdownItem, DropdownMenu, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
 import {AssignReview, ViewReviews} from '../review/'
 
@@ -57,6 +57,7 @@ export class CreateApplication extends React.Component {
           departmentList: data.value,
           selectedDepartment: (!data.value[0])?-1:data.value[0][0]
         });
+        this.selectDepartment((!data.value[0])?-1:data.value[0][0]);
       })
     }
 
@@ -175,7 +176,7 @@ export class ApplicationAdminButtons extends React.Component {
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
-            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
@@ -211,6 +212,7 @@ export class EditApplication extends React.Component {
         currentState: ""
     }
     this.load = this.load.bind(this);
+    this.getInstances = this.getInstances.bind(this);
   }
     componentWillReceiveProps() {
         this.load();
@@ -222,6 +224,7 @@ export class EditApplication extends React.Component {
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
             this.setState((state) => {
+                state.fieldInstances = [];
                 if(data.state === "STATUS_ERROR") {
                     state.isError = true
                 } else {
@@ -236,6 +239,17 @@ export class EditApplication extends React.Component {
             })
         })
     }
+    getInstances(ro = false) {
+        let fieldInstances = [];
+        for (var fieldInstance of this.state.fieldInstances) {
+            if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
+                fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
+            } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
+                fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
+            }
+        }
+        return fieldInstances;
+    }
   render() {
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
@@ -244,19 +258,17 @@ export class EditApplication extends React.Component {
     } else if(this.state.isLoading) {
       return <div class="loader">Loading...</div>;
     } else if(!this.state.isEditable) {
-      return (<p>This application has been submitted</p>)
+      return (<div>
+          <Alert color="secondary">
+              This application has been submitted.
+          </Alert>
+          {this.getInstances(true)}
+      </div>)
     } else if(this.state.fieldInstances) {
-      let fieldInstances = [];
-      for (var fieldInstance of this.state.fieldInstances) {
-          if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
-              fieldInstances.push(<FieldInstance disabled={this.props.disabled} {...fieldInstance}/>);
-          } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
-              fieldInstances.push(<FieldInstance disabled={this.props.disabled} {...fieldInstance}/>);
-          }
-      }
+
       return (
           <form>
-            {fieldInstances}
+              {this.getInstances()}
 
             <div className={"bg-light"}>
                 <div class="form-group" style={{"padding": "10px"}}>
@@ -276,16 +288,32 @@ class FieldInstance extends React.Component {
     super(props);
     this.props = props;
     this.state = {
-      value: props.value
+        value: props.value,
+        selected: props.selected
     }
     this.updateValue = this.updateValue.bind(this);
+    this.updateSingleSelected = this.updateSingleSelected.bind(this);
   }
 
-  updateValue(value) {
-    axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
-      console.log(data);
-    });
+  updateValue() {
+      axios.put(`/fieldinstance/${this.props.id}`, {value: this.state.value}).then(function(data) {
+          console.log(data);
+      });
   }
+
+
+    updateSingleSelected(select) {
+        axios.put(`/fieldinstance/${this.props.id}`, {value: select}).then(function(data) {
+            console.log(data);
+        }.bind(this));
+    }
+
+    updateMultipleSelected(select) {
+
+        axios.put(`/fieldinstance/${this.props.id}`, {value: select}).then(function(data) {
+            console.log(data);
+        }.bind(this));
+    }
 
     render() {
 
@@ -297,14 +325,24 @@ class FieldInstance extends React.Component {
       for (let option of this.props.field.fieldOptions) {
           options.push(<option value={option.id} disabled={this.props.disabled}>{option.title}</option>);
       }
-      inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p><Input type="select" multiple> {options} </Input></span>;
+      inner = <span><p><small>Press <code>shift</code> to select multiple items</small></p>
+          <Input type="select" multiple onChange={(e) => {
+              console.log(e.target.options)
+          }}> {options} </Input></span>;
 
     } else if(this.props.field.type === "SINGLECHOICE") {
       let options = [];
       for (let option of this.props.field.fieldOptions) {
+
           options.push(<option value={option.id}>{option.title}</option>);
       }
-      inner = <Input type="select" disabled={this.props.disabled}> {options} </Input>;
+      inner = <Input type="select" disabled={this.props.disabled}
+                     defaultValue={(this.state.selected && this.state.selected[0])?this.state.selected[0].id:undefined}
+                     onChange={(e) => {
+                         this.updateSingleSelected(e.target.value)
+                     }}> {options} </Input>;
+
+
     } else if(this.props.field.type === "LONGTEXT") {
       inner = <Input type="textarea"
                      disabled={this.props.disabled}
