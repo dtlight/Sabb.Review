@@ -164,6 +164,7 @@ export class ApplicationAdminButtons extends React.Component {
             "position": "sticky",
             "height": "80px",
             "top": "0em",
+            "z-index": "1000",
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
