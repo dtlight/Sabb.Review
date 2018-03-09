@@ -234,7 +234,7 @@ export class EditApplication extends React.Component {
       </h1>;
     } else if(this.state.isLoading) {
       return <div class="loader">Loading...</div>;
-    } else if(!this.state.isEditable) {
+    } else if(this.state.currentState === "SUBMITTED") {
       return (<div>
           <Alert color="secondary">
               This application has been submitted.
