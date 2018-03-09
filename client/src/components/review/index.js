@@ -12,7 +12,7 @@ let applicationStates = {
         colours: "warning",
         buttonsVisible: true
     },
-    SUCCESS: {
+    ACCEPTED: {
         humanStatus: "Accepted",
         body: "This application has been accepted by the department and review groups. You will received further information by email.",
         colours: "success",
@@ -29,8 +29,15 @@ let applicationStates = {
         body: "The application has been submitted and is currently awaiting approval.",
         colours: "secondary",
         buttonsVisible: true
+    },
+    COMPLETED: {
+        humanStatus: "Completed",
+        body: "The accepted sabbatical period has finished. Please complete the report.",
+        colours: "success",
+        buttonsVisible: false
     }
 };
+
 
 
 

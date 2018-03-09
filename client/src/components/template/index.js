@@ -76,6 +76,8 @@ export class FieldList extends React.Component {
           title={field.title}
           fieldOptions={field.fieldOptions}
           fieldType={field.type}
+          showAtEnd={field.showAtEnd}
+
           onDelete={this.deleteField}
           onChange={this.props.onChange}
         />);
@@ -99,7 +101,8 @@ export class NewQuestion extends React.Component {
     modal: false,
     title: "",
     type: "TEXT",
-    answers: []
+    answers: [],
+      showAtEnd: false
   };
   constructor(props) {
     super(props);
@@ -109,11 +112,13 @@ export class NewQuestion extends React.Component {
         questionId: this.props.questionId,
         title: this.props.title || "",
         type: this.props.type || "",
-        answers: this.props.answers || []
+        answers: this.props.answers || [],
+          showAtEnd: this.props.showAtEnd || false
       };
     } else {
       this.state = this.defaultState;
     }
+    this.toggleShowAtEnd = this.toggleShowAtEnd.bind(this);
 
     this.toggle = this.toggle.bind(this);
     this.addAnswer = this.addAnswer.bind(this);
@@ -145,8 +150,10 @@ export class NewQuestion extends React.Component {
             "id": this.props.questionId,
           	"title": this.state.title,
           	"type": this.state.type,
-          	"fieldOptions": this.state.answers
-          }).then((response) => {
+          	"fieldOptions": this.state.answers,
+          "showAtEnd": this.state.showAtEnd
+
+      }).then((response) => {
             if(response.data.state === "STATUS_OK") {
               this.toggle();
               if(this.props.onChange){
@@ -163,7 +170,8 @@ export class NewQuestion extends React.Component {
       axios.post(`/template/${this.props.templateId}/field`, {
           	"title": this.state.title,
           	"type": this.state.type,
-          	"fieldOptions": this.state.answers
+          	"fieldOptions": this.state.answers,
+            "showAtEnd": this.state.showAtEnd
           }).then((response) => {
             if(response.data.state === "STATUS_OK") {
               this.toggle();
@@ -180,6 +188,11 @@ export class NewQuestion extends React.Component {
     }
 
   }
+    toggleShowAtEnd() {
+        this.setState({
+            showAtEnd: !this.state.showAtEnd,
+        });
+    }
   render() {
     let optionItems = [];
     for (var i = 0; i < this.state.answers.length; i++) {
@@ -231,12 +244,18 @@ export class NewQuestion extends React.Component {
                 {typeOfInputs}
               </Input>
             </FormGroup>
-            <ListGroup style={{"display": (questionTypes[this.state.type].choice)?"block":"none"}}>
+            <ListGroup style={{"display": (questionTypes[this.state.type].choice)?"block":"none", "marginBottom": "10px"}}>
               {optionItems}
               <ListGroupItem>
                 <Button block color="secondary" onClick={this.addAnswer}><i class="fa fa-plus" aria-hidden="true"></i></Button>
               </ListGroupItem>
             </ListGroup>
+              <FormGroup check style={{"marginBottom": "10px"}}>
+                  <Label check>
+                      <Input type="checkbox" defaultChecked={this.state.showAtEnd} onChange={this.toggleShowAtEnd}/>{'  '}
+                      Is this a report question?
+                  </Label>
+              </FormGroup>
             <ModalFooter>
               <Button color="primary" onClick={this.submit}>Save Question</Button>
             </ModalFooter>
@@ -293,7 +312,10 @@ let Field = (props) => {
           title={props.title}
           type={props.fieldType}
           answers={props.fieldOptions}
-          onChange={props.onChange}>
+          onChange={props.onChange}
+                     showAtEnd={props.showAtEnd}
+
+        >
           Edit
         </NewQuestion>
         <Button className="float-right" color="danger" onClick={() => {
@@ -471,6 +493,7 @@ export class CreateTemplate extends React.Component {
                                     });
                                 }}/>
                             </FormGroup>
+
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onClick={this.create}>Create Template</Button>

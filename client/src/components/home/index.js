@@ -6,37 +6,37 @@ import axios from 'axios';
 
 
 let applicationStates = {
-  PENDING: {
-    humanStatus: "Pending",
-    body: "This application is awaiting completion, please edit your application and press submit to proceed.",
-    colours: "warning",
-    buttonsVisible: true
-  },
-  ACCEPTED: {
-    humanStatus: "Accepted",
-    body: "This application has been accepted by the department and review groups. You will received further information by email.",
-    colours: "success",
-    buttonsVisible: false
-  },
-  REFUSED: {
-    humanStatus: "Rejected",
-    body: "This application has been rejected by the department or review group.",
-    colours: "danger",
-    buttonsVisible: false
-  },
-  SUBMITTED: {
-    humanStatus: "Submitted",
-    body: "The application has been submitted and is currently awaiting approval.",
-    colours: "secondary",
-    buttonsVisible: true
-  },
-  COMPLETED: {
-      humanStatus: "Completed",
-      body: "The application has been completed.",
-      colours: "success",
-      buttonsVisible: false
-  }
-}
+    PENDING: {
+        humanStatus: "Pending",
+        body: "This application is awaiting completion, please edit your application and press submit to proceed.",
+        colours: "warning",
+        buttonsVisible: true
+    },
+    ACCEPTED: {
+        humanStatus: "Accepted",
+        body: "This application has been accepted by the department and review groups. You will received further information by email.",
+        colours: "success",
+        buttonsVisible: false
+    },
+    REFUSED: {
+        humanStatus: "Rejected",
+        body: "This application has been rejected by the department or review group.",
+        colours: "danger",
+        buttonsVisible: false
+    },
+    SUBMITTED: {
+        humanStatus: "Submitted",
+        body: "The application has been submitted and is currently awaiting approval.",
+        colours: "secondary",
+        buttonsVisible: true
+    },
+    COMPLETED: {
+        humanStatus: "Completed",
+        body: "The accepted sabbatical period has finished. Please complete the report.",
+        colours: "success",
+        buttonsVisible: false
+    }
+};
 
 
 

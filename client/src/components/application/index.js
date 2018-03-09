@@ -164,14 +164,14 @@ export class ApplicationAdminButtons extends React.Component {
             "position": "sticky",
             "height": "80px",
             "top": "0em",
-            "z-index": "1000",
+            "z-index": "99",
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
-            <DropDownStates application={this.props.id} color="secondary" style={{"marginRight":"10px"}}> </DropDownStates>
+            <DropDownStates application={this.props.id} color="secondary" style={{"marginRight":"10px"}} onStateChange={this.props.onStateChange}> </DropDownStates>
 
         </div>);
     }
@@ -234,7 +234,7 @@ export class EditApplication extends React.Component {
       </h1>;
     } else if(this.state.isLoading) {
       return <div class="loader">Loading...</div>;
-    } else if(this.state.currentState === "SUBMITTED") {
+    } else if(!this.state.isEditable) {
       return (<div>
           <Alert color="secondary">
               This application has been submitted.
@@ -278,14 +278,14 @@ class DropDownStates extends React.Component {
                     <DropdownToggle caret>
                         Change State
                     </DropdownToggle>
-                    <DropdownMenu>
+                    <DropdownMenu style={{"cursor": "pointer"}}>
                         <DropdownItem onClick={()=> this.setState("PENDING")}> Pending </DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem onClick={()=> this.setState("SUBMITTED")}> Submitted </DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("REFUSED")}> Refused </DropdownItem>
+                        <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
                     </DropdownMenu>
