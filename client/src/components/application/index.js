@@ -1,7 +1,7 @@
 import React from 'react';
 import {Redirect } from 'react-router-dom';
 import axios from 'axios';
-import {Input, Button, Alert} from 'reactstrap';
+import {Input, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
 import {AssignReview, ViewReviews} from '../review/'
 
@@ -146,9 +146,6 @@ export class ApplicationAdminButtons extends React.Component {
     constructor(props) {
         super(props);
         this.props = props;
-        this.state = {
-
-        }
         this.submitApplication = this.submitApplication.bind(this);
 
     }
@@ -158,6 +155,7 @@ export class ApplicationAdminButtons extends React.Component {
                 if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
         })
     }
+
     render() {
         return (<div style={{
             "padding": "20px",
@@ -166,12 +164,14 @@ export class ApplicationAdminButtons extends React.Component {
             "position": "sticky",
             "height": "80px",
             "top": "0em",
+            "z-index": "99",
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
             <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
             <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
             <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
+            <DropDownStates application={this.props.id} color="secondary" style={{"marginRight":"10px"}} onStateChange={this.props.onStateChange}> </DropDownStates>
 
         </div>);
     }
@@ -258,6 +258,41 @@ export class EditApplication extends React.Component {
         );
     }
   }
+}
+
+class DropDownStates extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    setState(selectState) {
+        axios.put(`/application/${this.props.application}/state/${selectState}`).then(({data})=> {
+            if(this.props.onStateChange) this.props.onStateChange(selectState);
+        })
+    }
+
+    render() {
+        return (
+            <ButtonGroup justified>
+                <UncontrolledDropdown>
+                    <DropdownToggle caret>
+                        Change State
+                    </DropdownToggle>
+                    <DropdownMenu style={{"cursor": "pointer"}}>
+                        <DropdownItem onClick={()=> this.setState("PENDING")}> Pending </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("SUBMITTED")}> Submitted </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
+                    </DropdownMenu>
+                </UncontrolledDropdown>
+            </ButtonGroup>
+        )
+    }
 }
 
 class FieldInstance extends React.Component {
