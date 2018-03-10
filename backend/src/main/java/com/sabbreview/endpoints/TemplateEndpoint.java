@@ -1,7 +1,6 @@
 package com.sabbreview.endpoints;
 
 import com.sabbreview.model.Field;
-import com.sabbreview.model.Template;
 
 import static com.sabbreview.controller.TemplateController.addField;
 import static com.sabbreview.controller.TemplateController.createTemplate;
@@ -15,8 +14,8 @@ import static spark.Spark.post;
 public class TemplateEndpoint extends Endpoint {
 
   public static void attach() {
-    post("/template", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(createTemplate(principle, fromJson(req.body(), Template.class))))));
+    post("/template/:name/department/:id", (req, res) -> requireAuthentication(req,
+        (principle -> toJson(createTemplate(principle, req.params("name"), req.params("id"))))));
 
     get("/template/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getTemplate(principle, req.params(":id"))))));

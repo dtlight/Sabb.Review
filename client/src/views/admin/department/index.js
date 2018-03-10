@@ -49,8 +49,7 @@ export class DepartmentInfo extends React.Component {
               <hr />
               <div>
                 <h2 class="lead">Templates</h2>
-                {//}<Applications> </Applications>
-              }
+               
               </div>
             </Col>
           </Row>

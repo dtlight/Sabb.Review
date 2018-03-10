@@ -8,13 +8,18 @@ export default class Home extends React.Component {
         super(props);
         this.props = props;
         this.state = {
-            newDeptName: ""
+            newDeptName: "",
+            deptIncr: -1
         };
         this.addDepartment = this.addDepartment.bind(this);
     }
     addDepartment() {
         axios.post("/department", {name: this.state.newDeptName}).then(({data})=> {
-            alert('done');
+            this.setState((state) => {
+                state.deptIncr++;
+                state.newDeptName = "";
+                return state;
+            });
         })
     }
     render() {
@@ -23,14 +28,14 @@ export default class Home extends React.Component {
                 <h1 class="display-4">Departments</h1>
                 <p class="lead">These are the departments currently associated with SabbReview</p>
                 <hr />
-                <DepartmentList />
+                <DepartmentList incr={this.state.deptIncr} />
                 <hr />
                 <strong class="display-5" >Add Department</strong>
 
                 <Form style={{"marginTop": "20px"}}>
                     <FormGroup>
                         <label>Department Name</label>
-                        <Input type={"text"} placeholder={"Name"} onChange={(e) => {
+                        <Input type={"text"} value={this.state.newDeptName} placeholder={"Name"} onChange={(e) => {
                             this.setState({
                                 newDeptName: e.target.value
                             })

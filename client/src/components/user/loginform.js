@@ -25,6 +25,10 @@ export default class Login extends React.Component {
         this.login = this.login.bind(this);
     }
 
+    componentDidMount () {
+        this.email.focus()
+    }
+
     login() {
       this.setState({
         isError: false,
@@ -79,6 +83,7 @@ export default class Login extends React.Component {
                       className={(this.state.isError)?"form-control is-invalid form-control form-control-lg"
                                 :"form-control form-control-lg"}
                       placeholder="Email Address"
+                           innerRef={el => this.email = el}
                       onChange={(e) => {
                         this.setState({
                           emailAddress: e.target.value
