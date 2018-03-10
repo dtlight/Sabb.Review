@@ -2,7 +2,7 @@ import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import {  AssignmentList } from '../../components/review/'
-import { EditApplication } from '../../components/application/index.js'
+import { EditApplication, ApplicationAdminButtons } from '../../components/application/index.js'
 import axios from "axios/index";
 import { Row, Col } from 'reactstrap';
 
@@ -51,6 +51,12 @@ export class ReviewDetail extends React.Component {
             return <div class="loader">Loading...</div>;
         } else {
             return (<div>
+                <ApplicationAdminButtons id={this.props.match.params.id} onStateChange={(newState)=>{
+                    this.setState({
+                        newState: newState
+                    })
+                }}/>
+                <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
                 <h1 class="display-4">Edit Review</h1>
                 <p class="lead">These applications require your review.</p>
                 <hr/>
@@ -62,7 +68,7 @@ export class ReviewDetail extends React.Component {
                       comment area
                     </Col>
                 </Row>
-
+                </div>
             </div>);
         }
 

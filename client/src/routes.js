@@ -41,6 +41,8 @@ export default class Routes extends React.Component {
                       <Switch>
                          <PrivateRoute exact path='/admin/application/:id' component={AdminEditApplication} />
                          <PrivateRoute exact path='/apply/:id' component={EditExisting} />
+                         <PrivateRoute path='/review/:id' component={ReviewDetail} />
+
                          <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
 
                            <Route path='/auth/' component={Auth} />
@@ -53,7 +55,6 @@ export default class Routes extends React.Component {
                            <PrivateRoute exact path='/' component={Home} />
                            <PrivateRoute exact path='/apply' component={Introduction} />
 
-                           <PrivateRoute path='/review/:id' component={ReviewDetail} />
                            <PrivateRoute exact path='/review' component={Review} />
 
                            <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
