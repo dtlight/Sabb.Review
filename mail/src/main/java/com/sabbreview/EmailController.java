@@ -96,7 +96,6 @@ public class EmailController {
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
 
-    String queue = queueName;     //queue name
     DefaultConsumer consumer = new DefaultConsumer(channel) {
       @Override public void handleDelivery(String consumerTag, Envelope envelope,
           AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -113,6 +112,6 @@ public class EmailController {
       }
     };
 
-    channel.basicConsume(queue, true, consumer);
+    channel.basicConsume(queueName, true, consumer);
   }
 }

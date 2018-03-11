@@ -1,9 +1,9 @@
 package com.sabbreview;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public enum Email {
     APPLICATIONCREATION("applicationCreation", "Application Created"),
@@ -65,9 +65,8 @@ public enum Email {
      * @throws IOException If something goes wrong reading the given file.
      */
     private String loadFile(String filePath) throws IOException {
-        String path = getEmailModuleBuildRoot() + filePath;
 
-        BufferedReader bf = new BufferedReader(new FileReader(path));
+        BufferedReader bf = new BufferedReader(new FileReader(filePath));
 
         String line = "";
         StringBuilder text = new StringBuilder();
@@ -90,10 +89,10 @@ public enum Email {
      */
     public String generateHTML(String userName) {
         try {
-            String html = loadFile("classes/static/emails/notificationTemplate.html");
+            String html = loadFile( new File("").getAbsolutePath() + "/mail/target/classes/static/emails/notificationTemplate.html");
 
             //Adding message+name to email
-            html = html.replaceFirst("\\{body}", loadFile("classes/static/emails/text/" + this.getFileName()));
+            html = html.replaceFirst("\\{body}", loadFile(new File("").getAbsolutePath() + "/mail/target/classes/static/emails/text/" + this.getFileName()));
             html = html.replaceFirst("\\{name}", userName);
 
             return html;
@@ -103,35 +102,5 @@ public enum Email {
         }
     }
 
-    /**
-     * Gets the path of the target folder in the mail module.
-     * Assumes that folder structure is similar to mail/target/classes/com/sabbreview
-     * @return The absolute path of the mail module target folder
-     */
-    private String getEmailModuleBuildRoot() {
-        try {
-            String fullpath = EmailController.class.getResource("").toURI().getPath();
 
-            //Moving slash at start of path.
-            fullpath = fullpath.substring(1, fullpath.length() - 1);
-
-            String[] splitPath = fullpath.split("/");
-
-
-            StringBuilder newPath = new StringBuilder();
-            for (int i = 0; (i == 0) || !splitPath[i - 1].equals("target"); i++) {
-                newPath.append(splitPath[i]).append("/");
-            }
-
-
-            //Removing leading slash if present
-            if (newPath.charAt(0) == '/' || newPath.charAt(0) == '\\') {
-                return newPath.toString().substring(1, newPath.length() - 1);
-            }
-            return newPath.toString();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
 }
