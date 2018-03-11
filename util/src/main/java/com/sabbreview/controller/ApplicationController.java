@@ -19,6 +19,7 @@ public class ApplicationController extends Controller {
       }
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
       application.setApplicant(user);
       em.persist(application);
       em.getTransaction().commit();

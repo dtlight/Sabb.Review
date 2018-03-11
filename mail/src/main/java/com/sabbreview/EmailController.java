@@ -1,11 +1,9 @@
 package com.sabbreview;
 
 import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.sabbreview.queue.EmailQueueInstance;
 import net.sargue.mailgun.Configuration;
 import net.sargue.mailgun.Mail;
 
@@ -22,10 +20,6 @@ public class EmailController {
   private static String mailgunApiKey;
   private static String mailgunFromEmail;
   private static String mailgunFromName;
-  private static String queueURL;
-
-
-
   public static void main(String[] args) throws Exception {
 
     if (System.getenv() != null) {
@@ -51,13 +45,20 @@ public class EmailController {
     } else {
       throw new Exception("No MailGun From Email Provided");
     }
-
-    if (System.getenv(ENV_AMQP_QUEUE) != null) {
-      queueURL = System.getenv(ENV_AMQP_QUEUE);
-    } else {
-      throw new Exception("No AMQP Queue URL Provided");
-    }
-    receiveFromQueue();
+    EmailQueueInstance emailQueueInstance = new EmailQueueInstance();
+    emailQueueInstance.addConsumer(new DefaultConsumer(emailQueueInstance.getChannel()) {
+      @Override public void handleDelivery(String consumerTag, Envelope envelope,
+          AMQP.BasicProperties properties, byte[] body) throws IOException {
+        Email currentEmail;
+        String[] message = new String(body, "UTF-8").split("/");
+        if (message.length < 3) {
+          //TODO
+        } else {
+          currentEmail = Email.emailNameToEnum(message[0]);
+          Send(currentEmail.getTitle(), currentEmail.generateHTML(message[1]), message[2]);
+        }
+      }
+    });
   }
 
   /**
@@ -74,44 +75,5 @@ public class EmailController {
             .from(mailgunFromName, mailgunFromEmail);
 
     Mail.using(configuration).to(recipient).subject(subject).html(content).build().send();
-  }
-
-  /**
-   * Continuously attempts to pull messages from the RabbitMQ server. Upon receiving specific messages it will call the
-   * Send() and pass it an email address received with the message, a template for the body of the email being sent and
-   * an appropriate subject.<br><br>
-   * Message format is <i>NotificationID/Name/Email</i>.<br>
-   * <i>NotificationID</i> determines the contents of the email.<br>
-   * <i>Name</i> is the name of the recipient.<br>
-   * <i>Email</i> is the email address of the recipient.<br>
-   */
-  private static void receiveFromQueue() throws Exception {
-    String uri = queueURL;
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setUri(uri);
-
-    //Recommended settings
-    factory.setRequestedHeartbeat(30);
-    factory.setConnectionTimeout(30000);
-    Connection connection = factory.newConnection();
-    Channel channel = connection.createChannel();
-    channel.queueDeclare(queueName, true, false, false, null);
-    DefaultConsumer consumer = new DefaultConsumer(channel) {
-      @Override public void handleDelivery(String consumerTag, Envelope envelope,
-          AMQP.BasicProperties properties, byte[] body) throws IOException {
-
-        Email currentEmail;
-
-        String[] message = new String(body, "UTF-8").split("/");
-        if (message.length < 3) {
-          //TODO
-        } else {
-          currentEmail = Email.emailNameToEnum(message[0]);
-          Send(currentEmail.getTitle(), currentEmail.generateHTML(message[1]), message[2]);
-        }
-      }
-    };
-
-    channel.basicConsume(queueName, true, consumer);
   }
 }
