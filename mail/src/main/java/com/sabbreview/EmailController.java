@@ -50,12 +50,13 @@ public class EmailController {
       @Override public void handleDelivery(String consumerTag, Envelope envelope,
           AMQP.BasicProperties properties, byte[] body) throws IOException {
         Email currentEmail;
+        System.out.println( new String(body, "UTF-8"));
         String[] message = new String(body, "UTF-8").split("/");
         if (message.length < 3) {
           //TODO
         } else {
           currentEmail = Email.emailNameToEnum(message[0]);
-          Send(currentEmail.getTitle(), currentEmail.generateHTML(message[1]), message[2]);
+          sendEmail(currentEmail.getTitle(), currentEmail.generateHTML(message[1]), message[2]);
         }
       }
     });
@@ -68,7 +69,7 @@ public class EmailController {
    * @param content   Content of the email.
    * @param recipient Recipient's email address.
    */
-  private static void Send(String subject, String content, String recipient) {
+  private static void sendEmail(String subject, String content, String recipient) {
     Configuration configuration = null;     //Sender details
     configuration =
         new Configuration().domain(domain).apiKey(mailgunApiKey)  //MailGun API key read from file
