@@ -95,7 +95,7 @@ public class EmailController {
     factory.setConnectionTimeout(30000);
     Connection connection = factory.newConnection();
     Channel channel = connection.createChannel();
-
+    channel.queueDeclare(queueName, true, false, false, null);
     DefaultConsumer consumer = new DefaultConsumer(channel) {
       @Override public void handleDelivery(String consumerTag, Envelope envelope,
           AMQP.BasicProperties properties, byte[] body) throws IOException {
