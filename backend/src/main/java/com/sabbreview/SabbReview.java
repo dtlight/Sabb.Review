@@ -35,6 +35,8 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
 
+import java.io.File;
+
 import static spark.Spark.before;
 import static spark.Spark.halt;
 import static spark.Spark.notFound;
@@ -111,5 +113,9 @@ public class SabbReview {
             "Could not verify authentication token")));
       }
     }
+  }
+
+  public static String getStaticResource(String module, String fileName) {
+    return new File("").getAbsolutePath() + "/"+module+"/target/classes/"+fileName;
   }
 }

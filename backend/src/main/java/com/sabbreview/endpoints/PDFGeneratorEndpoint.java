@@ -1,6 +1,7 @@
 package com.sabbreview.endpoints;
 
 
+import com.sabbreview.SabbReview;
 import com.sabbreview.SabbReviewEntityManager;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
@@ -14,7 +15,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -28,9 +28,7 @@ public class PDFGeneratorEndpoint {
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
           PDDocument document = new PDDocument();
-          String imgPath = new File("").getAbsolutePath() + "backend/target/classes/sabbreview.png";
-          System.out.println(imgPath);
-          PDImageXObject pdImage = PDImageXObject.createFromFile(imgPath, document);
+          PDImageXObject pdImage = PDImageXObject.createFromFile(SabbReview.getStaticResource("backend", "sabbreview.png"), document);
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
