@@ -14,6 +14,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -27,11 +28,12 @@ public class PDFGeneratorEndpoint {
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
           PDDocument document = new PDDocument();
-          PDImageXObject pdImage = PDImageXObject.createFromFile("/app/backend/src/main/resources/sabbreview.png", document);
+          String imgPath = new File("").getAbsolutePath() + "backend/target/classes/sabbreview.png";
+          PDImageXObject pdImage = PDImageXObject.createFromFile(imgPath, document);
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            Application application = em.find(Application.class,assignmentID);
+            Application application = em.find(Application.class, assignmentID);
 
             PDDocumentInformation pdDocumentInformation = new PDDocumentInformation();
             pdDocumentInformation.setTitle("SabbReview Appraisal #"+application.getId());
