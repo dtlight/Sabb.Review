@@ -3,6 +3,7 @@ import {Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {Input, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
+
 import {AssignReview, ViewReviews} from '../review/'
 
 export class CreateApplication extends React.Component {
@@ -197,7 +198,11 @@ export class EditApplication extends React.Component {
     componentDidMount() {
         this.load();
     }
-
+//Following four lines refer to signature pad in render() below
+    sigCanvas = {}
+    clear = () => {
+        this.sigCanvas.clear()
+    }
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
             this.setState((state) => {
@@ -247,18 +252,21 @@ export class EditApplication extends React.Component {
           <form>
               {this.getInstances()}
 
-            <div className={"bg-light"}>
-                <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the area below and click 'Sign'</p>
-                <SignatureCanvas penColor='#252f3c'
-                                 canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
-                </div>
-            </div>
+              <div className={"bg-light"}>
+                  <div class="form-group" style={{"padding": "10px"}}>
+                      <p class="lead">Please draw your signature in the area below and click 'Sign'</p>
+                      <SignatureCanvas penColor='#252f3c'
+                                       canvasProps={{width: 1000, height: 200, className: 'sigCanvas'}}
+                                       ref={(ref) => { this.sigCanvas = ref }}/>
+                  </div>
+              </div>
               <ButtonGroup style={{"paddingBottom": "10px", "textAlign": "center", "display": "block"}}>
                   <Button color="secondary" style={{"marginRight":"10px"}}> Sign</Button>
-                  <Button color="secondary" style={{"marginRight":"10px"}}> Clear Signature</Button>
+                  <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.clear}> Clear Signature</Button>
               </ButtonGroup>
-        </form>
+          </form>
+
+
         );
     }
   }
