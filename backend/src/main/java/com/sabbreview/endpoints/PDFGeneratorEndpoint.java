@@ -29,6 +29,7 @@ public class PDFGeneratorEndpoint {
         try {
           PDDocument document = new PDDocument();
           String imgPath = new File("").getAbsolutePath() + "backend/target/classes/sabbreview.png";
+          System.out.println(imgPath);
           PDImageXObject pdImage = PDImageXObject.createFromFile(imgPath, document);
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
