@@ -43,8 +43,8 @@ export class DepartmentList extends React.Component {
           </tr>);
     }
     return (
-      <Table>
-        <thead>
+      <Table  striped={true}>
+        <thead >
           <tr>
             <td>Department Name</td>
             <td>Actions</td>
