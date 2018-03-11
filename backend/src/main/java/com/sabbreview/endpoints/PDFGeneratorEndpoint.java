@@ -14,7 +14,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -28,8 +27,7 @@ public class PDFGeneratorEndpoint {
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
           PDDocument document = new PDDocument();
-          System.out.println("DEADBEEF"+new File("sabbreview.png").getAbsolutePath());
-          PDImageXObject pdImage = PDImageXObject.createFromFile("sabbreview.png", document);
+          PDImageXObject pdImage = PDImageXObject.createFromFile("/app/backend/src/main/resources/sabbreview.png", document);
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
