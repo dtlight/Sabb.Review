@@ -198,10 +198,16 @@ export class EditApplication extends React.Component {
     componentDidMount() {
         this.load();
     }
-//Following four lines refer to signature pad in render() below
+//Following nine lines refer to signature pad in render() below
+    state = {trimmedDataURL: null}
     sigCanvas = {}
     clear = () => {
         this.sigCanvas.clear()
+    }
+    trim = () => {
+        this.setState({
+            trimmedDataURL: this.sigCanvas.getTrimmedCanvas().toDataURL('image/png')
+        })
     }
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
@@ -233,6 +239,7 @@ export class EditApplication extends React.Component {
         return fieldInstances;
     }
   render() {
+      let {trimmedDataURL} = this.state
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
         Could not load requested application
@@ -249,6 +256,7 @@ export class EditApplication extends React.Component {
     } else if(this.state.fieldInstances) {
 
       return (
+
           <form>
               {this.getInstances()}
 
@@ -261,9 +269,13 @@ export class EditApplication extends React.Component {
                   </div>
               </div>
               <ButtonGroup style={{"paddingBottom": "10px", "textAlign": "center", "display": "block"}}>
-                  <Button color="secondary" style={{"marginRight":"10px"}}> Sign</Button>
+                  <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.trim}> Sign</Button>
                   <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.clear}> Clear Signature</Button>
               </ButtonGroup>
+
+              {trimmedDataURL
+                  ? <img style={{content: 'url(' + trimmedDataURL + ')'}}/>
+                  : null}
           </form>
 
 
