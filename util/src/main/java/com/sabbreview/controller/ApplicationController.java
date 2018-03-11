@@ -1,17 +1,10 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
-import com.sabbreview.model.Department;
-import com.sabbreview.model.Field;
-import com.sabbreview.model.FieldInstance;
-import com.sabbreview.model.FieldOption;
-import com.sabbreview.model.FieldType;
-import com.sabbreview.model.Template;
-import com.sabbreview.model.User;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
+import com.sabbreview.NotificationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,10 +44,10 @@ public class ApplicationController extends Controller {
   }
 
   public static TransactionState<Application> deleteApplication(String principle,
-      String applicationID) {
+      String applicationId) {
     try {
       em.getTransaction().begin();
-      em.createNamedQuery("authenticated-delete").setParameter("id", applicationID).executeUpdate();
+      em.createNamedQuery("authenticated-delete").setParameter("id", applicationId).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
@@ -99,6 +92,8 @@ public class ApplicationController extends Controller {
       em.merge(application); //need to iterate through user, find acc state, and change
       em.flush();
       em.getTransaction().commit();
+      new NotificationService().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
+              "User", application.getApplicant().getEmailAddress());//need to decide on names or not
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (IllegalArgumentException e) {
       rollback();
