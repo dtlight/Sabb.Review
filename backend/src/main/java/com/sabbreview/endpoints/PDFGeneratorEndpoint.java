@@ -14,11 +14,11 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
 
-import static java.lang.Thread.currentThread;
 import static spark.Spark.get;
 
 public class PDFGeneratorEndpoint {
@@ -28,9 +28,8 @@ public class PDFGeneratorEndpoint {
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
           PDDocument document = new PDDocument();
-
-          PDImageXObject pdImage = PDImageXObject.createFromFile(
-              currentThread().getContextClassLoader().getResource("sabbreview.png").getPath(), document);
+          System.out.println("DEADBEEF"+new File("sabbreview.png").getAbsolutePath());
+          PDImageXObject pdImage = PDImageXObject.createFromFile("sabbreview.png", document);
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
