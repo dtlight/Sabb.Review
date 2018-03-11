@@ -6,44 +6,21 @@ A sabbatical period review system for university staff.
 
 ### Frontend
 
-#### Prerequisites
-
-You need [Node JS](https://nodejs.org/en/) to run an npm server.
-
-#### Running
-
-To test the frontend locally, run:
+To test the frontend locally, run (inside 'client'):
 
     npm install
-    npm run
+    npm start
 
-
+Detailed instructions can be found [here](docs/frontend.md)
 
 ### Backend
 
-#### Prerequisites
-All dependencies are provided by Maven. To build SabbReview, make sure Maven is installed: https://maven.apache.org/install.html.
-
-To run the server locally, you'll need the [Heroku CLI tools](https://devcenter.heroku.com/articles/heroku-cli)
-
-#### Building
-
-To install the require dependencies run:
-
-     mvn clean install
-
-
-Two resulting jar files (for the modules 'mail' and 'backend') are created inside 'target' in the respective modules.
-(see Procfile for exact paths)
-
-
 To test the server locally, run:
 
+    maven clean install
     heroku local
 
-
-If you're having issues on Windows, try replacing the respective lines "*-with-dependencies.jar*" in procfile with the actual file name.
-
+Detailed instructions can be found [here](docs/backend.md)
 
 
 ## Contributing

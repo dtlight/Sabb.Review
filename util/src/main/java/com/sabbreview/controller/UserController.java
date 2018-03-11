@@ -26,16 +26,19 @@ public class UserController extends Controller {
 
   public static TransactionState<User> registerUser(User user) {
     try {
+      em.getTransaction().begin();
       user.encryptPassword();
       user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
-      } else {
-        em.persist(user);
       }
+
+      em.persist(user);
+      em.getTransaction().commit();
       return new TransactionState<>(user, TransactionStatus.STATUS_OK);
     } catch (RollbackException e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
           (e.getCause().getMessage().contains("duplicate") ?
               "There is already a user with that email address" :
@@ -128,7 +131,7 @@ public class UserController extends Controller {
       TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery("get-all-assignments-for-user", Assignment.class);
       assignmentTypedQuery.setParameter("owner", principle);
       List<Assignment> assignmentList = assignmentTypedQuery.getResultList();
-      return new TransactionState(assignmentList, TransactionStatus.STATUS_OK);
+      return new TransactionState<>(assignmentList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       e.printStackTrace();
       rollback();

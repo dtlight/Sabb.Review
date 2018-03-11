@@ -2,6 +2,7 @@ package com.sabbreview.controller;
 
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Department;
+import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
@@ -87,6 +88,17 @@ public class DepartmentController extends Controller {
             List<Application> applicationList = em.createNamedQuery("get-all-for-department", Application.class).setParameter("id", depID).getResultList();
             em.getTransaction().commit();
             return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK, "");
+        } catch (Exception e) {
+            rollback();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
+    }
+
+    public static TransactionState<List<Template>> getTemplates(String principle,
+        String depID) {
+        try {
+            List<Template> templateList = em.createNamedQuery("get-all-templates-for-department", Template.class).setParameter("id", depID).getResultList();
+            return new TransactionState<>(templateList, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {
             rollback();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");

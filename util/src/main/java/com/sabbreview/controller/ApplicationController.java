@@ -13,8 +13,8 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.RollbackException;
 
 public class ApplicationController extends Controller {
 
@@ -63,7 +63,17 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-
+  public static TransactionState<List> getAssignments(String principle,
+      String applicationID) {
+    try {
+      List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+      return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
   public static TransactionState<Application> getApplication(String applicationID) {
     try {
       Application application;
@@ -116,13 +126,15 @@ public class ApplicationController extends Controller {
       application.setState(AcceptanceState.PENDING);
 
       List<Field> fieldList = template.fieldList;
-
-      for (Field field : fieldList) {
-        System.out.println(field);
-        FieldInstance fieldInstance = new FieldInstance(field);
-        em.persist(fieldInstance);
-        application.addFieldInstance(fieldInstance);
+      if(fieldList  != null) {
+        for (Field field : fieldList) {
+          System.out.println(field);
+          FieldInstance fieldInstance = new FieldInstance(field);
+          em.persist(fieldInstance);
+          application.addFieldInstance(fieldInstance);
+        }
       }
+
       em.persist(application);
       em.merge(application);
       em.merge(user);
@@ -156,13 +168,28 @@ public class ApplicationController extends Controller {
         case TEXT:
           fieldInstance.setValue(value.getValue());
           break;
+        case LONGTEXT:
+          fieldInstance.setValue(value.getValue());
+          break;
         case DATE:
           //TODO
           break;
         case MULTICHOICE:
-          FieldOption option = em.find(FieldOption.class, value);
-          if (option != null && fieldOf.getFieldOptions().contains(option)) {
-            fieldInstance.setOption(option);
+          String[] choices = value.value.split(",");
+          ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
+          for (String c:
+               choices) {
+            FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
+            selectedOptionsList.add(fieldOption);
+          }
+          fieldInstance.setSelectedValues(selectedOptionsList);
+          break;
+        case SINGLECHOICE:
+          FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
+          if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
+            ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
+            selectedOptionList.add(singlefieldoption);
+            fieldInstance.setSelectedValues(selectedOptionList);
           } else {
             throw new ValidationException("Field option does not exist for this field");
           }
@@ -173,8 +200,9 @@ public class ApplicationController extends Controller {
 
 
       return new TransactionState<>(fieldInstance, TransactionStatus.STATUS_OK);
-    } catch (ValidationException | RollbackException e) {
+    } catch (Exception e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }

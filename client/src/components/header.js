@@ -53,11 +53,12 @@ export default class extends React.Component {
 
             </Nav>
             <Nav className="ml-auto" navbar>
+                <NavLink onClick={this.hideNave} to="/admin/department/1">Department Admin</NavLink>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Administration
                 </DropdownToggle>
-                <DropdownMenu >
+                <DropdownMenu>
                     <DropdownItem onClick={this.hideNave} exact to="/admin/">
                         View Departments
                     </DropdownItem>
