@@ -23,7 +23,11 @@ export class DepartmentInfo extends React.Component {
           hod: data.value.HOD,
           name: data.value.name,
           applications: data.value.applications,
+<<<<<<< Updated upstream
             templates: data.value.templateList
+=======
+            templates: data.value.templates
+>>>>>>> Stashed changes
         })
       }
     });
@@ -40,7 +44,11 @@ export class DepartmentInfo extends React.Component {
           <Row>
             <Col md={3} bg={'primary'} style={{"marginBottom": "1em"}}>
               <ListGroup>
+<<<<<<< Updated upstream
                 <ListGroupItem><strong>Head of Department</strong>: <br/>{(this.state.hod)?this.state.hod.emailAddress:""}</ListGroupItem>
+=======
+                <ListGroupItem><strong>Head of Department</strong>: <br/>{this.state.hod}</ListGroupItem>
+>>>>>>> Stashed changes
               </ListGroup>
             </Col>
             <Col md={9}>

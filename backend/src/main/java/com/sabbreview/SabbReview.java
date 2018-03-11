@@ -9,6 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.ApplicationAdapter;
 import com.sabbreview.adapters.AssignmentAdapter;
+
+import com.sabbreview.adapters.DepartmentAdapter;
+
 import com.sabbreview.adapters.FieldAdapter;
 import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
@@ -22,6 +25,8 @@ import com.sabbreview.endpoints.TemplateEndpoint;
 import com.sabbreview.endpoints.UserEndpoint;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Department;
+
 import com.sabbreview.model.Field;
 import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
@@ -77,6 +82,8 @@ public class SabbReview {
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
     gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
+    gsonBuilder.registerTypeAdapter(Department.class, new DepartmentAdapter());
+
     gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
     gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
     gsonBuilder.registerTypeAdapter(Assignment.class, new AssignmentAdapter());

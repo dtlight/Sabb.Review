@@ -6,16 +6,19 @@ import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
 import com.sabbreview.model.FieldInstance;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import static java.lang.Thread.currentThread;
 import static spark.Spark.get;
 
 public class PDFGeneratorEndpoint {
@@ -24,14 +27,22 @@ public class PDFGeneratorEndpoint {
 
     private static ByteArrayOutputStream getPDF(String assignmentID) {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          PDDocument document = new PDDocument();
+
+          PDImageXObject pdImage = PDImageXObject.createFromFile(
+              currentThread().getContextClassLoader().getResource("sabbreview.png").getPath(), document);
+
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             Application application = em.find(Application.class,assignmentID);
-            PDDocument document = new PDDocument();
 
+            PDDocumentInformation pdDocumentInformation = new PDDocumentInformation();
+            pdDocumentInformation.setTitle("SabbReview Appraisal #"+application.getId());
+            document.setDocumentInformation(pdDocumentInformation);
             PDPage pdPage = new PDPage(); // Page 1: Details about application
 
             PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
+            contentStream.drawImage( pdImage, 380, 700);
             contentStream.beginText();
             contentStream.setFont(font, 15);
             contentStream.setLeading(20f);
