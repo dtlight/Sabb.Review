@@ -115,6 +115,7 @@ public class ApplicationController extends Controller {
       User user = em.find(User.class, principle);
       Department department = em.find(Department.class, departmentid);
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
       Application application = new Application();
       application.setDepartment(department);
