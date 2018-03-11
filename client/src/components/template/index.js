@@ -406,29 +406,72 @@ export class TemplateTable extends React.Component {
     super(props);
     this.props = props;
     this.state = {
+        isLoading: true
     }
   }
 
+  componentWillMount() {
+      if(this.props.templates) {
+          this.setState({
+              isLoading: false,
+              templates: this.props.templates
+          })
+      } else {
+
+    axios.get(`/department/${this.props.departmentId}/templates`)
+        .then(function (response) {
+          if(response.data.state !== "STATUS_ERROR") {
+              this.setState({
+                  isLoading: false,
+                  templates: response.data.value
+              })
+          } else {
+              this.setState({
+                  isError: true,
+                  isCreating: false
+              })
+          }
+
+      }.bind(this))
+
+      }
+  }
+
   render() {
-    return (
-      <Table>
-        <thead>
-          <tr>
-            <td>ID</td>
-            <td>Name</td>
-            <td>Actions</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>#1</td>
-            <td>Main Template <Badge color="secondary">Default</Badge></td>
-            <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link to="./1"><Button color="secondary">Edit Template</Button></Link></ButtonGroup></td>
-          </tr>
-            <CreateTemplate />
-        </tbody>
-      </Table>
-    )
+      if(this.state.isLoading) {
+          return (<div class="loader">Loading...</div>);
+      } else {
+          let templates = [];
+
+          for (let template of this.state.templates) {
+              templates.push(
+                  <tr>
+                      <td>{template.name}</td>
+                      <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link
+                          to={`/admin/template/${template.id}`}><Button color="secondary">Edit
+                          Template</Button></Link></ButtonGroup></td>
+                  </tr>
+              )
+          }
+
+
+          return (
+              <Table striped={true} style={{"marginTop":"15px"}}>
+                  <thead>
+                  <tr>
+                      <td>Name</td>
+                      <td>Actions</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {
+                      templates
+                  }
+
+                  </tbody>
+              </Table>
+          )
+      }
   }
 }
 
@@ -438,7 +481,7 @@ export class CreateTemplate extends React.Component {
         this.props = props;
         this.state = {
             name: "",
-            deptID: -1,
+            deptID: this.props.departmentId||-1,
             newid: -1
         };
         this.toggle = this.toggle.bind(this);
@@ -473,7 +516,7 @@ export class CreateTemplate extends React.Component {
             return (<Redirect to={`/admin/template/${this.state.newid}`}/>);
         } else {
             return (
-                <div className={this.props.className}>
+                <div className={this.props.className} {...this.props}>
                     <Modal isOpen={this.state.modal} toggle={this.toggle}>
                         <ModalHeader toggle={this.toggle}>Create Template</ModalHeader>
                         <ModalBody>
@@ -485,21 +528,21 @@ export class CreateTemplate extends React.Component {
                                     })
                                 }} value={this.state.name}/>
                             </FormGroup>
-                            <FormGroup>
+                            {(this.props.departmentId)?"":<FormGroup>
                                 <label>Department</label>
                                 <DepartmentList selectDepartment={(d)=>{
                                     this.setState({
                                         deptID: d
                                     });
                                 }}/>
-                            </FormGroup>
+                            </FormGroup>}
 
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onClick={this.create}>Create Template</Button>
                         </ModalFooter>
                     </Modal>
-                    <Button color="dark" onClick={this.toggle}>Create Template</Button>
+                    <Button color="dark" onClick={this.toggle}><i class="fa fa-plus"></i>{" "}Create Template</Button>
                 </div>
             )
         }

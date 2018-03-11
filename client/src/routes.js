@@ -27,9 +27,6 @@ import Admin from './views/admin/home/';
 import {
     DepartmentInfo
 } from './views/admin/department/';
-import {
-    AdminEditApplication
-} from "./views/admin/application";
 
 export default class Routes extends React.Component {
     render() {
@@ -39,7 +36,6 @@ export default class Routes extends React.Component {
                   <span>
                   <Header isLoggedIn={isLoggedIn()}/>
                       <Switch>
-                         <PrivateRoute exact path='/admin/application/:id' component={AdminEditApplication} />
                          <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                          <PrivateRoute path='/review/:id' component={ReviewDetail} />
 
