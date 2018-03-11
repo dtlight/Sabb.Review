@@ -249,11 +249,15 @@ export class EditApplication extends React.Component {
 
             <div className={"bg-light"}>
                 <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the area below</p>
+                    <p class="lead">Please draw your signature in the area below and click 'Sign'</p>
                 <SignatureCanvas penColor='#252f3c'
                                  canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
                 </div>
             </div>
+              <ButtonGroup style={{"paddingBottom": "10px", "textAlign": "center", "display": "block"}}>
+                  <Button color="secondary" style={{"marginRight":"10px"}}> Sign</Button>
+                  <Button color="secondary" style={{"marginRight":"10px"}}> Clear Signature</Button>
+              </ButtonGroup>
         </form>
         );
     }
