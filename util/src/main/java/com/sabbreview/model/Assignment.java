@@ -14,24 +14,7 @@ import javax.persistence.SequenceGenerator;
 
 
 @NamedQueries({
-  @NamedQuery(
-      name="get-all-assignments-for-user",
-      query = "select a from assignments a " +
-              "where a.assignee.emailAddress = :principle"),
-  @NamedQuery(
-      name="get-assignment-application",
-      query = "select a.application from assignments a " +
-              "where a.application.id = :assignmentId and a.assignee.emailAddress = :principle"),
-
-  @NamedQuery(
-      name="set-assignment-application-acceptance-state",
-      query = "update assignments a set a.application.state = :acceptanceState " +
-              "where a.id = :assignmentId and a.assignee.emailAddress = :principle"),
-
-  @NamedQuery(
-      name="get-assignment-application-acceptance-state",
-      query = "select a.application.state from assignments a " +
-              "where a.id = :assignmentId and a.assignee.emailAddress = :principle")
+    @NamedQuery(name="get-all-assignments-for-user", query = "SELECT a from assignments a WHERE a.assignee.emailAddress = :owner")
 })
 @Entity(name = "assignments") public class Assignment extends Model {
   @Id @SequenceGenerator(name = "ass_id_gen")
@@ -82,8 +65,6 @@ import javax.persistence.SequenceGenerator;
   public Application getApplication() {
     return application;
   }
-
-
 
   public Assignment setApplication(Application application) {
     this.application = application;
