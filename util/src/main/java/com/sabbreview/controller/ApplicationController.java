@@ -5,30 +5,24 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 import com.sabbreview.NotificationService;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationController extends Controller {
 
-  /**
-   * Creates an application.
-   * @param principle Principle (email) of the user creating the application
-   */
   public static TransactionState<Application> createApplication(String principle,
       Application application) {
     try {
-
       if (application == null) {
         application = new Application();
       }
-
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
       queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
       application.setApplicant(user);
       em.persist(application);
       em.getTransaction().commit();
-
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
@@ -36,15 +30,8 @@ public class ApplicationController extends Controller {
     }
   }
 
-  /**
-   * Assigns an user to an application.
-   * @param principle Principle of the user creating the application
-   * @param applicant The applicant to be assigned to
-   * @param application Application to be assigned.
-   *
-  private static TransactionState<Application> assignApplication(String principle, User applicant,
+  private static TransactionState<Application> assignApplication(User applicant,
       Application application) {
-
     try {
       em.getTransaction().begin();
       application.setApplicant(applicant);
@@ -56,23 +43,18 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  */
 
   /**
-   * Deletes an application. Only admins and those who own an application can delete an application.
+   * Deletes an application.
    * @param principle Principle of the user calling this function..
    * @param applicationID ID of the application to be deleted.
+   * @return
    */
   public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
-
-      User user = em.find(User.class, principle);
-      Application application = em.find(Application.class, applicationID);
-      if(application.getApplicant().getEmailAddress().equals(user.getEmailAddress()) || user.getAdmin()){
-        em.getTransaction().begin();
-        em.createNamedQuery("delete-application").setParameter("id", applicationID).executeUpdate();
-        em.getTransaction().commit();
-    }
+      em.getTransaction().begin();
+      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
+      em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
@@ -80,25 +62,12 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-
-  /**
-   * Gets all of the assignments which assign a given application.
-   * @param applicationID The application in question
-   * @return A list of assignments to which assign the application
-   */
-  public static TransactionState<List> getAssignments(String principle, String applicationID) {
+  
+  public static TransactionState<List> getAssignments(String principle,
+      String applicationID) {
     try {
-        User user = em.find(User.class, principle);
-      Application application = em.find(Application.class, applicationID);
-      List assignments = null;
-
-      //TODO replace true with an actual permission
-      if( true || user.getAdmin()) {
-          assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
-      }
-
+      List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
       return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
-
     } catch (Exception e) {
       rollback();
       e.printStackTrace();
@@ -108,35 +77,25 @@ public class ApplicationController extends Controller {
 
   /**
    * Retrieves an application.
-   * Principle user must either own the application, be assigned the application, or be an admin.
    * @param principle The ID of the user requesting the application.
    * @param applicationID The application to be returned.
    * @return The application along with a transaction status message.
    */
   public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
-        User user = em.find(User.class, principle);
-        Application application = null;
-        application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).getSingleResult();
-
-        if( userIsAssignedApplication(applicationID, user) || user.getAdmin() || application.getApplicant().getEmailAddress().equals(principle)){
-            return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
-        }
-
-        return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
+      Application application;
+      application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
+      if (application == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
 
-    /**
-     * Sets the acceptance state of a given application
-     * @param principle Principle of the user setting the acceptance state
-     * @param applicationID The application to modify
-     * @param acceptanceStateString The acceptance state to set, in a string.
-     * @return
-     */
+
   public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
     try {
@@ -257,17 +216,6 @@ public class ApplicationController extends Controller {
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
-  }
-
-  private static boolean userIsAssignedApplication(String applicationID, User user){
-      List<Assignment> assignments = user.getAssignments();
-      for(int i = 0; i < assignments.size(); i++){
-          if( assignments.get(i).getId().equals(applicationID) ){
-              return true;
-          }
-      }
-
-      return false;
   }
 
 
