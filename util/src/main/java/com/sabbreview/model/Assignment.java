@@ -3,26 +3,30 @@ package com.sabbreview.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 
 
 @NamedQueries({
     @NamedQuery(name="get-all-assignments-for-user", query = "SELECT a from assignments a WHERE a.assignee.emailAddress = :owner")
 })
 @Entity(name = "assignments") public class Assignment extends Model {
-  @Id @SequenceGenerator(name = "ass_id_gen")
-  public int id;
 
-  @ManyToOne(targetEntity = User.class)  User assignee;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  String id;
 
-  @ManyToOne Application application;
+  @ManyToOne(targetEntity = User.class, cascade = CascadeType.PERSIST)  User assignee;
+
+  @ManyToOne(targetEntity = Application.class, cascade = CascadeType.PERSIST) Application application;
 
   @ManyToOne Role role;
 
@@ -43,14 +47,6 @@ import javax.persistence.SequenceGenerator;
     setRole(role);
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public Assignment setId(int id) {
-    this.id = id;
-    return this;
-  }
 
   public User getAssignee() {
     return assignee;
@@ -111,6 +107,16 @@ import javax.persistence.SequenceGenerator;
 
   public Assignment setState(AcceptanceState state) {
     this.state = state;
+    return this;
+  }
+
+
+  public String getId() {
+    return id;
+  }
+
+  public Assignment setId(String id) {
+    this.id = id;
     return this;
   }
 

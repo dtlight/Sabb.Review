@@ -8,6 +8,10 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.ApplicationAdapter;
+import com.sabbreview.adapters.AssignmentAdapter;
+
+import com.sabbreview.adapters.DepartmentAdapter;
+
 import com.sabbreview.adapters.FieldAdapter;
 import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
@@ -15,10 +19,14 @@ import com.sabbreview.endpoints.ApplicationEndpoint;
 import com.sabbreview.endpoints.AssignmentEndpoint;
 import com.sabbreview.endpoints.DepartmentEndpoint;
 import com.sabbreview.endpoints.FieldEndpoint;
+import com.sabbreview.endpoints.PDFGeneratorEndpoint;
 import com.sabbreview.endpoints.RoleEndpoint;
 import com.sabbreview.endpoints.TemplateEndpoint;
 import com.sabbreview.endpoints.UserEndpoint;
 import com.sabbreview.model.Application;
+import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Department;
+
 import com.sabbreview.model.Field;
 import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
@@ -26,6 +34,8 @@ import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
+
+import java.io.File;
 
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -54,7 +64,7 @@ public class SabbReview {
     FieldEndpoint.attach();
     TemplateEndpoint.attach();
     AssignmentEndpoint.attach();
-    //PDFGeneratorController.attach();
+    PDFGeneratorEndpoint.attach();
 
     options("*", (req, res) -> "");
 
@@ -74,8 +84,12 @@ public class SabbReview {
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
     gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
+    gsonBuilder.registerTypeAdapter(Department.class, new DepartmentAdapter());
+
     gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
     gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
+    gsonBuilder.registerTypeAdapter(Assignment.class, new AssignmentAdapter());
+
     return gsonBuilder.create();
   }
 
@@ -88,7 +102,7 @@ public class SabbReview {
     } else {
       try {
         String jwtString = token.split("Bearer ")[1];
-        Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
+        Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY")) ;
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("sabbreview").build();
         DecodedJWT decodedJWT = verifier.verify(jwtString);
         req.attribute("isAuthenticated", true);
@@ -99,5 +113,9 @@ public class SabbReview {
             "Could not verify authentication token")));
       }
     }
+  }
+
+  public static String getStaticResource(String module, String fileName) {
+    return new File("").getAbsolutePath() + "/"+module+"/target/classes/"+fileName;
   }
 }

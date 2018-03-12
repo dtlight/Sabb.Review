@@ -16,7 +16,7 @@ import javax.persistence.NamedQuery;
 
 @Entity
 @NamedQueries({
-    @NamedQuery( name="gettemplate", query = "SELECT t FROM Template t WHERE t.id = :id")
+    @NamedQuery( name="get-all-templates-for-department", query = "SELECT t.id, t.name FROM Template t WHERE t.department.id = :id")
 })
 public class Template extends Model {
 

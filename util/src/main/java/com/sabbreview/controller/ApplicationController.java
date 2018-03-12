@@ -1,20 +1,13 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
-import com.sabbreview.model.Department;
-import com.sabbreview.model.Field;
-import com.sabbreview.model.FieldInstance;
-import com.sabbreview.model.FieldOption;
-import com.sabbreview.model.FieldType;
-import com.sabbreview.model.Template;
-import com.sabbreview.model.User;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
+import com.sabbreview.NotificationService;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.RollbackException;
 
 public class ApplicationController extends Controller {
 
@@ -26,6 +19,7 @@ public class ApplicationController extends Controller {
       }
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
       application.setApplicant(user);
       em.persist(application);
       em.getTransaction().commit();
@@ -56,13 +50,24 @@ public class ApplicationController extends Controller {
    * @param applicationID ID of the application to be deleted.
    * @return
    */
-  public static TransactionState<Application> deleteApplication(String principle,
-                                                                String applicationID) {
+  public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
       em.getTransaction().begin();
       em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+  
+  public static TransactionState<List> getAssignments(String principle,
+      String applicationID) {
+    try {
+      List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+      return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
       e.printStackTrace();
@@ -102,6 +107,8 @@ public class ApplicationController extends Controller {
       em.merge(application); //need to iterate through user, find acc state, and change
       em.flush();
       em.getTransaction().commit();
+      new NotificationService().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
+              "User", application.getApplicant().getEmailAddress());//need to decide on names or not
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (IllegalArgumentException e) {
       rollback();
@@ -122,6 +129,7 @@ public class ApplicationController extends Controller {
       User user = em.find(User.class, principle);
       Department department = em.find(Department.class, departmentid);
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
       Application application = new Application();
       application.setDepartment(department);
@@ -129,13 +137,15 @@ public class ApplicationController extends Controller {
       application.setState(AcceptanceState.PENDING);
 
       List<Field> fieldList = template.fieldList;
-
-      for (Field field : fieldList) {
-        System.out.println(field);
-        FieldInstance fieldInstance = new FieldInstance(field);
-        em.persist(fieldInstance);
-        application.addFieldInstance(fieldInstance);
+      if(fieldList  != null) {
+        for (Field field : fieldList) {
+          System.out.println(field);
+          FieldInstance fieldInstance = new FieldInstance(field);
+          em.persist(fieldInstance);
+          application.addFieldInstance(fieldInstance);
+        }
       }
+
       em.persist(application);
       em.merge(application);
       em.merge(user);
@@ -169,13 +179,28 @@ public class ApplicationController extends Controller {
         case TEXT:
           fieldInstance.setValue(value.getValue());
           break;
+        case LONGTEXT:
+          fieldInstance.setValue(value.getValue());
+          break;
         case DATE:
           //TODO
           break;
         case MULTICHOICE:
-          FieldOption option = em.find(FieldOption.class, value);
-          if (option != null && fieldOf.getFieldOptions().contains(option)) {
-            fieldInstance.setOption(option);
+          String[] choices = value.value.split(",");
+          ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
+          for (String c:
+               choices) {
+            FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
+            selectedOptionsList.add(fieldOption);
+          }
+          fieldInstance.setSelectedValues(selectedOptionsList);
+          break;
+        case SINGLECHOICE:
+          FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
+          if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
+            ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
+            selectedOptionList.add(singlefieldoption);
+            fieldInstance.setSelectedValues(selectedOptionList);
           } else {
             throw new ValidationException("Field option does not exist for this field");
           }
@@ -186,8 +211,9 @@ public class ApplicationController extends Controller {
 
 
       return new TransactionState<>(fieldInstance, TransactionStatus.STATUS_OK);
-    } catch (ValidationException | RollbackException e) {
+    } catch (Exception e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }

@@ -17,15 +17,21 @@ public class FieldEndpoint extends Endpoint {
   public static void attach() {
     post("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(createField(principle, fromJson(req.body(), Field.class))))));
+
     put("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(editField(principle, fromJson(req.body(), Field.class))))));
+
     post("/field/:id/option", (req, res) -> requireAuthentication(req,
         (principle -> toJson(addOption(principle, req.params(":id"), fromJson(req.body(), FieldOption.class))))));
+
     delete("/field/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(deleteField(principle, req.params(":id"))))));
+
     get("/field/:id", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getField(principle, req.params(":id"))))));
+
     get("/field", (req, res) -> requireAuthentication(req,
         (principle -> toJson(getField(principle, req.params(":id"))))));
+
   }
 }

@@ -10,6 +10,7 @@ import spark.Request;
 import spark.Spark;
 
 class Endpoint {
+
   static String requireAuthentication(Request req, AuthentcatedRequest result) {
     if (req.attribute("isAuthenticated")) {
       return result.onAccept(req.attribute("principle"));
