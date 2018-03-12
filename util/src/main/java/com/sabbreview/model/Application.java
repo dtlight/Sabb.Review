@@ -14,12 +14,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 @NamedQueries({
-    @NamedQuery(name="authenticated-delete", query = "delete from applications a where a.id = :id"),
-    @NamedQuery(name="get-all-applications-for-user", query = "select a from applications a where a.applicant.emailAddress = :owner"),
+    @NamedQuery(name="delete-application", query = "delete from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
+    @NamedQuery(name="get-application", query = "select a from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
+    @NamedQuery(name="get-all-applications-for-user", query = "select a from applications a where a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-all-assignments-for-application", query = "select a.id, a.assignee.emailAddress from assignments a where a.application.id = :id"),
-
-    @NamedQuery(name="get-all-for-department", query = "select a from applications a where a.department.id = :id")
-
+    @NamedQuery(name="get-all-for-department", query = "select a from applications a where a.department.id = :id"),
 })
 @Entity(name = "applications")
 public class Application
@@ -69,7 +68,6 @@ public class Application
     applicant.applications.add(this);
   }
 
-
   public Application setState(AcceptanceState state) {
     this.state = state;
     return this;
@@ -115,6 +113,7 @@ public class Application
     return "Application{" + "id='" + id + '\'' + ", applicant=" + applicant + ", fields=" + fields
         + ", department=" + department + ", state=" + state + '}';
   }
+
 
 
 }

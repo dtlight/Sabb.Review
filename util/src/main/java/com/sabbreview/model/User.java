@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 @Entity(name = "users") public class User extends Model {
   private static transient int HASH_ROUNDS = 10;
 
+
   @Id private String emailAddress;
   @SuppressWarnings("FieldCanBeLocal") private String password;
 
