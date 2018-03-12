@@ -40,9 +40,9 @@ public class UserController extends Controller {
       rollback();
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
-          (e.getCause().getMessage().contains("duplicate") ?
-              "There is already a user with that email address" :
-              null));
+              (e.getCause().getMessage().contains("duplicate") ?
+                      "There is already a user with that email address" :
+                      null));
     } catch (Exception e) {
       rollback();
       e.printStackTrace();
@@ -72,7 +72,7 @@ public class UserController extends Controller {
           calendar.add(Calendar.DAY_OF_YEAR, 3);
           Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
           token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
-              .withExpiresAt(calendar.getTime()).sign(algorithm);
+                  .withExpiresAt(calendar.getTime()).sign(algorithm);
         } else {
           throw new ValidationException();
         }
@@ -115,7 +115,7 @@ public class UserController extends Controller {
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
-      applicationTypedQuery.setParameter("owner", principle);
+      applicationTypedQuery.setParameter("id", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
       return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
