@@ -19,6 +19,7 @@ public class ApplicationController extends Controller {
       }
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
       application.setApplicant(user);
       em.persist(application);
       em.getTransaction().commit();
@@ -43,11 +44,16 @@ public class ApplicationController extends Controller {
     }
   }
 
-  public static TransactionState<Application> deleteApplication(String principle,
-      String applicationId) {
+  /**
+   * Deletes an application.
+   * @param principle Principle of the user calling this function..
+   * @param applicationID ID of the application to be deleted.
+   * @return
+   */
+  public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
       em.getTransaction().begin();
-      em.createNamedQuery("authenticated-delete").setParameter("id", applicationId).executeUpdate();
+      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
@@ -56,6 +62,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+  
   public static TransactionState<List> getAssignments(String principle,
       String applicationID) {
     try {
@@ -67,10 +74,17 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  public static TransactionState<Application> getApplication(String applicationID) {
+
+  /**
+   * Retrieves an application.
+   * @param principle The ID of the user requesting the application.
+   * @param applicationID The application to be returned.
+   * @return The application along with a transaction status message.
+   */
+  public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
       Application application;
-      application = em.find(Application.class, applicationID);
+      application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
       if (application == null) {
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
       }
@@ -80,6 +94,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
 
   public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
@@ -114,6 +129,7 @@ public class ApplicationController extends Controller {
       User user = em.find(User.class, principle);
       Department department = em.find(Department.class, departmentid);
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
+      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
       Application application = new Application();
       application.setDepartment(department);
@@ -201,6 +217,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
 
   public class FieldInstanceValue {
     String value;

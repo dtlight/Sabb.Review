@@ -9,6 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sabbreview.adapters.ApplicationAdapter;
 import com.sabbreview.adapters.AssignmentAdapter;
+
+import com.sabbreview.adapters.DepartmentAdapter;
+
 import com.sabbreview.adapters.FieldAdapter;
 import com.sabbreview.adapters.TemplateAdapter;
 import com.sabbreview.adapters.UserAdadpter;
@@ -22,6 +25,8 @@ import com.sabbreview.endpoints.TemplateEndpoint;
 import com.sabbreview.endpoints.UserEndpoint;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Department;
+
 import com.sabbreview.model.Field;
 import com.sabbreview.model.Template;
 import com.sabbreview.model.User;
@@ -29,6 +34,8 @@ import com.sabbreview.responses.NotFound;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
+
+import java.io.File;
 
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -77,6 +84,8 @@ public class SabbReview {
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(User.class, new UserAdadpter());
     gsonBuilder.registerTypeAdapter(Template.class, new TemplateAdapter());
+    gsonBuilder.registerTypeAdapter(Department.class, new DepartmentAdapter());
+
     gsonBuilder.registerTypeAdapter(Application.class, new ApplicationAdapter());
     gsonBuilder.registerTypeAdapter(Field.class, new FieldAdapter());
     gsonBuilder.registerTypeAdapter(Assignment.class, new AssignmentAdapter());
@@ -104,5 +113,9 @@ public class SabbReview {
             "Could not verify authentication token")));
       }
     }
+  }
+
+  public static String getStaticResource(String module, String fileName) {
+    return new File("").getAbsolutePath() + "/"+module+"/target/classes/"+fileName;
   }
 }
