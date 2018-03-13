@@ -6,8 +6,8 @@ export class ViewRole extends React.Component {
   render() {
     return (
       <div>
-        <h1 class="display-4"><strong>Edit Template:</strong> {this.state.title}</h1>
-        <p class="lead">These are the questions that you can ask applicants for sabbatical leave.</p>
+        <h1 class="display-4"><strong>Edit Roles:</strong> {this.state.title}</h1>
+        <p class="lead">These are the roles that you can assign to the reviews.</p>
         <hr />
       </div>
     );
