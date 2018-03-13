@@ -114,7 +114,8 @@ public class ApplicationController extends Controller {
             Application application;
             application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).getSingleResult();
 
-            if( userIsAssignedApplication(applicationID, user) || user.getAdmin() || application.getApplicant().getEmailAddress().equals(principle)){
+            if( userIsAssignedApplication(applicationID, user) || user.getAdmin() ||
+                    application.getApplicant().getEmailAddress().equals(principle)){
                 return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
             }
 
@@ -134,8 +135,8 @@ public class ApplicationController extends Controller {
     public static TransactionState<Application> setAcceptanceState(String principle,
                                                                    String applicationID, String acceptanceStateString) {
         try {
-            AcceptanceState acceptanceState =
-                    AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
+
+            AcceptanceState acceptanceState = AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
             em.getTransaction().begin();
             Application application = em.find(Application.class, applicationID);
             application.setState(acceptanceState);
