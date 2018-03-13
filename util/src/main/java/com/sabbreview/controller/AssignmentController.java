@@ -10,6 +10,12 @@ import javax.persistence.RollbackException;
 
 public class AssignmentController extends Controller {
 
+  /**
+   * Assigns an application to a user. Currently has no authentication.
+   * @param principle Principle of the user assigning the application.
+   * @param applicationId ID of the application to assign.
+   * @param assigneeId ID of the user to whom the application is being assigned.
+   */
   public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String assigneeId) {
     try {
       em.getTransaction().begin();
@@ -28,6 +34,12 @@ public class AssignmentController extends Controller {
     }
   }
 
+  /**
+   * Creates and adds a comment to an application.
+   * @param principle Principle of the user adding the comment.
+   * @param assignmentID ID of the assignment to add the comment to.
+   * @param comment The string of the comment.
+   */
   public static TransactionState<Assignment> createComment(String principle, String assignmentID, Comment comment) {
     try {
       em.getTransaction().begin();
@@ -43,7 +55,11 @@ public class AssignmentController extends Controller {
     }
   }
 
-
+  /**
+   * Deletes the assignment of an application to a user.
+   * @param principle Principle of the user deleting the assignment.
+   * @param assignmentid ID of the assignment to delete.
+   */
   public static TransactionState<Assignment> deleteAssignment(String principle, String assignmentid) {
     try {
       em.getTransaction().begin();
@@ -60,22 +76,6 @@ public class AssignmentController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  
-    public static TransactionState<Assignment> setAcceptanceState(String applicationId, AcceptanceState acceptanceState){
-        Assignment assignment;
-        try{
-            em.getTransaction().begin();
-            assignment = em.find(Assignment.class, applicationId);
-            assignment.setState(acceptanceState);
-            em.getTransaction().commit();
-            new NotificationService().sendNotification(NotificationID.valueOf(acceptanceState.toString()),
-                    "User", assignment.getApplication().getApplicant().getEmailAddress());//need to decide on names or not
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-        } catch (RollbackException e) {
-            rollback();
-            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-        }
-    }
 
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {
       try {
