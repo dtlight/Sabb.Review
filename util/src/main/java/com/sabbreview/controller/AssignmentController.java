@@ -1,10 +1,7 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
-import com.sabbreview.model.Assignment;
-import com.sabbreview.model.Comment;
-import com.sabbreview.model.User;
+import com.sabbreview.NotificationService;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
@@ -23,6 +20,7 @@ public class AssignmentController extends Controller {
       assignment.setAssignee(assignee);
       em.persist(assignment);
       em.getTransaction().commit();
+      new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       rollback();
@@ -54,6 +52,7 @@ public class AssignmentController extends Controller {
         throw new ValidationException("Assignment does not exist");
       } else {
         em.remove(assignment);
+
       }
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
@@ -62,13 +61,15 @@ public class AssignmentController extends Controller {
     }
   }
   
-    public static TransactionState<Assignment> setAcceptanceState(String applicationid, AcceptanceState acceptanceState){
+    public static TransactionState<Assignment> setAcceptanceState(String applicationId, AcceptanceState acceptanceState){
         Assignment assignment;
         try{
             em.getTransaction().begin();
-            assignment = em.find(Assignment.class, applicationid);
+            assignment = em.find(Assignment.class, applicationId);
             assignment.setState(acceptanceState);
             em.getTransaction().commit();
+            new NotificationService().sendNotification(NotificationID.valueOf(acceptanceState.toString()),
+                    "User", assignment.getApplication().getApplicant().getEmailAddress());//need to decide on names or not
             return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
         } catch (RollbackException e) {
             rollback();

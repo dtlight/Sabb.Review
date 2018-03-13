@@ -19,7 +19,9 @@ public class ApplicationEndpoint extends Endpoint {
             .createApplication(principle, fromJson(req.body(), com.sabbreview.model.Application.class)))));
 
     get("/application/:id",
-        (req, res) -> toJson(ApplicationController.getApplication(req.params(":id"))));
+        (req, res) -> requireAuthentication(req, (principle) -> toJson(
+                ApplicationController.getApplication(principle, req.params(":id")))));
+
     get("/application/:id/assignments",
         (req, res) -> requireAuthentication(req, (principle) ->
             toJson(ApplicationController.getAssignments(principle, req.params(":id")))));

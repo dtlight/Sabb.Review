@@ -1,0 +1,6 @@
+package com.sabbreview.model;
+
+public enum NotificationID {
+    PENDING, SUBMITTED, ACCEPTED, REFUSED, COMPLETED, ASSIGNEDTO;
+    //RETRACTED, MODIFIEDBYUSER, MODIFIEDBYADMIN
+}
