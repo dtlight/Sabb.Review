@@ -11,8 +11,9 @@ import java.util.List;
 public class ApplicationController extends Controller {
 
     /**
-     * Creates an application.
+     * Stores an application in the database.
      * @param principle Principle (email) of the user creating the application
+     * @param application Persists an application in the data
      */
     public static TransactionState<Application> createApplication(String principle,
                                                                   Application application) {
@@ -61,14 +62,15 @@ public class ApplicationController extends Controller {
     public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
         try {
 
+            em.getTransaction().begin();
             User user = em.find(User.class, principle);
             Application application = em.find(Application.class, applicationID);
 
             if(application.getApplicant().getEmailAddress().equals(user.getEmailAddress()) || user.getAdmin()){
-                em.getTransaction().begin();
                 em.createNamedQuery("delete-application").setParameter("id", applicationID).executeUpdate();
-                em.getTransaction().commit();
             }
+
+            em.getTransaction().commit();
             return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {
             rollback();
@@ -84,15 +86,17 @@ public class ApplicationController extends Controller {
      */
     public static TransactionState<List> getAssignments(String principle, String applicationID) {
         try {
+            em.getTransaction().begin();
             User user = em.find(User.class, principle);
-            List assignments;
+            List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+            em.getTransaction().commit();
 
             //TODO replace true with an actual permission
             if( true || user.getAdmin()) {
-                assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+                return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
             }
 
-            return new TransactionState<>(assignments, TransactionStatus.STATUS_OK, "");
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
 
         } catch (Exception e) {
             rollback();
@@ -110,10 +114,13 @@ public class ApplicationController extends Controller {
      */
     public static TransactionState<Application> getApplication(String principle, String applicationID) {
         try {
+            em.getTransaction().begin();
             User user = em.find(User.class, principle);
             Application application;
             application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).getSingleResult();
+            em.getTransaction().commit();
 
+            //Checking user owns the application, is assigned the application, or is an admin
             if( userIsAssignedApplication(applicationID, user) || user.getAdmin() ||
                     application.getApplicant().getEmailAddress().equals(principle)){
                 return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
@@ -128,6 +135,7 @@ public class ApplicationController extends Controller {
 
     /**
      * Sets the acceptance state of a given application
+     * Only an admin, or someone assigned to an application can change its acceptance state.
      * @param principle Principle of the user setting the acceptance state
      * @param applicationID The application to modify
      * @param acceptanceStateString The acceptance state to set, in a string.
@@ -135,13 +143,16 @@ public class ApplicationController extends Controller {
     public static TransactionState<Application> setAcceptanceState(String principle,
                                                                    String applicationID, String acceptanceStateString) {
         try {
-
             AcceptanceState acceptanceState = AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
+
             em.getTransaction().begin();
             Application application = em.find(Application.class, applicationID);
-            application.setState(acceptanceState);
-            em.merge(application); //need to iterate through user, find acc state, and change
-            em.flush();
+            User caller = em.find( User.class, principle);
+
+            if( userIsAssignedApplication(applicationID, caller) || caller.getAdmin() ) {
+                application.setState(acceptanceState);
+            }
+
             em.getTransaction().commit();
             new NotificationService().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
                     "User", application.getApplicant().getEmailAddress());//need to decide on names or not
@@ -156,7 +167,13 @@ public class ApplicationController extends Controller {
         }
     }
 
-
+    /**
+     * Creates a new application using a template with templateid.
+     * @param principle Principle of the calling user.
+     * @param templateid Id of the template to use
+     * @param departmentid Id of the department to assign the application to.
+     * @return
+     */
     public static TransactionState<Application> useTemplate(String principle, String templateid,
                                                             String departmentid) {
         try {
@@ -198,51 +215,62 @@ public class ApplicationController extends Controller {
         }
     }
 
+    /**
+     * Changes the value of a field instance inside an application.
+     * @param principle Principle of the calling user
+     * @param fieldInstanceId ID of the instance of the field whose value you want to modify.
+     * @param value Value to set the field to.
+     */
     public static TransactionState<FieldInstance> changeFieldValue(String principle,
                                                                    String fieldInstanceId, FieldInstanceValue value) {
         try {
             em.getTransaction().begin();
             FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
+            User caller = em.find( User.class, principle);
 
-            if (fieldInstance == null) {
-                throw new ValidationException("Field Instance does not exist");
+            //TODO add actual authentication
+            if( true || caller.getAdmin()) {
+                if (fieldInstance == null) {
+                    throw new ValidationException("Field Instance does not exist");
+                }
+
+                Field fieldOf = fieldInstance.getField();
+                FieldType fieldType = fieldOf.getType();
+
+                switch (fieldType) {
+                    case TEXT:
+                        fieldInstance.setValue(value.getValue());
+                        break;
+                    case LONGTEXT:
+                        fieldInstance.setValue(value.getValue());
+                        break;
+                    case DATE:
+                        //TODO
+                        break;
+                    case MULTICHOICE:
+                        String[] choices = value.value.split(",");
+                        ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
+                        for (String c :
+                                choices) {
+                            FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
+                            selectedOptionsList.add(fieldOption);
+                        }
+                        fieldInstance.setSelectedValues(selectedOptionsList);
+                        break;
+                    case SINGLECHOICE:
+                        FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
+                        if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
+                            ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
+                            selectedOptionList.add(singlefieldoption);
+                            fieldInstance.setSelectedValues(selectedOptionList);
+                        } else {
+                            throw new ValidationException("Field option does not exist for this field");
+                        }
+                }
+
+                em.merge(fieldInstance);
             }
 
-            Field fieldOf = fieldInstance.getField();
-            FieldType fieldType = fieldOf.getType();
-
-            switch (fieldType) {
-                case TEXT:
-                    fieldInstance.setValue(value.getValue());
-                    break;
-                case LONGTEXT:
-                    fieldInstance.setValue(value.getValue());
-                    break;
-                case DATE:
-                    //TODO
-                    break;
-                case MULTICHOICE:
-                    String[] choices = value.value.split(",");
-                    ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
-                    for (String c:
-                            choices) {
-                        FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
-                        selectedOptionsList.add(fieldOption);
-                    }
-                    fieldInstance.setSelectedValues(selectedOptionsList);
-                    break;
-                case SINGLECHOICE:
-                    FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
-                    if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
-                        ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
-                        selectedOptionList.add(singlefieldoption);
-                        fieldInstance.setSelectedValues(selectedOptionList);
-                    } else {
-                        throw new ValidationException("Field option does not exist for this field");
-                    }
-            }
-
-            em.merge(fieldInstance);
             em.getTransaction().commit();
 
 
