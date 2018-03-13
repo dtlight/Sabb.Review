@@ -7,9 +7,20 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 
+import java.util.List;
 import javax.persistence.RollbackException;
 
 public class RoleController extends Controller {
+  public static TransactionState<List<Role>> getRoles(String principle) {
+    try {
+      List<Role> roles = em.createNamedQuery("get-all-roles", Role.class).getResultList();
+      return new TransactionState<>(roles, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Cannot access roles");
+    }
+  }
 
   public static TransactionState<Role> createRole(String principle, Role role) {
     try {

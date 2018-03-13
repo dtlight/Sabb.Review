@@ -20,7 +20,7 @@ public class AssignmentController extends Controller {
       assignment.setAssignee(assignee);
       em.persist(assignment);
       em.getTransaction().commit();
-      new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
+      //new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       rollback();

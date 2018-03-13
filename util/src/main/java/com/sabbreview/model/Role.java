@@ -2,7 +2,12 @@ package com.sabbreview.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
+@NamedQueries({
+    @NamedQuery(name="get-all-roles", query = "select a.name from roles a"),
+})
 @Entity(name = "roles") public class Role extends Model {
   @Id
   private String name;

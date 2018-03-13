@@ -4,6 +4,7 @@ import com.sabbreview.controller.RoleController;
 import com.sabbreview.model.Role;
 
 import static spark.Spark.delete;
+import static spark.Spark.get;
 import static spark.Spark.post;
 
 public class RoleEndpoint extends Endpoint {
@@ -13,5 +14,8 @@ public class RoleEndpoint extends Endpoint {
 
     post("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         RoleController.createRole(principle, fromJson(req.body(), Role.class)))));
+
+    get("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+        RoleController.getRoles(principle))));
   }
 }
