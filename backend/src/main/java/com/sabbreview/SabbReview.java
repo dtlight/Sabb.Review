@@ -36,6 +36,9 @@ import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
 
 import java.io.File;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -65,10 +68,12 @@ public class SabbReview {
     TemplateEndpoint.attach();
     AssignmentEndpoint.attach();
     PDFGeneratorEndpoint.attach();
-
     options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
+
+    final ScheduledExecutorService dueDateWorkerPool = Executors.newScheduledThreadPool(1);
+    dueDateWorkerPool.scheduleAtFixedRate(new DueDateWorker(), 1, 10, TimeUnit.SECONDS);
   }
 
   private static int getHerokuAssignedPort() {
