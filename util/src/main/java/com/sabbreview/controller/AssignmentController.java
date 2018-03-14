@@ -36,19 +36,30 @@ public class AssignmentController extends Controller {
 
   /**
    * Creates and adds a comment to an application.
+   * Principle user needs to be assigned to the application (or be an admin) to comment.
    * @param principle Principle of the user adding the comment.
    * @param assignmentID ID of the assignment to add the comment to.
    * @param comment The string of the comment.
    */
   public static TransactionState<Assignment> createComment(String principle, String assignmentID, Comment comment) {
     try {
-      em.getTransaction().begin();
+
       Assignment assignment = em.find(Assignment.class, assignmentID);
-      em.persist(comment);
-      assignment.addComment(comment);
-      em.persist(assignment);
-      em.getTransaction().commit();
-      return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
+      User user = em.find( User.class, principle);
+
+      if( assignment.getAssignee().getEmailAddress().equals(principle)|| user.getAdmin()){
+        em.getTransaction().begin();
+
+        em.persist(comment);
+        assignment.addComment(comment);
+        em.persist(assignment);
+        em.getTransaction().commit();
+
+        return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
+      }
+
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
+
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
@@ -57,19 +68,27 @@ public class AssignmentController extends Controller {
 
   /**
    * Deletes the assignment of an application to a user.
+   * User needs to be assigned to an application or be an admin to delete an assignment.
    * @param principle Principle of the user deleting the assignment.
    * @param assignmentid ID of the assignment to delete.
    */
   public static TransactionState<Assignment> deleteAssignment(String principle, String assignmentid) {
     try {
-      em.getTransaction().begin();
+
+      User user = em.find(User.class, principle);
       Assignment assignment = em.find(Assignment.class, assignmentid);
+
+
       if(assignment == null) {
         throw new ValidationException("Assignment does not exist");
-      } else {
-        em.remove(assignment);
-
       }
+
+      if( assignment.getAssignee().getEmailAddress().equals(principle) ||  user.getAdmin()){
+        em.getTransaction().begin();
+        em.remove(assignment);
+        em.getTransaction().commit();
+      }
+
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
@@ -79,12 +98,19 @@ public class AssignmentController extends Controller {
 
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {
       try {
-        Assignment assignment;
-        assignment = em.find(Assignment.class, assignmentId);
+
+        Assignment assignment = em.find(Assignment.class, assignmentId);
+        User user = em.find(User.class, principle);
+
         if (assignment == null) {
           return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
-        return new TransactionState<>(assignment, TransactionStatus.STATUS_OK, "");
+
+        if( assignment.getAssignee().getEmailAddress().equals(principle) || user.getAdmin()) {
+          return new TransactionState<Assignment>(assignment, TransactionStatus.STATUS_OK);
+        }
+
+        return new TransactionState<>(assignment, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
       } catch (Exception e) {
         rollback();
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
