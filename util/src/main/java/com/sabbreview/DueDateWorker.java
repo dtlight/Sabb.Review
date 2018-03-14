@@ -1,20 +1,14 @@
 package com.sabbreview;
 
-import com.sabbreview.controller.AssignmentController;
-import com.sabbreview.model.Assignment;
-
 import java.net.URI;
-import java.sql.Date;
-import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import javax.persistence.*;
 
 public class DueDateWorker implements Runnable{
-    //Date currDate = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
     private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
     private static final String DB_ENV_VARIABLE = "DATABASE_URL";
     public void run(){
-        //AssignmentController.createAssignment("user","1","2");
         EntityManagerFactory emf;
         if (System.getenv(DB_ENV_VARIABLE) != null) {
             URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
@@ -31,21 +25,17 @@ public class DueDateWorker implements Runnable{
         }
         EntityManager em = emf.createEntityManager();
         em.setFlushMode(FlushModeType.COMMIT);
-        /*
-        em.getTransaction().begin();
-        Assignment assignment = em.find(Assignment.class, 1);
-        System.out.println(assignment.toString());
-        em.getTransaction().commit();
-        */
-        /*
-        em.getTransaction().begin();
-        String s = em.createNamedQuery("get-all-assignments-by-duedate").
-                setParameter("dueDate","2018-03-14 00:00:00").getResultList().toString();
-        System.out.println(s);
-        */
+
+
+        Query query = em.createNamedQuery("get-all-assignment-id-duedate");
+        List list = query.getResultList();
+        for (int i = 0; i < query.getResultList().size(); i++){
+            //check duedates
+        }
 
 
         em.close();
         emf.close();
+
     }
 }
