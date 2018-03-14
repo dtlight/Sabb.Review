@@ -38,6 +38,7 @@ public class AssignmentController extends Controller {
       } else {
         em.remove(assignment);
       }
+      em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
