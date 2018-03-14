@@ -438,21 +438,6 @@ export class TemplateTable extends React.Component {
   }
 
   render() {
-      if(this.state.isLoading) {
-          return (<div class="loader">Loading...</div>);
-      } else {
-          let templates = [];
-
-          for (let template of this.state.templates) {
-              templates.push(
-                  <tr>
-                      <td>{template.name}</td>
-                      <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link
-                          to={`/admin/template/${template.id}`}><Button color="secondary">Edit
-                          Template</Button></Link></ButtonGroup></td>
-                  </tr>
-              )
-          }
 
 
           return (
@@ -471,7 +456,6 @@ export class TemplateTable extends React.Component {
                   </tbody>
               </Table>
           )
-      }
   }
 }
 

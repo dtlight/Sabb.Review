@@ -12,7 +12,7 @@ import javax.persistence.NamedQuery;
   @Id
   private String name;
 
-  private boolean canRefuseApplication;
+  private boolean canChangeApplicationState;
   private boolean canComment;
   private boolean canEdit;
 
@@ -31,12 +31,12 @@ import javax.persistence.NamedQuery;
     return this;
   }
 
-  public boolean isCanRefuseApplication() {
-    return canRefuseApplication;
+  public boolean can() {
+    return canChangeApplicationState;
   }
 
-  public Role setCanRefuseApplication(boolean canRefuseApplication) {
-    this.canRefuseApplication = canRefuseApplication;
+  public Role setCanChangeApplicationState(boolean canRefuseApplication) {
+    this.canChangeApplicationState = canRefuseApplication;
     return this;
   }
 
@@ -59,7 +59,7 @@ import javax.persistence.NamedQuery;
   }
 
   @Override public String toString() {
-    return "Role{" + "name='" + name + '\'' + ", canRefuseApplication=" + canRefuseApplication
+    return "Role{" + "name='" + name + '\'' + ", canRefuseApplication=" + canChangeApplicationState
         + ", canComment=" + canComment + ", canEdit=" + canEdit + '}';
   }
 }
