@@ -1,4 +1,4 @@
-package com.sabbreview.controller;
+package com.sabbreview.tests;
 
 import org.junit.After;
 import org.junit.Before;
