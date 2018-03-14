@@ -62,10 +62,12 @@ public class ApplicationController extends Controller {
     public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
         try {
 
-            em.getTransaction().begin();
+
             User user = em.find(User.class, principle);
             Application application = em.find(Application.class, applicationID);
 
+            em.getTransaction().begin();
+            
             if(application.getApplicant().getEmailAddress().equals(user.getEmailAddress()) || user.getAdmin()){
                 em.createNamedQuery("delete-application").setParameter("id", applicationID).executeUpdate();
             }
