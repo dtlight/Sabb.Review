@@ -10,14 +10,16 @@ import javax.persistence.RollbackException;
 
 public class AssignmentController extends Controller {
 
-  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String assigneeId) {
+  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
     try {
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationId);
+      Role role = em.find(Role.class, roleId);
       User assignee = em.find(User.class, assigneeId);
       Assignment assignment = new Assignment();
       assignment.setApplication(application);
       assignment.setAssignee(assignee);
+      assignment.setRole(role);
       em.persist(assignment);
       em.getTransaction().commit();
       //new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());

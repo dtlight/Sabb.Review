@@ -1,15 +1,21 @@
 package com.sabbreview.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 @NamedQueries({
-    @NamedQuery(name="get-all-roles", query = "select a.name from roles a"),
+    @NamedQuery(name="get-all-roles", query = "select a.id, a.name from roles a"),
 })
 @Entity(name = "roles") public class Role extends Model {
+
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  String id;
+
   private String name;
 
   private boolean canChangeApplicationState;
@@ -58,8 +64,21 @@ import javax.persistence.NamedQuery;
     return this;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public Role setId(String id) {
+    this.id = id;
+    return this;
+  }
+
+  public boolean isCanChangeApplicationState() {
+    return canChangeApplicationState;
+  }
+
   @Override public String toString() {
-    return "Role{" + "name='" + name + '\'' + ", canRefuseApplication=" + canChangeApplicationState
-        + ", canComment=" + canComment + ", canEdit=" + canEdit + '}';
+    return "Role{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", canChangeApplicationState="
+        + canChangeApplicationState + ", canComment=" + canComment + ", canEdit=" + canEdit + '}';
   }
 }

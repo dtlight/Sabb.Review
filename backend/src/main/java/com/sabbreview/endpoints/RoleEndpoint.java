@@ -15,7 +15,10 @@ public class RoleEndpoint extends Endpoint {
     post("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         RoleController.createRole(principle, fromJson(req.body(), Role.class)))));
 
+    get("/role/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+        RoleController.getRole(principle, req.params("id")))));
     get("/role", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         RoleController.getRoles(principle))));
+
   }
 }

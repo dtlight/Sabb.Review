@@ -22,6 +22,7 @@ import {
     TemplateList,
     ViewTemplate
 } from './views/admin/template/';
+
 import {
     ViewRole,
     ViewRoles

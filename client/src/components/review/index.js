@@ -48,7 +48,8 @@ export class AssignReview extends React.Component {
         super(props);
         this.state = {
             modal: false,
-            assignee: ""
+            assignee: "",
+            role: null
         };
 
         this.toggle = this.toggle.bind(this);
@@ -58,22 +59,23 @@ export class AssignReview extends React.Component {
     toggle() {
         this.setState({
             modal: !this.state.modal,
-            assignee: ""
+            assignee: "",
+            role: null
 
         });
     }
 
 
     submit() {
-        axios.post(`/assignment/application/${this.props.application}/assignee/${this.state.assignee}`)
+        axios.post(`/assignment/application/${this.props.application}/role/${this.state.role}/assignee/${this.state.assignee}`)
             .then(function (response) {
                 if(response.data.state !== "STATUS_ERROR") {
                     this.setState({
                         isSuccess: true,
                         isCreating: false,
                         modal: false,
-                        assignee: ""
-
+                        assignee: "",
+                        role: null
                     })
                 } else {
                     this.setState({
@@ -99,7 +101,11 @@ export class AssignReview extends React.Component {
                           })
                       }} value={this.state.assignee} placeholder={"example@example.com"} />
                     </FormGroup>
-                    <SelectRole />
+                    <SelectRole  onChange={(r) => {
+                        this.setState({
+                            role: r
+                        })
+                    }}/>
                   </ModalBody>
                   <ModalFooter>
                     <Button class={(this.state.isError)?"btn btn-primary border-danger":"btn btn-primary"} color="primary" onClick={this.submit}>Assign Review</Button>

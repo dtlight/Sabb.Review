@@ -100,9 +100,10 @@ export class RoleEditor extends React.Component {
                              <FormGroup>
                                  <label>Role Name</label>
                                  <Input onChange={(e) => {
-                                     this.setState({
-                                         roleName: e.target.value
-                                     })
+
+                                  this.setState({
+                                      roleName: e.target.value
+                                  })
                                  }} value={this.state.roleName}/>
                             </FormGroup>
 
@@ -231,7 +232,9 @@ export class SelectRole extends React.Component {
             return (
                 <FormGroup>
                     <Label for="exampleSelect">Select a role</Label>
-                    <Input type="select" name="select" id="exampleSelect">
+                    <Input type="select" name="select" id="exampleSelect" onChange={(e) => {
+                        if(this.props.onChange) this.props.onChange(e.target.value);
+                    }}>
                         {roles}
                     </Input>
                 </FormGroup>
