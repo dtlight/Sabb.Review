@@ -14,16 +14,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-
-import static org.junit.Assert.*;
-
 public class FieldControllerTest {
     private Field testField;
     private Application testApplication;
     private User testuser = new User("test@test.sabb.review", "password");
 
     @Before
-    public void setupAssignment() {
+    public void setupField() {
         testApplication = new Application();
         if((testuser = SabbReviewEntityManager.getEntityManager().find(User.class, testuser.getEmailAddress())) == null) {
             testuser = new User("test@test.sabb.review", "password");
@@ -33,9 +30,10 @@ public class FieldControllerTest {
         ApplicationController.createApplication(testuser.getEmailAddress(), testApplication);
     }
 
-
     @After
-    public void tearDown() throws Exception {
+    public void tearDownField()  {
+        UserController.deleteUser(testuser.getEmailAddress());
+        ApplicationController.deleteApplication(testuser.getEmailAddress(), testApplication.getId());
     }
 
     @Test
