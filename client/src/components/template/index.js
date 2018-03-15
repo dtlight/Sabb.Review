@@ -76,8 +76,6 @@ export class FieldList extends React.Component {
           title={field.title}
           fieldOptions={field.fieldOptions}
           fieldType={field.type}
-          showAtEnd={field.showAtEnd}
-
           onDelete={this.deleteField}
           onChange={this.props.onChange}
         />);
@@ -101,8 +99,7 @@ export class NewQuestion extends React.Component {
     modal: false,
     title: "",
     type: "TEXT",
-    answers: [],
-      showAtEnd: false
+    answers: []
   };
   constructor(props) {
     super(props);
@@ -112,13 +109,11 @@ export class NewQuestion extends React.Component {
         questionId: this.props.questionId,
         title: this.props.title || "",
         type: this.props.type || "",
-        answers: this.props.answers || [],
-          showAtEnd: this.props.showAtEnd || false
+        answers: this.props.answers || []
       };
     } else {
       this.state = this.defaultState;
     }
-    this.toggleShowAtEnd = this.toggleShowAtEnd.bind(this);
 
     this.toggle = this.toggle.bind(this);
     this.addAnswer = this.addAnswer.bind(this);
@@ -150,10 +145,8 @@ export class NewQuestion extends React.Component {
             "id": this.props.questionId,
           	"title": this.state.title,
           	"type": this.state.type,
-          	"fieldOptions": this.state.answers,
-          "showAtEnd": this.state.showAtEnd
-
-      }).then((response) => {
+          	"fieldOptions": this.state.answers
+          }).then((response) => {
             if(response.data.state === "STATUS_OK") {
               this.toggle();
               if(this.props.onChange){
@@ -170,8 +163,7 @@ export class NewQuestion extends React.Component {
       axios.post(`/template/${this.props.templateId}/field`, {
           	"title": this.state.title,
           	"type": this.state.type,
-          	"fieldOptions": this.state.answers,
-            "showAtEnd": this.state.showAtEnd
+          	"fieldOptions": this.state.answers
           }).then((response) => {
             if(response.data.state === "STATUS_OK") {
               this.toggle();
@@ -188,11 +180,6 @@ export class NewQuestion extends React.Component {
     }
 
   }
-    toggleShowAtEnd() {
-        this.setState({
-            showAtEnd: !this.state.showAtEnd,
-        });
-    }
   render() {
     let optionItems = [];
     for (var i = 0; i < this.state.answers.length; i++) {
@@ -244,18 +231,12 @@ export class NewQuestion extends React.Component {
                 {typeOfInputs}
               </Input>
             </FormGroup>
-            <ListGroup style={{"display": (questionTypes[this.state.type].choice)?"block":"none", "marginBottom": "10px"}}>
+            <ListGroup style={{"display": (questionTypes[this.state.type].choice)?"block":"none"}}>
               {optionItems}
               <ListGroupItem>
                 <Button block color="secondary" onClick={this.addAnswer}><i class="fa fa-plus" aria-hidden="true"></i></Button>
               </ListGroupItem>
             </ListGroup>
-              <FormGroup check style={{"marginBottom": "10px"}}>
-                  <Label check>
-                      <Input type="checkbox" defaultChecked={this.state.showAtEnd} onChange={this.toggleShowAtEnd}/>{'  '}
-                      Is this a report question?
-                  </Label>
-              </FormGroup>
             <ModalFooter>
               <Button color="primary" onClick={this.submit}>Save Question</Button>
             </ModalFooter>
@@ -312,10 +293,7 @@ let Field = (props) => {
           title={props.title}
           type={props.fieldType}
           answers={props.fieldOptions}
-          onChange={props.onChange}
-                     showAtEnd={props.showAtEnd}
-
-        >
+          onChange={props.onChange}>
           Edit
         </NewQuestion>
         <Button className="float-right" color="danger" onClick={() => {
@@ -406,56 +384,29 @@ export class TemplateTable extends React.Component {
     super(props);
     this.props = props;
     this.state = {
-        isLoading: true
     }
   }
 
-  componentWillMount() {
-      if(this.props.templates) {
-          this.setState({
-              isLoading: false,
-              templates: this.props.templates
-          })
-      } else {
-
-    axios.get(`/department/${this.props.departmentId}/templates`)
-        .then(function (response) {
-          if(response.data.state !== "STATUS_ERROR") {
-              this.setState({
-                  isLoading: false,
-                  templates: response.data.value
-              })
-          } else {
-              this.setState({
-                  isError: true,
-                  isCreating: false
-              })
-          }
-
-      }.bind(this))
-
-      }
-  }
-
   render() {
-
-
-          return (
-              <Table striped={true} style={{"marginTop":"15px"}}>
-                  <thead>
-                  <tr>
-                      <td>Name</td>
-                      <td>Actions</td>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {
-                      templates
-                  }
-
-                  </tbody>
-              </Table>
-          )
+    return (
+      <Table>
+        <thead>
+          <tr>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Actions</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#1</td>
+            <td>Main Template <Badge color="secondary">Default</Badge></td>
+            <td><ButtonGroup><AssignTemplate>Assign</AssignTemplate><Link to="./1"><Button color="secondary">Edit Template</Button></Link></ButtonGroup></td>
+          </tr>
+            <CreateTemplate />
+        </tbody>
+      </Table>
+    )
   }
 }
 
@@ -465,7 +416,7 @@ export class CreateTemplate extends React.Component {
         this.props = props;
         this.state = {
             name: "",
-            deptID: this.props.departmentId||-1,
+            deptID: -1,
             newid: -1
         };
         this.toggle = this.toggle.bind(this);
@@ -500,7 +451,7 @@ export class CreateTemplate extends React.Component {
             return (<Redirect to={`/admin/template/${this.state.newid}`}/>);
         } else {
             return (
-                <div className={this.props.className} {...this.props}>
+                <div className={this.props.className}>
                     <Modal isOpen={this.state.modal} toggle={this.toggle}>
                         <ModalHeader toggle={this.toggle}>Create Template</ModalHeader>
                         <ModalBody>
@@ -512,21 +463,20 @@ export class CreateTemplate extends React.Component {
                                     })
                                 }} value={this.state.name}/>
                             </FormGroup>
-                            {(this.props.departmentId)?"":<FormGroup>
+                            <FormGroup>
                                 <label>Department</label>
                                 <DepartmentList selectDepartment={(d)=>{
                                     this.setState({
                                         deptID: d
                                     });
                                 }}/>
-                            </FormGroup>}
-
+                            </FormGroup>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onClick={this.create}>Create Template</Button>
                         </ModalFooter>
                     </Modal>
-                    <Button color="dark" onClick={this.toggle}><i class="fa fa-plus"></i>{" "}Create Template</Button>
+                    <Button color="dark" onClick={this.toggle}>Create Template</Button>
                 </div>
             )
         }

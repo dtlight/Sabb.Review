@@ -21,13 +21,28 @@ public class RoleController extends Controller {
           "Cannot access roles");
     }
   }
+  public static TransactionState<Role> getRole(String principle, String id) {
+    try {
+      Role role = em.find(Role.class, id);
+      return new TransactionState<>(role, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Cannot access roles");
+    }
+  }
+
 
   public static TransactionState<Role> createRole(String principle, Role role) {
     try {
       User userPrinciple = em.find(User.class, principle);
       if (userPrinciple != null && userPrinciple.isAdmin) {
         em.getTransaction().begin();
-        em.persist(role);
+        if(role.getId() != null) {
+          em.merge(role);
+        } else {
+          em.persist(role);
+        }
         em.getTransaction().commit();
         return new TransactionState<>(role, TransactionStatus.STATUS_OK, null);
       } else {

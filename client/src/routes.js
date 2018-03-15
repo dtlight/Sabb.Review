@@ -20,6 +20,11 @@ import Footer from './components/footer.js'
 
 
 import {
+    TemplateList,
+    ViewTemplate
+} from './views/admin/template/';
+
+import {
     ViewRole,
     ViewRoles
 } from './views/admin/role/';
@@ -56,6 +61,7 @@ export default class Routes extends React.Component {
                            <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
                            <PrivateRoute exact path='/admin/' component={Admin} />
                            <PrivateRoute exact path='/admin/roles' component={ViewRoles} />
+                           <PrivateRoute path='/admin/template/:id' component={ViewTemplate} />
 
                         </div>
                         <Route path="**" render={() =>{

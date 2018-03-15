@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import {RoleTable, RoleEditor} from '../../../components/role/';
 
 export class ViewRole extends React.Component {
 
@@ -7,7 +8,7 @@ export class ViewRole extends React.Component {
     return (
       <div>
         <h1 class="display-4"><strong>Edit Template:</strong> {this.state.title}</h1>
-        <p class="lead">These are the questions that you can ask applicants for sabbatical leave.</p>
+        <p class="lead">These are the roles that can be assigned to reviewers.</p>
         <hr />
       </div>
     );
@@ -20,24 +21,8 @@ export class ViewRoles extends React.Component {
     constructor(props) {
         super(props);
         this.props = props;
-        this.state = {
-            roles: null
-        };
-        this.load = this.load.bind(this);
     }
-    componentDidMount() {
-        this.load();
-    }
-    load() {
-        axios.get(`/role`).then(({data}) => {
-            console.log(data);
-            if(data.state === "STATUS_OK") {
-                this.setState({
-                    roles: data.value
-                });
-            }
-        });
-    }
+
 
   render() {
     return (
@@ -45,7 +30,8 @@ export class ViewRoles extends React.Component {
         <h1 class="display-4">View Roles</h1>
         <p class="lead">These are the roles that can be assigned to a new review.</p>
         <hr />
-          {(this.state.roles === null)?<div class="loader">Loading...</div>:""}
+          <RoleTable />
+          <RoleEditor>Create a new role</RoleEditor>
       </div>
     );
   }
