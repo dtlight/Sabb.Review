@@ -71,8 +71,8 @@ export class RoleEditor extends React.Component {
                         isCreating: false,
                         modal: false,
                         assignee: ""
-
                     })
+                    if(this.props.onChange) this.props.onChange();
                 } else {
                     this.setState({
                         isError: true,
@@ -174,7 +174,7 @@ export class RoleTable extends React.Component {
             for(let role of this.state.roles) {
                 roles.push(<tr>
                     <td>{role[1]}</td>
-                    <td><RoleEditor id={role[0]}>Edit Role</RoleEditor></td>
+                    <td><RoleEditor id={role[0]} onChange={this.load}>Edit Role</RoleEditor></td>
 
                 </tr>)
             }
@@ -192,6 +192,49 @@ export class RoleTable extends React.Component {
                         </tbody>
                     </Table>
                 </div>
+            )
+        } else {
+            return (<div class="loader">Loading...</div>);
+        }
+    }
+}
+
+
+export class SelectRole extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            roles: null
+        };
+        this.load = this.load.bind(this);
+    }
+    componentDidMount() {
+        this.load();
+    }
+    load() {
+        axios.get(`/role`).then(({data}) => {
+            console.log(data);
+            if(data.state === "STATUS_OK") {
+                this.setState({
+                    roles: data.value
+                });
+            }
+        });
+    }
+
+    render() {
+        if(this.state.roles) {
+            let roles = [];
+            for(let role of this.state.roles) {
+                roles.push(<option value={role[0]}>{role[1]}</option>)
+            }
+            return (
+                <FormGroup>
+                    <Label for="exampleSelect">Select a role</Label>
+                    <Input type="select" name="select" id="exampleSelect">
+                        {roles}
+                    </Input>
+                </FormGroup>
             )
         } else {
             return (<div class="loader">Loading...</div>);

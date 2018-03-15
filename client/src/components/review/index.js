@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, FormGroup, Input, Card, Badge, CardText, CardBody,
     CardTitle, CardSubtitle, ListGroup, ListGroupItem } from 'reactstrap';
 import axios from "axios/index";
-
+import {RoleEditor} from '../../components/role/'
+import {SelectRole} from "../role";
 
 let applicationStates = {
     PENDING: {
@@ -98,6 +99,7 @@ export class AssignReview extends React.Component {
                           })
                       }} value={this.state.assignee} placeholder={"example@example.com"} />
                     </FormGroup>
+                    <SelectRole />
                   </ModalBody>
                   <ModalFooter>
                     <Button class={(this.state.isError)?"btn btn-primary border-danger":"btn btn-primary"} color="primary" onClick={this.submit}>Assign Review</Button>
