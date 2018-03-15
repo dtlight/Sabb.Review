@@ -16,6 +16,11 @@ public class TransactionState<T> {
     this.state = state;
   }
 
+
+  public TransactionState(TransactionStatus state) {
+    this.state = state;
+  }
+
   public T getValue() {
     return value;
   }

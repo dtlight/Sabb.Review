@@ -10,17 +10,19 @@ import javax.persistence.RollbackException;
 
 public class AssignmentController extends Controller {
 
-  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String assigneeId) {
+  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
     try {
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationId);
+      Role role = em.find(Role.class, roleId);
       User assignee = em.find(User.class, assigneeId);
       Assignment assignment = new Assignment();
       assignment.setApplication(application);
       assignment.setAssignee(assignee);
+      assignment.setRole(role);
       em.persist(assignment);
       em.getTransaction().commit();
-      new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
+      //new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       rollback();
@@ -32,6 +34,8 @@ public class AssignmentController extends Controller {
     try {
       em.getTransaction().begin();
       Assignment assignment = em.find(Assignment.class, assignmentID);
+      User user = em.find(User.class, principle);
+      comment.setAuthor(user);
       em.persist(comment);
       assignment.addComment(comment);
       em.persist(assignment);
@@ -54,6 +58,7 @@ public class AssignmentController extends Controller {
         em.remove(assignment);
 
       }
+      em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
