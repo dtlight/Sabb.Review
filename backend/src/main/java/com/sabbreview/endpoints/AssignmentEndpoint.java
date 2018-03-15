@@ -25,7 +25,7 @@ public class AssignmentEndpoint extends Endpoint {
     put("/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"),
         AcceptanceState.valueOf(req.params(":state")))));
 
-    put("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
+    post("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(createComment(principle, req.params(":id"), fromJson(req.body(),
             Comment.class)))));
 

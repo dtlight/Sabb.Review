@@ -5,6 +5,7 @@ import com.sabbreview.SabbReview;
 import com.sabbreview.SabbReviewEntityManager;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Comment;
 import com.sabbreview.model.FieldInstance;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -145,6 +146,10 @@ public class PDFGeneratorEndpoint {
             assignmentContentStream.setFont(font, 12);
             assignmentContentStream.showText("  Status: "+ assignment.getState());
             assignmentContentStream.newLine();
+            for(Comment comment: assignment.getComments()) {
+              assignmentContentStream.showText("Comment: "+ comment.getBody());
+              assignmentContentStream.newLine();
+            }
         }
         assignmentContentStream.endText();
         assignmentContentStream.close();

@@ -25,7 +25,7 @@ export class EditExisting extends React.Component {
 
   render() {
     return (<div>
-        <ApplicationAdminButtons id={this.props.match.params.id} onStateChange={(newState)=>{
+        <ApplicationAdminButtons id={this.props.match.params.id} showAssign={true} onStateChange={(newState)=>{
             this.setState({
                 newState: newState
             })

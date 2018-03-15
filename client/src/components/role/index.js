@@ -169,13 +169,25 @@ export class RoleTable extends React.Component {
         });
     }
 
+    delete(role) {
+        axios.delete(`/role/${role}`).then(({data}) => {
+            if(data.state === "STATUS_OK") {
+                this.load();
+            }
+        });
+    }
+
     render() {
         if(this.state.roles) {
             let roles = [];
             for(let role of this.state.roles) {
                 roles.push(<tr>
                     <td>{role[1]}</td>
-                    <td><RoleEditor id={role[0]} onChange={this.load}>Edit Role</RoleEditor></td>
+                    <td>
+                        <RoleEditor id={role[0]} onChange={this.load}>Edit Role</RoleEditor>
+                        <Button color={"danger"} onClick={this.delete.bind(this, role[0])}>Delete Role</Button>
+
+                    </td>
 
                 </tr>)
             }

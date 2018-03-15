@@ -63,8 +63,8 @@ export default class extends React.Component {
                         View Departments
                     </DropdownItem>
 
-                  <DropdownItem onClick={this.hideNave} to="/admin/template/">
-                    Edit Templates
+                  <DropdownItem onClick={this.hideNave} to="/admin/roles/">
+                    Edit Roles
                   </DropdownItem>
 
                 </DropdownMenu>

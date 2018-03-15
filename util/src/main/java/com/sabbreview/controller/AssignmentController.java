@@ -34,6 +34,8 @@ public class AssignmentController extends Controller {
     try {
       em.getTransaction().begin();
       Assignment assignment = em.find(Assignment.class, assignmentID);
+      User user = em.find(User.class, principle);
+      comment.setAuthor(user);
       em.persist(comment);
       assignment.addComment(comment);
       em.persist(assignment);
@@ -56,6 +58,7 @@ public class AssignmentController extends Controller {
         em.remove(assignment);
 
       }
+      em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
