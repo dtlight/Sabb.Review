@@ -1,8 +1,11 @@
 package com.sabbreview;
 
+import com.sabbreview.model.AcceptanceState;
+import com.sabbreview.model.Assignment;
+
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import javax.persistence.*;
 
 public class DueDateWorker implements Runnable{
@@ -25,17 +28,30 @@ public class DueDateWorker implements Runnable{
         }
         EntityManager em = emf.createEntityManager();
         em.setFlushMode(FlushModeType.COMMIT);
-
-
-        Query query = em.createNamedQuery("get-all-assignment-id-duedate");
-        List list = query.getResultList();
+        TypedQuery<Assignment> query =em.createNamedQuery("get-all-assignments", Assignment.class);
         for (int i = 0; i < query.getResultList().size(); i++){
-            //check duedates
-        }
+            Assignment assignment = query.getResultList().get(i);
+            if(assignment.getDueDate().before(new Date()) && assignment.getState() != AcceptanceState.REFUSED){
+                //System.out.println("PRINT");
+                System.out.println(query.getResultList().get(i).toString());
 
+                try{
+                    em.getTransaction().begin();
+                    query.getResultList().get(i).setState(AcceptanceState.COMPLETED);
+                    em.getTransaction().commit();
+                } catch (RollbackException e) {
+                    if(em.getTransaction().isActive()){
+                        em.getTransaction().rollback();
+                    }
+                }
+
+            }
+        }
 
         em.close();
         emf.close();
+        //System.out.println("DONE");
 
     }
+
 }
