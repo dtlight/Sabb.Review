@@ -6,6 +6,7 @@ import com.sabbreview.model.Assignment;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import javax.persistence.*;
 
 
@@ -38,18 +39,21 @@ public class DueDateWorker implements Runnable{
 
         //Creates list of all assignments and updates state, depending on due date.
         TypedQuery<Assignment> query =em.createNamedQuery("get-all-assignments", Assignment.class);
-        for (int i = 0; i < query.getResultList().size(); i++){
-            Assignment assignment = query.getResultList().get(i);
-            if(assignment.getDueDate().before(new Date()) && assignment.getState() != AcceptanceState.COMPLETED){
-                try{
-                    em.getTransaction().begin();
-                    query.getResultList().get(i).setState(AcceptanceState.COMPLETED);
-                    em.getTransaction().commit();
-                } catch (RollbackException e) {
-                    if(em.getTransaction().isActive()){
-                        em.getTransaction().rollback();
-                    }
+        List <Assignment> assignmentList = query.getResultList();
+        try{
+            em.getTransaction().begin();
+            for (int i = 0; i < query.getResultList().size(); i++){
+                Assignment assignment = assignmentList.get(i);
+                if(assignment.getDueDate().before(new Date()) && assignment.getState() != AcceptanceState.COMPLETED){
+                    //System.out.println("ID:" + assignment.getId() + " STATE:" + assignment.getState());
+                    assignment.setState(AcceptanceState.COMPLETED);
                 }
+
+            }
+            em.getTransaction().commit();
+        } catch (RollbackException e) {
+            if(em.getTransaction().isActive()){
+                em.getTransaction().rollback();
             }
         }
 
