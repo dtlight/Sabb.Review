@@ -52,7 +52,7 @@ public class FieldInstance extends Model {
   }
 
   public String getValue() {
-    return value;
+    return (value == null)?"":value;
   }
 
   public FieldInstance setValue(String value) {

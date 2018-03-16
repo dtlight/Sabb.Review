@@ -115,6 +115,23 @@ public class ApplicationController extends Controller {
     }
   }
 
+  public static TransactionState<String> getSignature(String principle, String applicationID) {
+    try {
+      em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationID);
+      em.getTransaction().commit();
+      return new TransactionState<>(application.getSignature(), TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Error Capturing Signature");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
   public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
     try {

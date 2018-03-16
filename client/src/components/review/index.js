@@ -163,7 +163,7 @@ export class ViewReviews extends React.Component {
                 let reviewItems = [];
                 for (let review of this.state.assignmentList) {
                     reviewItems.push(
-                        <ListGroupItem>{review[1]}</ListGroupItem>
+                        <ListGroupItem><strong>{review[2]}: </strong> {review[1]}</ListGroupItem>
                     )
                 }
                 body = <span><ListGroup>
@@ -211,7 +211,7 @@ export class AssignmentCard extends React.Component {
             <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.props.state].colours} bg-light`}>
                 <CardBody>
                     <CardTitle><h5>Review for {this.props.applicant} <Badge color={applicationStates[this.props.state].colours}>{applicationStates[this.props.state].humanStatus}</Badge></h5></CardTitle>
-                    <CardSubtitle className="mb-2 text-muted">{this.props.role.name} for the {this.props.application.department} Dept.</CardSubtitle>
+                    <CardSubtitle className="mb-2 text-muted">{this.props.role && this.props.role.name} for the {this.props.application.department} Dept.</CardSubtitle>
                     <CardText>{applicationStates[this.props.state].body}</CardText>
                     <div class={(applicationStates[this.props.state].buttonsVisible)?"visible":"invisible"}>
                         <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/review/${this.props.id}`}>View Review</Link>

@@ -8,7 +8,7 @@ import javax.persistence.*;
     @NamedQuery(name="delete-application", query = "delete from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-application", query = "select a from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-all-applications-for-user", query = "select a from applications a where a.applicant.emailAddress = :principle"),
-    @NamedQuery(name="get-all-assignments-for-application", query = "select a.id, a.assignee.emailAddress from assignments a where a.application.id = :id"),
+    @NamedQuery(name="get-all-assignments-for-application", query = "select a.id, a.assignee.emailAddress, a.role.name from assignments a where a.application.id = :id"),
     @NamedQuery(name="get-all-for-department", query = "select a from applications a where a.department.id = :id"),
 })
 @Entity(name = "applications")

@@ -231,6 +231,8 @@ export class SelectRole extends React.Component {
                 this.setState({
                     roles: data.value
                 });
+                if(this.props.onChange && data.value.length > 0) this.props.onChange(data.value[0][0]);
+
             }
         });
     }

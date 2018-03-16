@@ -38,7 +38,7 @@ export default class Routes extends React.Component {
             <span>
                 <Router {...this.props}>
                   <span>
-                  <Header isLoggedIn={isLoggedIn()}/>
+                  <Header isLoggedIn={isLoggedIn}/>
                       <Switch>
                          <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                          <PrivateRoute path='/review/:id' component={ReviewDetail} />

@@ -15,6 +15,9 @@ public class AssignmentController extends Controller {
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationId);
       Role role = em.find(Role.class, roleId);
+      if(role == null) {
+        throw new ValidationException("Must have role");
+      }
       User assignee = em.find(User.class, assigneeId);
       Assignment assignment = new Assignment();
       assignment.setApplication(application);

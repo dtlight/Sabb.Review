@@ -41,5 +41,8 @@ public class ApplicationEndpoint extends Endpoint {
     put("/application/:id/sign", (req, res) -> requireAuthentication(req,
             (principle) -> toJson(ApplicationController
                     .setSignature(req.params(":id"), req.body()))));
+
+    get("/application/:id/sign", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(ApplicationController.getSignature(principle, req.params(":id")))));
   }
 }
