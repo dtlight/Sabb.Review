@@ -3,6 +3,7 @@ import {Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {Input, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
+
 import {AssignReview, ViewReviews} from '../review/'
 
 export class CreateApplication extends React.Component {
@@ -199,7 +200,15 @@ export class EditApplication extends React.Component {
     componentDidMount() {
         this.load();
     }
-
+//Following nine lines refer to signature pad in render() below
+    state = {trimmedDataURL: null}
+    sigCanvas = {}
+    clear = () => {
+        this.sigCanvas.clear()
+    }
+    trim = () => {
+             axios.put(`/application/${this.props.id}/sign`, this.sigCanvas.getTrimmedCanvas().toDataURL('image/png'))
+    }
     load() {
         axios.get(`/application/${this.props.id}`).then(({data})=> {
             this.setState((state) => {
@@ -230,6 +239,7 @@ export class EditApplication extends React.Component {
         return fieldInstances;
     }
   render() {
+
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
         Could not load requested application
@@ -246,19 +256,27 @@ export class EditApplication extends React.Component {
     } else if(this.state.fieldInstances) {
 
       return (
+
           <form>
               {this.getInstances()}
 
-            <div className={"bg-light"}>
-                <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the area below</p>
-                <SignatureCanvas penColor='#252f3c'
-                                 canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
-                </div>
-            </div>
-        </form>
+              <div className={"bg-light"}>
+                  <div class="form-group" style={{"padding": "10px"}}>
+                      <p class="lead">Please draw your signature in the area below and click 'Sign'</p>
+                      <SignatureCanvas penColor='#252f3c'
+                                       canvasProps={{width: 1000, height: 200, className: 'sigCanvas'}}
+                                       ref={(ref) => { this.sigCanvas = ref }}/>
+                  </div>
+              </div>
+              <ButtonGroup style={{"paddingBottom": "10px", "textAlign": "center", "display": "block"}}>
+                  <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.trim}> Sign</Button>
+                  <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.clear}> Clear Signature</Button>
+              </ButtonGroup>
+          </form>
+
         );
     }
+
   }
 }
 
