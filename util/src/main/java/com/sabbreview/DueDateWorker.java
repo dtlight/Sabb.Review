@@ -3,9 +3,7 @@ package com.sabbreview;
 import com.sabbreview.model.AcceptanceState;
 import com.sabbreview.model.Assignment;
 
-import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import javax.persistence.*;
 
@@ -16,8 +14,6 @@ import javax.persistence.*;
  */
 public class DueDateWorker implements Runnable{
 
-    private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
-    private static final String DB_ENV_VARIABLE = "DATABASE_URL";
     public void run(){
         EntityManager em = SabbReviewEntityManager.getEntityManager();
 
