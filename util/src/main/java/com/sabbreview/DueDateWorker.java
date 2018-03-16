@@ -8,10 +8,17 @@ import java.util.Date;
 import java.util.HashMap;
 import javax.persistence.*;
 
+
+/**
+ * Tread worker that checks if assignments are past due.
+ * If they are it sets their state to COMPLETED.
+ */
 public class DueDateWorker implements Runnable{
+
     private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
     private static final String DB_ENV_VARIABLE = "DATABASE_URL";
     public void run(){
+        //Creates entity manager separate to the one in the Controller class.
         EntityManagerFactory emf;
         if (System.getenv(DB_ENV_VARIABLE) != null) {
             URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
@@ -28,13 +35,12 @@ public class DueDateWorker implements Runnable{
         }
         EntityManager em = emf.createEntityManager();
         em.setFlushMode(FlushModeType.COMMIT);
+
+        //Creates list of all assignments and updates state, depending on due date.
         TypedQuery<Assignment> query =em.createNamedQuery("get-all-assignments", Assignment.class);
         for (int i = 0; i < query.getResultList().size(); i++){
             Assignment assignment = query.getResultList().get(i);
-            if(assignment.getDueDate().before(new Date()) && assignment.getState() != AcceptanceState.REFUSED){
-                //System.out.println("PRINT");
-                System.out.println(query.getResultList().get(i).toString());
-
+            if(assignment.getDueDate().before(new Date()) && assignment.getState() != AcceptanceState.COMPLETED){
                 try{
                     em.getTransaction().begin();
                     query.getResultList().get(i).setState(AcceptanceState.COMPLETED);
@@ -44,13 +50,11 @@ public class DueDateWorker implements Runnable{
                         em.getTransaction().rollback();
                     }
                 }
-
             }
         }
 
         em.close();
         emf.close();
-        //System.out.println("DONE");
 
     }
 
