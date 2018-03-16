@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 
 
 @NamedQueries({
-    @NamedQuery(name="get-all-assignment-id-duedate", query = "SELECT a.id, a.dueDate FROM assignments a"),
+    @NamedQuery(name="get-all-assignments", query = "SELECT a FROM assignments a"),
     @NamedQuery(name="get-all-assignments-for-user", query = "SELECT a from assignments a WHERE a.assignee.emailAddress = :owner")
 })
 @Entity(name = "assignments") public class Assignment extends Model {
