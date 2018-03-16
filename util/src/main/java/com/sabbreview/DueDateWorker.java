@@ -11,7 +11,7 @@ import javax.persistence.*;
 
 
 /**
- * Tread worker that checks if assignments are past due.
+ * Thread worker that checks if assignments are past due.
  * If they are it sets their state to COMPLETED.
  */
 public class DueDateWorker implements Runnable{
@@ -19,23 +19,7 @@ public class DueDateWorker implements Runnable{
     private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
     private static final String DB_ENV_VARIABLE = "DATABASE_URL";
     public void run(){
-        //Creates entity manager separate to the one in the Controller class.
-        EntityManagerFactory emf;
-        if (System.getenv(DB_ENV_VARIABLE) != null) {
-            URI uri = URI.create(System.getenv(DB_ENV_VARIABLE));
-            HashMap<String, String> persistenceMap = new HashMap<>();
-            String[] userDetails = uri.getUserInfo().split(":");
-            String jdbcURL = String
-                    .format("jdbc:postgresql://%s:%d%s?user=%s&password=%s&sslmode=require", uri.getHost(),
-                            uri.getPort(), uri.getPath(), userDetails[0], userDetails[1]);
-            persistenceMap.put("javax.persistence.jdbc.url", jdbcURL);
-            persistenceMap.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
-            emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, persistenceMap);
-        } else {
-            emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        }
-        EntityManager em = emf.createEntityManager();
-        em.setFlushMode(FlushModeType.COMMIT);
+        EntityManager em = SabbReviewEntityManager.getEntityManager();
 
         //Creates list of all assignments and updates state, depending on due date.
         TypedQuery<Assignment> query =em.createNamedQuery("get-all-assignments", Assignment.class);
@@ -55,9 +39,6 @@ public class DueDateWorker implements Runnable{
                 em.getTransaction().rollback();
             }
         }
-
-        em.close();
-        emf.close();
 
     }
 
