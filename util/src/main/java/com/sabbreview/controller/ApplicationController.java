@@ -67,7 +67,7 @@ public class ApplicationController extends Controller {
             Application application = em.find(Application.class, applicationID);
 
             em.getTransaction().begin();
-            
+
             if(application.getApplicant().getEmailAddress().equals(user.getEmailAddress()) || user.getAdmin()){
                 em.createNamedQuery("delete-application").setParameter("id", applicationID).executeUpdate();
             }
@@ -174,7 +174,6 @@ public class ApplicationController extends Controller {
      * @param principle Principle of the calling user.
      * @param templateid Id of the template to use
      * @param departmentid Id of the department to assign the application to.
-     * @return
      */
     public static TransactionState<Application> useTemplate(String principle, String templateid,
                                                             String departmentid) {
@@ -231,7 +230,7 @@ public class ApplicationController extends Controller {
             User caller = em.find( User.class, principle);
 
             //TODO add actual authentication
-            if( true || caller.getAdmin()) {
+            if( caller.getEmailAddress().equals(principle) || caller.getAdmin() || true) {
                 if (fieldInstance == null) {
                     throw new ValidationException("Field Instance does not exist");
                 }
