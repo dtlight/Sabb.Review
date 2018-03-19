@@ -42,7 +42,7 @@ public class DepartmentControllerTest {
 
     @Test
     public void createDepartment() {
-        TransactionState<Department> departmentTransactionState  = DepartmentController.createDepartment(testuser.getEmailAddress(), );
+        TransactionState<Department> departmentTransactionState  = DepartmentController.createDepartment(testuser.getEmailAddress(),testDepartment);
         Assert.assertEquals(TransactionStatus.STATUS_OK, departmentTransactionState.getState());
         Assert.assertNotNull(departmentTransactionState.getValue());
         Department department = departmentTransactionState.getValue();
