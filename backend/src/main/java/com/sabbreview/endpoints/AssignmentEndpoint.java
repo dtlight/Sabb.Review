@@ -19,13 +19,13 @@ public class AssignmentEndpoint extends Endpoint {
         (principle) -> toJson(deleteAssignment(principle, req.params(":id")))));
     get("/assignment/:id", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(getAssignment(principle, req.params(":id")))));
-    post("/assignment/application/:application/assignee/:assignee", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(createAssignment(principle, req.params("application"), req.params("assignee"))))));
+    post("/assignment/application/:application/role/:role/assignee/:assignee", (req, res) -> requireAuthentication(req,
+        (principle -> toJson(createAssignment(principle, req.params("application"), req.params("role"), req.params("assignee"))))));
 
     put("/assignment/:id/state/:state", (req, res) -> toJson(setAcceptanceState(req.params(":id"),
         AcceptanceState.valueOf(req.params(":state")))));
 
-    put("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
+    post("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(createComment(principle, req.params(":id"), fromJson(req.body(),
             Comment.class)))));
 

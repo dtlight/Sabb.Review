@@ -7,16 +7,42 @@ import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
 
+import java.util.List;
 import javax.persistence.RollbackException;
 
 public class RoleController extends Controller {
+  public static TransactionState<List<Role>> getRoles(String principle) {
+    try {
+      List<Role> roles = em.createNamedQuery("get-all-roles", Role.class).getResultList();
+      return new TransactionState<>(roles, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Cannot access roles");
+    }
+  }
+  public static TransactionState<Role> getRole(String principle, String id) {
+    try {
+      Role role = em.find(Role.class, id);
+      return new TransactionState<>(role, TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Cannot access roles");
+    }
+  }
+
 
   public static TransactionState<Role> createRole(String principle, Role role) {
     try {
       User userPrinciple = em.find(User.class, principle);
       if (userPrinciple != null && userPrinciple.isAdmin) {
         em.getTransaction().begin();
-        em.persist(role);
+        if(role.getId() != null) {
+          em.merge(role);
+        } else {
+          em.persist(role);
+        }
         em.getTransaction().commit();
         return new TransactionState<>(role, TransactionStatus.STATUS_OK, null);
       } else {

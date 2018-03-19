@@ -35,11 +35,7 @@ export default class extends React.Component {
   render() {
     return (
       <Navbar dark color="primary" expand="lg">
-        <Link to="/">
-           <NavbarBrand >
-            <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
-          </NavbarBrand>
-        </Link>
+        <Brand />
         <IfLoggedIn>
           <NavbarToggler onClick={this.toggleNav} />
         </IfLoggedIn>
@@ -63,8 +59,8 @@ export default class extends React.Component {
                         View Departments
                     </DropdownItem>
 
-                  <DropdownItem onClick={this.hideNave} to="/admin/template/">
-                    Edit Templates
+                  <DropdownItem onClick={this.hideNave} to="/admin/roles/">
+                    Edit Roles
                   </DropdownItem>
 
                 </DropdownMenu>
@@ -91,7 +87,13 @@ let IfLoggedIn = withRouter((props) => {
   }
 });
 
-
+let Brand = withRouter((props) => {
+  return (<Link to={(!props.location.pathname.startsWith("/auth/"))?"/":"/auth/"}>
+      <NavbarBrand >
+          <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
+      </NavbarBrand>
+  </Link>);
+})
 let DropdownItem = withRouter((props) => {
   const { location } = props;
  return (<Link className={((props.exact && location.pathname === props.to)
