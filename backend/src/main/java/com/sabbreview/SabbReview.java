@@ -48,6 +48,7 @@ import static spark.Spark.port;
 
 public class SabbReview {
   public static Gson gson = generateGson();
+  private static final ScheduledExecutorService DUE_CHECK_SCHEDULER = Executors.newScheduledThreadPool(1);
 
   public static void main(String... args) {
     port(getHerokuAssignedPort());
@@ -72,8 +73,7 @@ public class SabbReview {
 
     notFound((request, response) -> gson.toJson(new NotFound()));
 
-    final ScheduledExecutorService dueDateWorkerPool = Executors.newScheduledThreadPool(1);
-    dueDateWorkerPool.scheduleAtFixedRate(new DueDateWorker(), 1, 10, TimeUnit.SECONDS);
+    DUE_CHECK_SCHEDULER.scheduleAtFixedRate(new DueCheckWorker(), 1, 60, TimeUnit.MINUTES);
   }
 
   private static int getHerokuAssignedPort() {
