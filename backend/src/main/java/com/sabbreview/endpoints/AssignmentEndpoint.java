@@ -17,18 +17,18 @@ import static spark.Spark.put;
 public class AssignmentEndpoint extends Endpoint {
   public static void attach() {
     delete("/assignment/:id", (req, res) -> requireAuthentication(req,
-        (principle) -> toJson(deleteAssignment(principle, req.params(":id")))))
-    ;
+        (principle) -> toJson(deleteAssignment(principle, req.params(":id")))));
+    
     get("/assignment/:id", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(getAssignment(principle, req.params(":id")))));
 
-    post("/assignment/application/:application/assignee/:assignee", (req, res) -> requireAuthentication(req,
-        (principle -> toJson(createAssignment(principle, req.params("application"), req.params("assignee"))))));
+    post("/assignment/application/:application/role/:role/assignee/:assignee", (req, res) -> requireAuthentication(req,
+        (principle -> toJson(createAssignment(principle, req.params("application"), req.params("role"), req.params("assignee"))))));
 
     put("/assignment/:id/state/:state", (req, res) -> requireAuthentication(req,
             (principle) -> toJson(setAcceptanceState(principle, req.params(":id"), req.params(":state")))));
 
-    put("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
+    post("/assignment/:id/comment", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(createComment(principle, req.params(":id"), fromJson(req.body(),
             Comment.class)))));
 

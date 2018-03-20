@@ -2,16 +2,7 @@ package com.sabbreview.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @NamedQueries({
         @NamedQuery(name="delete-application", query = "delete from applications a " +
@@ -28,6 +19,7 @@ import javax.persistence.OneToMany;
 
         @NamedQuery(name="get-all-for-department", query = "select a from applications a " +
                 "where a.department.id = :id")
+
 })
 
 @Entity(name = "applications")
@@ -48,6 +40,18 @@ public class Application
 
   @Enumerated()
   private AcceptanceState state;
+
+  @Lob
+  private String signature;
+
+  public void setSignature(String sign) {
+    this.signature = sign;
+
+  }
+
+  public String getSignature() {
+    return signature;
+  }
 
   public Application() {
 

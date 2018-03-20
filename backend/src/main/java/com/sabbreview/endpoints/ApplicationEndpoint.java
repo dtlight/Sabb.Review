@@ -18,9 +18,8 @@ public class ApplicationEndpoint extends Endpoint {
         ApplicationController
             .createApplication(principle, fromJson(req.body(), com.sabbreview.model.Application.class)))));
 
-    get("/application/:id",
-            (req, res) -> requireAuthentication(req, (principle) ->
-                    toJson(ApplicationController.getApplication(principle, req.params(":id")))));
+    get("/application/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
+            ApplicationController.getApplication(principle, req.params(":id")))));
 
     get("/application/:id/assignments",
         (req, res) -> requireAuthentication(req, (principle) ->
@@ -37,5 +36,12 @@ public class ApplicationEndpoint extends Endpoint {
     put("/fieldinstance/:id", (req, res) -> requireAuthentication(req, (principle) -> toJson(
         ApplicationController.changeFieldValue(principle, req.params(":id"),
             fromJson(req.body(), ApplicationController.FieldInstanceValue.class)))));
+
+    put("/application/:id/sign", (req, res) -> requireAuthentication(req,
+            (principle) -> toJson(ApplicationController
+                    .setSignature(req.params(":id"), req.body()))));
+
+    get("/application/:id/sign", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(ApplicationController.getSignature(principle, req.params(":id")))));
   }
 }

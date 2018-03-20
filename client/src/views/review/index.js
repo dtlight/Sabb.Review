@@ -1,7 +1,6 @@
 import React from 'react';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import {  AssignmentList } from '../../components/review/'
+import {  AssignmentList, CommentArea, CommentList } from '../../components/review/'
 import { EditApplication, ApplicationAdminButtons } from '../../components/application/index.js'
 import axios from "axios/index";
 import { Row, Col } from 'reactstrap';
@@ -40,7 +39,8 @@ export class ReviewDetail extends React.Component {
         axios.get(`/assignment/${this.props.match.params.id}`).then(({data})=> {
             this.setState({
                 assignment: data.value,
-                isLoading: false
+                isLoading: false,
+
             });
             console.log(data);
         })
@@ -51,7 +51,7 @@ export class ReviewDetail extends React.Component {
             return <div class="loader">Loading...</div>;
         } else {
             return (<div>
-                <ApplicationAdminButtons id={this.props.match.params.id} onStateChange={(newState)=>{
+                <ApplicationAdminButtons id={this.state.assignment.application.id} hideSubmit={true} showChangeState={this.state.assignment.role.canChangeApplicationState} onStateChange={(newState)=>{
                     this.setState({
                         newState: newState
                     })
@@ -62,10 +62,11 @@ export class ReviewDetail extends React.Component {
                 <hr/>
                 <Row>
                   <Col md={8}>
-                    <EditApplication id={this.state.assignment.application.id} disabled/>
+                    <EditApplication id={this.state.assignment.application.id} disabled={!this.state.assignment.role.canEdit}/>
                   </Col>
-                    <Col md={4}>
-                      comment area
+                    <Col md={4} style={{"paddingTop": "10px"}}>
+                        <CommentList comments={this.state.assignment.comments}/>
+                        {(this.state.assignment.role.canComment)?<CommentArea assignment={this.state.assignment.id} onChange={this.load}/>:""}
                     </Col>
                 </Row>
                 </div>

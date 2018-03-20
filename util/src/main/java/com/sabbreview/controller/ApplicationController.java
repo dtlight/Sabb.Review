@@ -90,7 +90,7 @@ public class ApplicationController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
-
+  
     /**
      * Gets all of the assignments which assign a given application.
      * @param applicationID The application in question
@@ -123,6 +123,44 @@ public class ApplicationController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
+  
+  
+  public static TransactionState<Application> setSignature(String applicationID, String sign) {
+    try {
+      em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationID);
+      application.setSignature(sign.split(",")[1]);
+      em.merge(application); //need to iterate through user, find acc state, and change
+      em.flush();
+      em.getTransaction().commit();
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+              "Error Capturing Signature");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+  public static TransactionState<String> getSignature(String principle, String applicationID) {
+    try {
+      em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationID);
+      em.getTransaction().commit();
+      return new TransactionState<>(application.getSignature(), TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Error Capturing Signature");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
 
     /**
      * Retrieves an application.
@@ -136,7 +174,7 @@ public class ApplicationController extends Controller {
             em.getTransaction().begin();
             User user = em.find(User.class, principle);
             Application application = em.find(Application.class, applicationID);
-
+          
             if( application == null){
                 return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "APPLICATION NO EXISTERINO");
             }
@@ -195,43 +233,41 @@ public class ApplicationController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
-
+     
     /**
      * Creates a new application using a template with templateid.
      * @param principle Principle of the calling user.
      * @param templateid Id of the template to use
      * @param departmentid Id of the department to assign the application to.
      */
-    public static TransactionState<Application> useTemplate(String principle, String templateid,
-                                                            String departmentid) {
-        try {
-            em.getTransaction().begin();
+      public static TransactionState<Application> useTemplate(String principle, String templateid,
+      String departmentid) {
+      try {
+      em.getTransaction().begin();
 
-            User user = em.find(User.class, principle);
-            Department department = em.find(Department.class, departmentid);
-            Template template = TemplateController.getTemplate(principle, templateid).getValue();
-
-            if( department == null || template == null){
-                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "TEMPLATE OR" +
+      User user = em.find(User.class, principle);
+      Department department = em.find(Department.class, departmentid);
+      Template template = TemplateController.getTemplate(principle, templateid).getValue();
+        
+      if( department == null || template == null){
+         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "TEMPLATE OR" +
                         "DEPARTMENT NO EXISTERINO");
-            }
+      }
+        
+      // TODO      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
+      Application application = new Application();
+      application.setDepartment(department);
+      application.setApplicant(user);
+      application.setState(AcceptanceState.PENDING);
 
-
-            queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
-
-            Application application = new Application();
-            application.setDepartment(department);
-            application.setApplicant(user);
-            application.setState(AcceptanceState.PENDING);
-
-            List<Field> fieldList = template.fieldList;
-            if(fieldList  != null) {
-                for (Field field : fieldList) {
-                    System.out.println(field);
-                    FieldInstance fieldInstance = new FieldInstance(field);
-                    em.persist(fieldInstance);
-                    application.addFieldInstance(fieldInstance);
+      List<Field> fieldList = template.fieldList;
+      if(fieldList  != null) {
+        for (Field field : fieldList) {
+          System.out.println(field);
+          FieldInstance fieldInstance = new FieldInstance(field);
+          em.persist(fieldInstance);
+          application.addFieldInstance(fieldInstance);
                 }
             }
 

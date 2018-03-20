@@ -8,7 +8,7 @@ import './style.css';
 
 
 if (window.location.hostname === "localhost") {
-  axios.defaults.baseURL = 'https://sabbreview-stage.herokuapp.com/';
+  axios.defaults.baseURL = 'http://localhost:4567';
 } else {
   axios.defaults.baseURL = 'https://api.sabb.review';
 }

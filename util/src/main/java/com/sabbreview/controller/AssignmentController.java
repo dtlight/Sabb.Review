@@ -22,23 +22,29 @@ public class AssignmentController extends Controller {
    * @param applicationId ID of the application to assign.
    * @param assigneeId ID of the user to whom the application is being assigned.
    */
-  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String assigneeId) {
+  public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
     try {
       em.getTransaction().begin();
       Application application = em.find(Application.class, applicationId);
+      Role role = em.find(Role.class, roleId);
+      if(role == null) {
+        throw new ValidationException("Must have role");
+      }
       User assignee = em.find(User.class, assigneeId);
       Assignment assignment = new Assignment();
       assignment.setApplication(application);
       assignment.setAssignee(assignee);
+      assignment.setRole(role);
       em.persist(assignment);
       em.getTransaction().commit();
-      new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
+      //new NotificationService().sendNotification(NotificationID.ASSIGNEDTO,"User", assignee.getEmailAddress());
       return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
     }
   }
+  
 
   /**
    * Creates and adds a comment to an application.
@@ -55,17 +61,18 @@ public class AssignmentController extends Controller {
 
       if( assignment.getAssignee().getEmailAddress().equals(principle)|| user.getAdmin()){
         em.getTransaction().begin();
-
+        comment.setAuthor(user);
         em.persist(comment);
         assignment.addComment(comment);
         em.persist(assignment);
+        em.getTransaction().commit();
         em.getTransaction().commit();
 
         return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
       }
 
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
-
+      
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
