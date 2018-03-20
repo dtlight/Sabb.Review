@@ -66,6 +66,10 @@ public class ApplicationController extends Controller {
             User user = em.find(User.class, principle);
             Application application = em.find(Application.class, applicationID);
 
+            if( application == null){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "APPLICATION NO EXISTERINO");
+            }
+
             em.getTransaction().begin();
 
             if(application.getApplicant().getEmailAddress().equals(user.getEmailAddress()) || user.getAdmin()){
@@ -91,6 +95,13 @@ public class ApplicationController extends Controller {
             em.getTransaction().begin();
             User user = em.find(User.class, principle);
             List assignments = em.createNamedQuery("get-all-assignments-for-application").setParameter("id", applicationID).getResultList();
+
+            if( assignments.size() == 0){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "NO APPLICATION" +
+                        "ASSIGNMENTS OR APPLICATION NO EXISTERINO");
+            }
+
+
             em.getTransaction().commit();
 
             //TODO replace true with an actual permission
@@ -118,8 +129,12 @@ public class ApplicationController extends Controller {
         try {
             em.getTransaction().begin();
             User user = em.find(User.class, principle);
-            Application application;
-            application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).getSingleResult();
+            Application application = em.find(Application.class, applicationID);
+
+            if( application == null){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "APPLICATION NO EXISTERINO");
+            }
+
             em.getTransaction().commit();
 
             //Checking user owns the application, is assigned the application, or is an admin
@@ -149,6 +164,12 @@ public class ApplicationController extends Controller {
 
             em.getTransaction().begin();
             Application application = em.find(Application.class, applicationID);
+
+            if( application == null){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "APPLICATION NO EXISTERINO");
+            }
+
+
             User caller = em.find( User.class, principle);
 
             if( userIsAssignedApplication(applicationID, caller) || caller.getAdmin() ) {
@@ -183,6 +204,14 @@ public class ApplicationController extends Controller {
             User user = em.find(User.class, principle);
             Department department = em.find(Department.class, departmentid);
             Template template = TemplateController.getTemplate(principle, templateid).getValue();
+
+            if( department == null || template == null){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "TEMPLATE OR" +
+                        "DEPARTMENT NO EXISTERINO");
+            }
+
+
+
             queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
             Application application = new Application();
@@ -229,6 +258,11 @@ public class ApplicationController extends Controller {
             FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
             User caller = em.find( User.class, principle);
 
+            if( fieldInstance == null){
+                return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "FIELD INSTANCE NO EXISTERINO");
+            }
+
+            
             //TODO add actual authentication
             if( caller.getEmailAddress().equals(principle) || caller.getAdmin() || true) {
                 if (fieldInstance == null) {
