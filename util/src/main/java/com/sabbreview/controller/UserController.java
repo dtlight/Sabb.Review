@@ -30,6 +30,12 @@ public class UserController extends Controller {
     EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
   }
 
+  /**
+   * Stores a user object in the database.
+   * ALL USERS ARE CREATED AS ADMINS CURRENTLY.
+   * SEE TODO!!!
+   * @param user User to persist.
+   */
   public static TransactionState<User> registerUser(User user) {
     try {
       em.getTransaction().begin();
@@ -56,6 +62,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Fetches a user object.
+   * @param emailAddress Email address of user to fetch.
+   * @return The user object, as part of a transactionstate.
+   */
   public static TransactionState<User> getUser(String emailAddress) {
     User user = em.find(User.class, emailAddress);
     if (user == null) {
@@ -65,6 +76,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Generates a session token.
+   * @param uap
+   * @return A token, as part of a transactionstate.
+   */
   public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
     try {
@@ -98,10 +114,14 @@ public class UserController extends Controller {
 
   }
 
+  /**
+   * Deletes the user that calls this function.
+   * @param principle Principle of the calling user.
+   */
   public static TransactionState<User> deleteUser(String principle) {
     try {
       User user = em.find(User.class, principle);
-      if(user.getEmailAddress().equals(principle) || user.getAdmin()) {
+      if(user.getEmailAddress().equals(principle)) {
 
         em.getTransaction().begin();
         if (user == null) {
@@ -122,6 +142,11 @@ public class UserController extends Controller {
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
 
+  /**
+   * Fetches all of the applications belonging to the calling user.
+   * @param principle Principle of the calling user.
+   * @return A list of applications belonging to the user.
+   */
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
@@ -136,6 +161,11 @@ public class UserController extends Controller {
   }
 
 
+  /**
+   * Fetches all the assignments for the calling user.
+   * @param principle Principle of the calling user.
+   * @return A list of Assignments.
+   */
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
     try {
       TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery("get-all-assignments-for-user", Assignment.class);
