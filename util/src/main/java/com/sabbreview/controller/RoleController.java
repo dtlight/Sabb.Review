@@ -9,6 +9,12 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
+/**
+ * Contains the high level code for operations on user roles.
+ * Authentication is currently *not* enforced with roles.
+ * Call this class to perform operations on roles.
+ * @see Role
+ */
 public class RoleController extends Controller {
 
   public static TransactionState<Role> createRole(String principle, Role role) {

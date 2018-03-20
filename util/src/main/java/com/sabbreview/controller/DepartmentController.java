@@ -10,7 +10,12 @@ import com.sabbreview.responses.TransactionStatus;
 import java.util.List;
 
 
-
+/**
+ * Contains the high level code for operations on Department JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Assignments.
+ * @see Department
+ */
 public class DepartmentController extends Controller {
 
     /**

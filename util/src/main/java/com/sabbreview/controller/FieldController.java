@@ -10,6 +10,14 @@ import com.sabbreview.responses.ValidationException;
 import javax.persistence.RollbackException;
 
 
+/**
+ * Contains the high level code for operations on template field JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Fields.
+ * @see Field
+ * @see com.sabbreview.model.Template
+ * @see com.sabbreview.model.FieldInstance
+ */
 public class FieldController extends Controller {
 
   public static TransactionState<Field> createField(String principle, Field field) {

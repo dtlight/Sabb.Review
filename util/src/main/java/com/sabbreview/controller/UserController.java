@@ -17,6 +17,12 @@ import java.util.List;
 import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 
+/**
+ * Contains the high level code for operations on User JPA Objects.
+ * Authentication is enforced for some methods in this class.
+ * Call this class to do operations on Users.
+ * @see User
+ */
 public class UserController extends Controller {
   private static final String EMAIL_REGEX;
 
@@ -94,14 +100,18 @@ public class UserController extends Controller {
 
   public static TransactionState<User> deleteUser(String principle) {
     try {
-      em.getTransaction().begin();
       User user = em.find(User.class, principle);
-      if(user == null) {
-        throw new ValidationException();
-      } else {
-        em.remove(user);
+      if(user.getEmailAddress().equals(principle) || user.getAdmin()) {
+
+        em.getTransaction().begin();
+        if (user == null) {
+          throw new ValidationException();
+        } else {
+          em.remove(user);
+        }
+        em.getTransaction().commit();
+
       }
-      em.getTransaction().commit();
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());

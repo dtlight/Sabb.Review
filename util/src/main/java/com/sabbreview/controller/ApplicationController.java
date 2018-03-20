@@ -8,12 +8,18 @@ import com.sabbreview.NotificationService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains the high level code for operations on Application JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Applications.
+ * @see Application
+ */
 public class ApplicationController extends Controller {
 
     /**
-     * Stores an application in the database.
+     * Stores an application object in the database.
      * @param principle Principle (email) of the user creating the application
-     * @param application Persists an application in the data
+     * @param application Application to store
      */
     public static TransactionState<Application> createApplication(String principle,
                                                                   Application application) {
@@ -317,6 +323,13 @@ public class ApplicationController extends Controller {
         }
     }
 
+    /**
+     * Finds whether or not a user is assigned an application.
+     * For internal use.
+     * @param applicationID Application to check for.
+     * @param user User to check.
+     * @return Whether a user is assigned an application with applicationID.
+     */
     private static boolean userIsAssignedApplication(String applicationID, User user){
         List<Assignment> assignments = user.getAssignments();
         for(int i = 0; i < assignments.size(); i++){

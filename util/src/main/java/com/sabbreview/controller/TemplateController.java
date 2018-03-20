@@ -9,7 +9,11 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
-
+/**
+ * Contains the high level code for operations on Assignment objects.
+ * Authentication is currently *not* enforced with roles.
+ * @see Template
+ */
 public class TemplateController extends Controller {
 
   public static TransactionState<Template> createTemplate(String principle, String name, String departmentId) {

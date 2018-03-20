@@ -8,6 +8,12 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
+/**
+ * Contains the high level code for operations on Assignment JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Assignments.
+ * @see Assignment
+ */
 public class AssignmentController extends Controller {
 
   /**
@@ -96,6 +102,12 @@ public class AssignmentController extends Controller {
     }
   }
 
+  /**
+   * Fetches an assignment
+   * @param principle Principle of the calling user
+   * @param assignmentId Assignment to fetch
+   * @return The fetched assignment.
+   */
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {
       try {
 
