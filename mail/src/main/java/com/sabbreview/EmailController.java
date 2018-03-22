@@ -9,6 +9,11 @@ import net.sargue.mailgun.Mail;
 
 import java.io.IOException;
 
+/**
+ * Automated email worker, which runs separately and independently to the back-end.
+ * Consumes CloudAMQP messages and processes as commands for sending emails.
+ * @see EmailQueueInstance
+ */
 public class EmailController {
   private static final String ENV_DOMAIN = "MAILGUN_DOMAIN";
   private static final String ENV_MAILGUN_API_KEY = "MAILGUN_API_KEY";
@@ -63,11 +68,14 @@ public class EmailController {
     Mail.using(configuration).to(recipient).subject(subject).html(content).build().send();
   }
 
+  /**
+   * Extends default library consumer to allow for custom handling of delivered messages.
+   * @see Email
+   */
   private static class EmailQueueConsumer extends DefaultConsumer {
     EmailQueueConsumer(EmailQueueInstance emailQueueInstance) {
       super(emailQueueInstance.getChannel());
     }
-
     @Override public void handleDelivery(String consumerTag, Envelope envelope,
         AMQP.BasicProperties properties, byte[] body) throws IOException {
       Email currentEmail;

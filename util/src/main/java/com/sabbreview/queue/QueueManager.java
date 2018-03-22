@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Creates and maintains the connection to the cloudAMQP server.
+ * Creates and maintains the connection to the cloudAMQP server for.
  */
 public class QueueManager {
   private static final String ENV_AMQP_QUEUE = "CLOUDAMQP_URL";

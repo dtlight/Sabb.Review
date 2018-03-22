@@ -6,7 +6,9 @@ import com.rabbitmq.client.Consumer;
 import java.io.IOException;
 
 /**
- * Manages channel and publishing messages to the CloudAMQP server.
+ * Manages channel, publishes messages and allows for consummation of messages to and from the CloudAMQP server
+ * through a given connection.
+ * @see QueueManager
  */
 public class EmailQueueInstance {
   private static final String queueName = "email";
