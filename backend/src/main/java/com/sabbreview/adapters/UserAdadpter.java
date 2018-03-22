@@ -32,7 +32,6 @@ public class UserAdadpter implements JsonSerializer<User> {
     JsonArray assignmentsJsonArray =  new JsonArray();
     for (Assignment assignment:
         src.getAssignments()) {
-      System.out.println(assignment);
       assignmentsJsonArray.add(assignment.getId());
     }
     user.add("assignments", assignmentsJsonArray);

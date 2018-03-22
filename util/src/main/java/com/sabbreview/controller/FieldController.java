@@ -10,9 +10,24 @@ import com.sabbreview.responses.ValidationException;
 import javax.persistence.RollbackException;
 
 
+/**
+ * Contains the high level code for operations on template field JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Fields.
+ * @see Field
+ * @see com.sabbreview.model.Template
+ * @see com.sabbreview.model.FieldInstance
+ */
 public class FieldController extends Controller {
 
+  /**
+   * Stores a field in the database.
+   * @param principle ID (email) of the calling user.
+   * @param field Field to persist.
+   * @return Transaction state.
+   */
   public static TransactionState<Field> createField(String principle, Field field) {
+
     try {
       em.getTransaction().begin();
       em.persist(field);
@@ -24,10 +39,17 @@ public class FieldController extends Controller {
     }
   }
 
-
+  /**
+   * Modifies a field.
+   * @param principle ID (email) of the calling user.
+   * @param field Modified field, to be stored.
+   * @return Transaction state.
+   */
   public static TransactionState<Field> editField(String principle, Field field) {
     try {
       em.getTransaction().begin();
+      Field f = em.find(Field.class, field.getId());
+      field.setCreatedAt(f.getCreatedAt());
       em.merge(field);
       em.getTransaction().commit();
       return new TransactionState<>(field, TransactionStatus.STATUS_OK, "Field edited");
@@ -37,7 +59,12 @@ public class FieldController extends Controller {
     }
   }
 
-
+  /**
+   * Fetches a field from the database.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the field to fetch.
+   * @return The field with the associated ID as part of a transaction state.
+   */
   public static TransactionState<Field> getField(String principle, String id) {
     try {
       Field field = em.find(Field.class, id);
@@ -55,6 +82,12 @@ public class FieldController extends Controller {
     }
   }
 
+  /**
+   * Deletes a field.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the field to delete.
+   * @return Transaction state.
+   */
   public static TransactionState<Field> deleteField(String principle, String id) {
     try {
       em.getTransaction().begin();
@@ -71,6 +104,13 @@ public class FieldController extends Controller {
     }
   }
 
+  /**
+   * Adds an option to a multi-choice question.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the field to add an option to. Should be of type multichoice.
+   * @param fieldOption Option to add to the field.
+   * @return Transaction state.
+   */
   public static TransactionState<Field> addOption(String principle, String id,
       FieldOption fieldOption) {
     try {

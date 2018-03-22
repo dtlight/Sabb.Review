@@ -1,11 +1,16 @@
 package com.sabbreview.model;
 
 
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 
+/*
+ * Model class for the JPA entity manager to store fieldOption database entries in.
+ */
 @Entity public class FieldOption extends Model {
 
   @Id
@@ -13,7 +18,8 @@ import javax.persistence.Id;
   int id;
 
   String title;
-  boolean selected;
+
+  Date createdAt;
 
   public FieldOption() {}
 
@@ -35,17 +41,14 @@ import javax.persistence.Id;
     return this;
   }
 
-  public boolean isSelected() {
-    return selected;
-  }
-
-  public FieldOption setSelected(boolean selected) {
-    this.selected = selected;
-    return this;
-  }
-
   @Override public String toString() {
-    return "FieldOption{" + "id=" + id + ", title='" + title + '\'' + ", selected=" + selected
+    return "FieldOption{" + "id=" + id + ", title='" + title + '\''
         + '}';
   }
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
+  }
+
 }

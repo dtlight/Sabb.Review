@@ -3,14 +3,18 @@ package com.sabbreview.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-
+/*
+ * Model class for the JPA entity manager to store comment database entries in.
+ */
 @Entity
 public class Comment extends Model {
   @GeneratedValue
   @Id
   private String id;
 
+  @Lob
   private String body;
 
   @ManyToOne
@@ -51,7 +55,7 @@ public class Comment extends Model {
     return author;
   }
 
-  private Comment setAuthor(User author) {
+  public Comment setAuthor(User author) {
     this.author = author;
     return this;
   }

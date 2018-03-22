@@ -10,18 +10,25 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu } from 'reactstrap';
+import withAdmin from "../AdminHOC";
 
 
-export default class extends React.Component {
+class Header extends React.Component {
   constructor (props) {
     super(props);
     this.props = props;
-    this.state = { navExpanded: false }
+    this.state = { navExpanded: false, isAdmin: props.isAdmin || false}
     this.toggleNav = this.toggleNav.bind(this);
     this.hideNave = this.hideNave.bind(this);
   }
 
-  toggleNav() {
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            isAdmin: nextProps.isAdmin || false
+        })
+    }
+
+        toggleNav() {
     this.setState({ navExpanded: !this.state.navExpanded });
   }
 
@@ -31,15 +38,10 @@ export default class extends React.Component {
     }
   }
 
-
   render() {
     return (
       <Navbar dark color="primary" expand="lg">
-        <Link to="/">
-           <NavbarBrand >
-            <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
-          </NavbarBrand>
-        </Link>
+        <Brand />
         <IfLoggedIn>
           <NavbarToggler onClick={this.toggleNav} />
         </IfLoggedIn>
@@ -52,24 +54,29 @@ export default class extends React.Component {
               <NavLink onClick={this.hideNave} to="/review">Review</NavLink>
 
             </Nav>
-            <Nav className="ml-auto" navbar>
+              {this.state.isAdmin?<Nav className="ml-auto" navbar>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Administration
                 </DropdownToggle>
-                <DropdownMenu >
+                <DropdownMenu>
                     <DropdownItem onClick={this.hideNave} exact to="/admin/">
-                        View Departments
+                         Departments
                     </DropdownItem>
 
-                  <DropdownItem onClick={this.hideNave} to="/admin/template/">
-                    Edit Templates
+                  <DropdownItem onClick={this.hideNave} to="/admin/roles/">Roles
                   </DropdownItem>
 
+                    <DropdownItem onClick={this.hideNave} to="/admin/users/">
+                      Users
+                      </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
                 <NavLink onClick={this.hideNave} to="/logout">Logout</NavLink>
-            </Nav>
+            </Nav> :
+                  <Nav className="ml-auto" navbar>
+                      <NavLink onClick={this.hideNave} to="/logout">Logout</NavLink>
+                  </Nav>}
           </IfLoggedIn>
         </Collapse>
       </Navbar>
@@ -90,7 +97,13 @@ let IfLoggedIn = withRouter((props) => {
   }
 });
 
-
+let Brand = withRouter((props) => {
+  return (<Link to={(!props.location.pathname.startsWith("/auth/"))?"/":"/auth/"}>
+      <NavbarBrand >
+          <img style={{"height": "40px"}} alt="logo" src="/brand/sabbreview.png"/>
+      </NavbarBrand>
+  </Link>);
+})
 let DropdownItem = withRouter((props) => {
   const { location } = props;
  return (<Link className={((props.exact && location.pathname === props.to)
@@ -102,3 +115,5 @@ let NavLink = withRouter((props) => {
   return (<li className={((props.exact && location.pathname === props.to)
       || (!props.exact && location.pathname.startsWith(props.to)))?"active nav-item":"nav-item"} {...props}><Link className="nav-link" to={props.to}>{props.children}</Link></li>)
 });
+
+export default withAdmin(Header);

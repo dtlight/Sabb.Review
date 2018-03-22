@@ -14,10 +14,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
-
 @NamedQueries({
+    @NamedQuery(name="get-all-assignments", query = "SELECT a FROM assignments a"),
     @NamedQuery(name="get-all-assignments-for-user", query = "SELECT a from assignments a WHERE a.assignee.emailAddress = :owner")
 })
+
+/*
+ * Model class for the JPA entity manager to store assignment database entries in.
+ */
 @Entity(name = "assignments") public class Assignment extends Model {
 
   @Id
@@ -36,7 +40,7 @@ import javax.persistence.OneToMany;
   @Enumerated
   private AcceptanceState state = AcceptanceState.PENDING;
 
-  Date dueDate;
+  private Date dueDate;
 
   public Assignment() {
   }

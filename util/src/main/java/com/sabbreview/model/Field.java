@@ -1,6 +1,7 @@
 package com.sabbreview.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -8,7 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 
+/*
+ * Model class for the JPA entity manager to store template field database entries in.
+ */
 @Entity public class Field extends Model {
 
   @Id
@@ -19,7 +24,10 @@ import javax.persistence.OneToMany;
 
   private FieldType type;
 
-  private Boolean showAtEnd = false;
+  Boolean showAtEnd = false;
+
+
+  Date createdAt;
 
   @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
@@ -70,8 +78,22 @@ import javax.persistence.OneToMany;
     fieldOptions.add(fieldOption);
   }
 
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public Field setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+    return this;
+  }
+
   @Override public String toString() {
     return "Field{" + "id=" + id + ", title='" + title + '\'' + ", type=" + type + ", fieldOptions="
         + fieldOptions + '}';
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
   }
 }

@@ -5,32 +5,44 @@ import { Card, Badge, CardText, CardBody,
 import axios from 'axios';
 
 
-let applicationStates = {
-  PENDING: {
-    humanStatus: "Pending",
-    body: "This application is awaiting completion, please edit your application and press submit to proceed.",
-    colours: "warning",
-    buttonsVisible: true
-  },
-  SUCCESS: {
-    humanStatus: "Accepted",
-    body: "This application has been accepted by the department and review groups. You will received further information by email.",
-    colours: "success",
-    buttonsVisible: false
-  },
-  REFUSED: {
-    humanStatus: "Rejected",
-    body: "This application has been rejected by the department or review group.",
-    colours: "danger",
-    buttonsVisible: false
-  },
-  SUBMITTED: {
-    humanStatus: "Submitted",
-    body: "The application has been submitted and is currently awaiting approval.",
-    colours: "secondary",
-    buttonsVisible: true
-  }
-}
+export let applicationStates = {
+    PENDING: {
+        humanStatus: "Pending",
+        body: "This application is awaiting completion, please edit your application and press submit to proceed.",
+        colours: "warning",
+        buttonsVisible: true
+    },
+    ACCEPTED: {
+        humanStatus: "Accepted",
+        body: "This application has been accepted by the department and review groups. You will received further information by email.",
+        colours: "success",
+        buttonsVisible: false
+    },
+    REFUSED: {
+        humanStatus: "Rejected",
+        body: "This application has been rejected by the department or review group.",
+        colours: "danger",
+        buttonsVisible: false
+    },
+    SUBMITTED: {
+        humanStatus: "Submitted",
+        body: "The application has been submitted and is currently awaiting approval.",
+        colours: "secondary",
+        buttonsVisible: true
+    },
+    COMPLETED: {
+        humanStatus: "Completed",
+        body: "The accepted sabbatical period has finished. Please complete the report.",
+        colours: "success",
+        buttonsVisible: true
+    },
+    FINALISED: {
+        humanStatus: "Finalised",
+        body: "The application has been finalised and the provided report has been submitted.",
+        colours: "success",
+        buttonsVisible: false
+    }
+};
 
 
 
@@ -57,17 +69,18 @@ export class ApplicationCard extends React.Component {
 
   render() {
     return (
-      <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
+      <Link to={`/apply/${this.state.id}`} className={"card-link card-link-custom"}>
+          <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.state.status].colours}`}>
         <CardBody>
           <CardTitle><h5>Application to the {this.state.department} dept. <Badge color={applicationStates[this.state.status].colours}>{applicationStates[this.state.status].humanStatus}</Badge></h5></CardTitle>
           <CardSubtitle className="mb-2 text-muted">{this.state.applicationDate}</CardSubtitle>
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
             <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>View Application</Link>
-            <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
+              <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
-      </Card>
+      </Card></Link>
     )
   }
 }

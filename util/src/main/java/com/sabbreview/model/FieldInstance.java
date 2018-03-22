@@ -1,12 +1,19 @@
 package com.sabbreview.model;
 
-import javax.persistence.CascadeType;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
+/*
+ * Model class for the JPA entity manager to store fieldInstance database entries in.
+ */
 @Entity
 public class FieldInstance extends Model {
 
@@ -14,13 +21,14 @@ public class FieldInstance extends Model {
   @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
+  @OrderBy("createdAt")
   @ManyToOne
   Field field;
 
   String value; // Only for text (not date/multichoice etc...)
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
-  FieldOption option;
+  @OneToMany(fetch = FetchType.EAGER) List<FieldOption> selected; // Only for text (not date/multichoice etc...)
+
 
   public FieldInstance() {
 
@@ -49,7 +57,7 @@ public class FieldInstance extends Model {
   }
 
   public String getValue() {
-    return value;
+    return (value == null)?"":value;
   }
 
   public FieldInstance setValue(String value) {
@@ -57,17 +65,21 @@ public class FieldInstance extends Model {
     return this;
   }
 
-  public FieldOption getOption() {
-    return option;
+  public List<FieldOption> getSelected() {
+    return selected;
   }
 
-  public FieldInstance setOption(FieldOption option) {
-    this.option = option;
+
+  public FieldInstance setSelectedValues(ArrayList<FieldOption> newSelectedValues) {
+    if(selected == null) {
+      selected = new ArrayList<FieldOption>();
+    }
+      selected.clear();
+    selected.addAll(newSelectedValues);
     return this;
   }
 
   @Override public String toString() {
-    return "FieldInstance{" + "id='" + id + '\'' + ", field=" + field + ", value='" + value + '\''
-        + ", option=" + option + '}';
+    return "FieldInstance{" + "id='" + id + '\'' + ", field=" + field + ", value='" + value + '\'';
   }
 }

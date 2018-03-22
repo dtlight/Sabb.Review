@@ -15,10 +15,12 @@ public class AssignmentAdapter implements JsonSerializer<Assignment> {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("id", src.getId());
     jsonObject.addProperty("assignee", src.getAssignee().getEmailAddress());
+    jsonObject.addProperty("applicant", src.getApplication().getApplicant().getEmailAddress());
 
     jsonObject.addProperty("state", src.getState().name());
     jsonObject.add("application", context.serialize(src.getApplication()));
     jsonObject.add("comments", context.serialize(src.getComments()));
+    jsonObject.add("role", context.serialize(src.getRole()));
 
     //jsonObject.add("applicant", );*/
 

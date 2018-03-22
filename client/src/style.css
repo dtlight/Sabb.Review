@@ -39,3 +39,8 @@ body {
 .card {
   box-shadow: 5px 6px 18px 0px #262f3d26;
 }
+
+.dropdown-item {
+  cursor: pointer;
+}
+

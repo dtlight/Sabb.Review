@@ -22,12 +22,6 @@ export class EditExisting extends React.Component {
             newState: null
         }
     }
-  //Temporary af
-  componentDidMount() {
-    axios.get(`/application/${this.props.match.params.id}`).then(({data})=> {
-      console.log(data);
-    })
-  }
 
   render() {
     return (<div>

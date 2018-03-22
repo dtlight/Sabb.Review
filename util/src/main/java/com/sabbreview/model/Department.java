@@ -17,6 +17,10 @@ import javax.persistence.OneToOne;
 @NamedQueries({
     @NamedQuery(name="get_all_departments", query = "SELECT d.id, d.name from departments d")
 })
+
+/*
+ * Model class for the JPA entity manager to store department database entries in.
+ */
 @Entity(name = "departments")
 public class Department extends Model {
 

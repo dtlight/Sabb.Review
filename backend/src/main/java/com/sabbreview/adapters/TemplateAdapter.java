@@ -19,12 +19,15 @@ public class TemplateAdapter implements JsonSerializer<Template> {
     templateJSON.addProperty("name", src.getName());
 
     List<Field> fieldList = src.getFieldList();
-    JsonArray fieldArray = new JsonArray();
-    for (Field field:
-         fieldList) {
-      fieldArray.add(context.serialize(field));
+    if(fieldList != null){
+      JsonArray fieldArray = new JsonArray();
+      for (Field field:
+          fieldList) {
+        fieldArray.add(context.serialize(field));
+      }
+      templateJSON.add("fields", fieldArray);
     }
-    templateJSON.add("fields", fieldArray);
+
     //templateJSON.addProperty("department", src.getDepartment().getId());
     return templateJSON;
   }

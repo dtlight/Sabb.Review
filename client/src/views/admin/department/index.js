@@ -1,7 +1,7 @@
 import React from 'react';
 import {Row, Col, ListGroupItem, ListGroup} from 'reactstrap';
-import {FieldList, NewQuestion} from '../../../components/template/index.js';
 import {ApplicationList} from '../../../components/home/index.js';
+import {TemplateTable, CreateTemplate} from '../../../components/template/index.js';
 
 import axios from 'axios';
 
@@ -21,7 +21,8 @@ export class DepartmentInfo extends React.Component {
           isLoading: false,
           hod: data.value.hod,
           name: data.value.name,
-          applications: data.value.applications
+          applications: data.value.applications,
+            templates: data.value.templates
         })
       }
     });
@@ -36,21 +37,22 @@ export class DepartmentInfo extends React.Component {
           <p class="lead"></p>
           <hr />
           <Row>
-            <Col lg={3} bg={'primary'} style={{"marginBottom": "1em"}}>
+            <Col md={3} bg={'primary'} style={{"marginBottom": "1em"}}>
               <ListGroup>
-                <ListGroupItem><strong>Head of Department</strong>: {this.state.hod}</ListGroupItem>
+                <ListGroupItem><strong>Head of Department</strong>: <br/>{this.state.hod}</ListGroupItem>
               </ListGroup>
             </Col>
-            <Col lg={9}>
+            <Col md={9}>
               <div>
                 <h2 class="lead">Applications</h2>
                   <ApplicationList applications={this.state.applications} />
               </div>
               <hr />
               <div>
-                <h2 class="lead">Templates</h2>
-                {//}<Applications> </Applications>
-              }
+                <h2 class="lead">Templates
+                </h2>
+                <TemplateTable templates={this.state.templates} />
+                  <CreateTemplate departmentId={this.props.match.params.id} style={{"marginTop":"15px", "marginBottom":"15px"}}/>
               </div>
             </Col>
           </Row>
