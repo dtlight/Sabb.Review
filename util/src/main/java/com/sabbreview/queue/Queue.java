@@ -1,4 +1,4 @@
-package com.sabbreview;
+package com.sabbreview.queue;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
