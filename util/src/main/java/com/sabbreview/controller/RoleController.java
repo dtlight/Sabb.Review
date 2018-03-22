@@ -10,6 +10,12 @@ import com.sabbreview.responses.ValidationException;
 import java.util.List;
 import javax.persistence.RollbackException;
 
+/**
+ * Contains the high level code for operations on user roles.
+ * Authentication is currently *not* enforced with roles.
+ * Call this class to perform operations on roles.
+ * @see Role
+ */
 public class RoleController extends Controller {
   public static TransactionState<List<Role>> getRoles(String principle) {
     try {
@@ -33,6 +39,12 @@ public class RoleController extends Controller {
   }
 
 
+  /**
+   * Persists a role in the database.
+   * Only admins can create roles.
+   * @param principle Principle of the calling user.
+   * @param role Role to persist.
+   */
   public static TransactionState<Role> createRole(String principle, Role role) {
     try {
       User userPrinciple = em.find(User.class, principle);
@@ -59,6 +71,12 @@ public class RoleController extends Controller {
     }
   }
 
+  /**
+   * Removes a role from the database.
+   * Only admins can remove roles.
+   * @param principle Principle of the calling user.
+   * @param id Id of the role to delete.
+   */
   public static TransactionState<Role> removeRole(String principle, String id) {
     try {
       User userPrinciple = em.find(User.class, principle);

@@ -17,6 +17,12 @@ import java.util.List;
 import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 
+/**
+ * Contains the high level code for operations on User JPA Objects.
+ * Authentication is enforced for some methods in this class.
+ * Call this class to do operations on Users.
+ * @see User
+ */
 public class UserController extends Controller {
   private static final String EMAIL_REGEX;
 
@@ -24,6 +30,12 @@ public class UserController extends Controller {
     EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
   }
 
+  /**
+   * Stores a user object in the database.
+   * ALL USERS ARE CREATED AS ADMINS CURRENTLY.
+   * SEE TODO!!!
+   * @param user User to persist.
+   */
   public static TransactionState<User> registerUser(User user) {
     try {
       em.getTransaction().begin();
@@ -40,9 +52,9 @@ public class UserController extends Controller {
       rollback();
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
-          (e.getCause().getMessage().contains("duplicate") ?
-              "There is already a user with that email address" :
-              null));
+              (e.getCause().getMessage().contains("duplicate") ?
+                      "There is already a user with that email address" :
+                      null));
     } catch (Exception e) {
       rollback();
       e.printStackTrace();
@@ -50,6 +62,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Fetches a user object.
+   * @param emailAddress Email address of user to fetch.
+   * @return The user object, as part of a transactionstate.
+   */
   public static TransactionState<User> getUser(String emailAddress) {
     User user = em.find(User.class, emailAddress);
     if (user == null) {
@@ -59,6 +76,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Generates a session token.
+   * @param uap
+   * @return A token, as part of a transactionstate.
+   */
   public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
     try {
@@ -72,7 +94,7 @@ public class UserController extends Controller {
           calendar.add(Calendar.DAY_OF_YEAR, 3);
           Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
           token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
-              .withExpiresAt(calendar.getTime()).sign(algorithm);
+                  .withExpiresAt(calendar.getTime()).sign(algorithm);
         } else {
           throw new ValidationException();
         }
@@ -92,16 +114,24 @@ public class UserController extends Controller {
 
   }
 
+  /**
+   * Deletes the user that calls this function.
+   * @param principle Principle of the calling user.
+   */
   public static TransactionState<User> deleteUser(String principle) {
     try {
-      em.getTransaction().begin();
       User user = em.find(User.class, principle);
-      if(user == null) {
-        throw new ValidationException();
-      } else {
-        em.remove(user);
+      if(user.getEmailAddress().equals(principle)) {
+
+        em.getTransaction().begin();
+        if (user == null) {
+          throw new ValidationException();
+        } else {
+          em.remove(user);
+        }
+        em.getTransaction().commit();
+
       }
-      em.getTransaction().commit();
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
@@ -112,6 +142,11 @@ public class UserController extends Controller {
     return new TransactionState<>(null, TransactionStatus.STATUS_OK);
   }
 
+  /**
+   * Fetches all of the applications belonging to the calling user.
+   * @param principle Principle of the calling user.
+   * @return A list of applications belonging to the user.
+   */
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
@@ -126,6 +161,11 @@ public class UserController extends Controller {
   }
 
 
+  /**
+   * Fetches all the assignments for the calling user.
+   * @param principle Principle of the calling user.
+   * @return A list of Assignments.
+   */
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
     try {
       TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery("get-all-assignments-for-user", Assignment.class);
