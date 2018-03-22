@@ -24,7 +24,7 @@ import javax.persistence.PrePersist;
   Boolean showAtEnd = false;
 
 
-  private Date createdAt;
+  Date createdAt;
 
   @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
@@ -77,6 +77,11 @@ import javax.persistence.PrePersist;
 
   public Date getCreatedAt() {
     return createdAt;
+  }
+
+  public Field setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+    return this;
   }
 
   @Override public String toString() {

@@ -46,6 +46,8 @@ public class FieldController extends Controller {
   public static TransactionState<Field> editField(String principle, Field field) {
     try {
       em.getTransaction().begin();
+      Field f = em.find(Field.class, field.getId());
+      field.setCreatedAt(f.getCreatedAt());
       em.merge(field);
       em.getTransaction().commit();
       return new TransactionState<>(field, TransactionStatus.STATUS_OK, "Field edited");

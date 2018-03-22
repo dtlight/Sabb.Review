@@ -200,12 +200,14 @@ export  class ApplicationAdminButtonsNoHoc extends React.Component {
             {(!this.props.hideSubmit && (this.state.currentState === "COMPLETED" || this.state.currentState === "PENDING"))?
                 <Button color="primary" style={{"marginRight":"10px"}} onClick={this.submitApplication}><i class="fa fa-save"></i> {(this.state.currentState === "COMPLETED")?"Finalise":"Submit"} Application</Button>:""}
 
-            <a href={`${axios.defaults.baseURL}/pdf/application/${props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            <a href={`${axios.defaults.baseURL}/pdf/application/${props.id}`} target={"_blank"} class="btn btn-primary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
             {(props.isAdmin)?<span>
                 <AssignReview application={props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
                 <ViewReviews application={props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
             </span>:""}
             {(props.showChangeState)?<DropDownStates application={props.id} color="secondary" style={{"marginRight":"10px"}} onStateChange={props.onStateChange}/>:""}
+            {(props.assignment)?<DropDownStates assignment={props.assignment} color="secondary" style={{"marginRight":"10px"}} onStateChange={props.onAssignmentStateChange}/>:""}
+
         </div>);
 
     }
@@ -273,7 +275,7 @@ export class EditApplication extends React.Component {
       return <div class="loader">Loading...</div>;
     } else if(!this.state.isEditable) {
       return (<div>
-          <Alert color="secondary">
+          <Alert color={applicationStates[this.state.currentState].colours}>
               {applicationStates[this.state.currentState].body}
           </Alert>
           {this.getInstances(true)}
@@ -365,37 +367,54 @@ class ApplicationSignature extends React.Component {
     }
 }
 
-class DropDownStates extends React.Component {
+export class DropDownStates extends React.Component {
     constructor(props) {
         super(props)
+        this.props = props;
+        this.setState = this.setState.bind(this);
     }
 
     setState(selectState) {
-        axios.put(`/application/${this.props.application}/state/${selectState}`).then(({data})=> {
-            if(this.props.onStateChange) this.props.onStateChange(selectState);
-        })
+        if(this.props.application) {
+            axios.put(`/application/${this.props.application}/state/${selectState}`).then(({data})=> {
+                if(this.props.onStateChange) this.props.onStateChange(selectState);
+            })
+        } else if (this.props.assignment){
+            axios.put(`/assignment/${this.props.assignment}/state/${selectState}`).then(({data})=> {
+                if(this.props.onStateChange) this.props.onStateChange(selectState);
+            })
+        }
+
     }
 
     render() {
+        let choices = (this.props.assignment)?
+            <DropdownMenu style={{"cursor": "pointer"}}>
+                <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
+            </DropdownMenu>:
+            <DropdownMenu style={{"cursor": "pointer"}}>
+                <DropdownItem onClick={()=> this.setState("PENDING")}> Pending </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("SUBMITTED")}> Submitted </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=> this.setState("FINALISED")}> Finalised </DropdownItem>
+            </DropdownMenu>;
+
         return (
-            <ButtonGroup justified>
+            <ButtonGroup justified style={this.props.style} >
                 <UncontrolledDropdown>
-                    <DropdownToggle caret>
-                        Change State
+                    <DropdownToggle caret block>
+                        Change {(this.props.application)?"Application":"Review"} State
                     </DropdownToggle>
-                    <DropdownMenu style={{"cursor": "pointer"}}>
-                        <DropdownItem onClick={()=> this.setState("PENDING")}> Pending </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("SUBMITTED")}> Submitted </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("ACCEPTED")}> Accepted </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={()=> this.setState("FINALISED")}> Finalised </DropdownItem>
-                    </DropdownMenu>
+                    {choices}
                 </UncontrolledDropdown>
             </ButtonGroup>
         )

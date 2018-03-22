@@ -127,16 +127,15 @@ public class UserController extends Controller {
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
       if(user.getEmailAddress().equals(principle)) {
-
-        em.getTransaction().begin();
         if (user == null) {
           throw new ValidationException();
         } else {
           em.remove(user);
         }
-        em.getTransaction().commit();
 
       }
+      em.getTransaction().commit();
+
     } catch (RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());

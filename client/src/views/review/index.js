@@ -1,9 +1,9 @@
 import React from 'react';
 import 'react-tabs/style/react-tabs.css';
-import {  AssignmentList, CommentArea, CommentList } from '../../components/review/'
-import { EditApplication, ApplicationAdminButtons } from '../../components/application/index.js'
+import {  AssignmentList, CommentArea, CommentList, reviewStates } from '../../components/review/'
+import { EditApplication, ApplicationAdminButtons, DropDownStates } from '../../components/application/index.js'
 import axios from "axios/index";
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Alert } from 'reactstrap';
 
 export default class extends React.Component {
   constructor(props, context){
@@ -26,7 +26,6 @@ export class ReviewDetail extends React.Component {
         super(props, context);
         this.load = this.load.bind(this);
         this.state ={
-          application: null,
             isLoading: true
 
         }
@@ -51,9 +50,13 @@ export class ReviewDetail extends React.Component {
             return <div class="loader">Loading...</div>;
         } else {
             return (<div>
-                <ApplicationAdminButtons id={this.state.assignment.application.id} hideSubmit={true} showChangeState={this.state.assignment.role.canChangeApplicationState} onStateChange={(newState)=>{
+                <ApplicationAdminButtons assignment={this.state.assignment.id} id={this.state.assignment.application.id} hideSubmit={true} showChangeState={this.state.assignment.role.canChangeApplicationState} onStateChange={(newState)=>{
                     this.setState({
                         newState: newState
+                    })
+                }}  onAssignmentStateChange={(newState)=>{
+                    this.setState({
+                        newAssignmentState: newState
                     })
                 }}/>
                 <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
@@ -64,10 +67,13 @@ export class ReviewDetail extends React.Component {
                   <Col md={8}>
                     <EditApplication id={this.state.assignment.application.id} disabled={!this.state.assignment.role.canEdit}/>
                   </Col>
-                    <Col md={4} style={{"paddingTop": "10px"}}>
+                    <Col md={4} >
+                        <Alert color={(this.state.newAssignmentState)?reviewStates[this.state.newAssignmentState].colours:reviewStates[this.state.assignment.state].colours}>
+                            {(this.state.newAssignmentState)?reviewStates[this.state.newAssignmentState].body:reviewStates[this.state.assignment.state].body}
+                            </Alert>
                         <CommentList comments={this.state.assignment.comments}/>
-                        {(this.state.assignment.role.canComment)?<CommentArea assignment={this.state.assignment.id} onChange={this.load}/>:""}
-                    </Col>
+                        {(this.state.assignment.role.canComment)?<CommentArea  assignment={this.state.assignment.id} onChange={this.load}/>:""}
+                        </Col>
                 </Row>
                 </div>
             </div>);

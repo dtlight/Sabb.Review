@@ -7,6 +7,7 @@ import axios from "axios/index";
 export class RoleEditor extends React.Component {
     constructor(props) {
         super(props);
+        this.props = props;
         this.state = {
             modal: false,
             roleName: "",
@@ -64,15 +65,15 @@ export class RoleEditor extends React.Component {
             canComment: this.state.canComment,
             canEdit: this.state.canEdit
         })
-            .then(function (response) {
-                if(response.data.state !== "STATUS_ERROR") {
+            .then((response) => {
+                if (response.data.state !== "STATUS_ERROR") {
                     this.setState({
                         isSuccess: true,
                         isCreating: false,
                         modal: false,
                         assignee: ""
                     })
-                    if(this.props.onChange) this.props.onChange();
+                    if (this.props.onChange) this.props.onChange();
                 } else {
                     this.setState({
                         isError: true,
@@ -80,7 +81,7 @@ export class RoleEditor extends React.Component {
                     })
                 }
 
-            }.bind(this))
+            })
     }
 
     updateCheckbox(v) {
@@ -158,6 +159,10 @@ export class RoleTable extends React.Component {
     componentDidMount() {
         this.load();
     }
+    componentWillReceiveProps() {
+        this.load();
+    }
+
     load() {
         axios.get(`/role`).then(({data}) => {
             console.log(data);
@@ -183,9 +188,11 @@ export class RoleTable extends React.Component {
             for(let role of this.state.roles) {
                 roles.push(<tr>
                     <td>{role[1]}</td>
-                    <td>
+                    <td >
+                        <span className={"float-right"}>
                         <RoleEditor id={role[0]} onChange={this.load}>Edit Role</RoleEditor>
                         <Button color={"danger"} onClick={this.delete.bind(this, role[0])}>Delete Role</Button>
+                        </span>
 
                     </td>
 
@@ -197,7 +204,7 @@ export class RoleTable extends React.Component {
                         <thead>
                         <tr>
                             <td>Name</td>
-                            <td>Actions</td>
+                            <td></td>
                         </tr>
                         </thead>
                         <tbody>
