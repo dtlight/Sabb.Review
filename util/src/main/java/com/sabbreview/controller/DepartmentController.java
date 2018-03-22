@@ -46,6 +46,7 @@ public class DepartmentController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
         } catch (Exception e) {
             rollback();
+            e.printStackTrace();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
@@ -129,6 +130,7 @@ public class DepartmentController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
         } catch (Exception e) {
             rollback();
+            e.printStackTrace();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
