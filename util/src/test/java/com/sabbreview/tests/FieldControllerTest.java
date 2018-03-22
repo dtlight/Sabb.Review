@@ -6,6 +6,7 @@ import com.sabbreview.controller.FieldController;
 import com.sabbreview.controller.UserController;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Field;
+import com.sabbreview.model.FieldOption;
 import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
@@ -17,6 +18,7 @@ import org.junit.Test;
 public class FieldControllerTest {
     private Field testField;
     private Application testApplication;
+    private FieldOption fieldOption;
     private User testuser = new User("test@test.sabb.review", "password");
 
     @Before
@@ -51,7 +53,9 @@ public class FieldControllerTest {
 
     @Test
     public void editField() {
-
+        testField = new Field();
+        TransactionState<Field> fieldTransactionState = FieldController.editField(testuser.getEmailAddress(), testField);
+        Assert.assertEquals(TransactionStatus.STATUS_OK, fieldTransactionState.getState());
     }
 
     /**
@@ -68,7 +72,4 @@ public class FieldControllerTest {
         Assert.assertNull(fieldTransactionState.getValue());
     }
 
-    @Test
-    public void addOption() {
-    }
 }
