@@ -25,6 +25,7 @@ public class DepartmentController extends Controller {
             return new TransactionState<>(department, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {
             rollback();
+            e.printStackTrace();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
@@ -75,6 +76,7 @@ public class DepartmentController extends Controller {
             return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {
             rollback();
+            e.printStackTrace();
             return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
     }
