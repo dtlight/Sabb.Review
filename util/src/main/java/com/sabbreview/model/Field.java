@@ -11,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 
+/*
+ * Model class for the JPA entity manager to store template field database entries in.
+ */
 @Entity public class Field extends Model {
 
   @Id

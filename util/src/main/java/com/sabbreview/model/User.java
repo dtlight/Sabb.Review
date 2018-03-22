@@ -15,6 +15,10 @@ import javax.persistence.OneToMany;
 @NamedQueries({
     @NamedQuery(query = "SELECT U FROM users U WHERE :isAdmin = true", name = "get-all-users")
 })
+
+/*
+ * Model class for the JPA entity manager to store user database entries in.
+ */
 @Entity(name = "users") public class User extends Model {
   private static transient int HASH_ROUNDS = 10;
 

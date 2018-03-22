@@ -6,10 +6,12 @@ import com.sabbreview.queue.EmailQueueInstance;
 import javax.persistence.EntityManager;
 
 /**
- * The base class for Controller objects.
+ * Patent class for all controllers.
  * Provides static entity manager and email queue functionality.
  * When creating a new entity manager object, it's probably a good idea to
  * create a controller extending this class.
+ * @see SabbReviewEntityManager
+ * @see EmailQueueInstance
  */
 class Controller {
 

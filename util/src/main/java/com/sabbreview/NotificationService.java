@@ -8,6 +8,10 @@ import com.sabbreview.model.NotificationID;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Creates connection to cloudAMQP server and sends message.
+ * @deprecated
+ */
 public class NotificationService {
 
     /**

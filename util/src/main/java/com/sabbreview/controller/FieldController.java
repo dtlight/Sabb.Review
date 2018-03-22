@@ -22,8 +22,9 @@ public class FieldController extends Controller {
 
   /**
    * Stores a field in the database.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param field Field to persist.
+   * @return Transaction state.
    */
   public static TransactionState<Field> createField(String principle, Field field) {
 
@@ -40,8 +41,9 @@ public class FieldController extends Controller {
 
   /**
    * Modifies a field.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param field Modified field, to be stored.
+   * @return Transaction state.
    */
   public static TransactionState<Field> editField(String principle, Field field) {
     try {
@@ -59,9 +61,9 @@ public class FieldController extends Controller {
 
   /**
    * Fetches a field from the database.
-   * @param principle Principle of the calling user.
-   * @param id Id of the field to fetch.
-   * @return The field with ID id.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the field to fetch.
+   * @return The field with the associated ID as part of a transaction state.
    */
   public static TransactionState<Field> getField(String principle, String id) {
     try {
@@ -82,8 +84,9 @@ public class FieldController extends Controller {
 
   /**
    * Deletes a field.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id ID of the field to delete.
+   * @return Transaction state.
    */
   public static TransactionState<Field> deleteField(String principle, String id) {
     try {
@@ -103,9 +106,10 @@ public class FieldController extends Controller {
 
   /**
    * Adds an option to a multi-choice question.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id ID of the field to add an option to. Should be of type multichoice.
    * @param fieldOption Option to add to the field.
+   * @return Transaction state.
    */
   public static TransactionState<Field> addOption(String principle, String id,
       FieldOption fieldOption) {

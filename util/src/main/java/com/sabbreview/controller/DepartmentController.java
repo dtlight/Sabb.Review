@@ -21,8 +21,9 @@ public class DepartmentController extends Controller {
     /**
      * Creates a new department in the database.
      * Only admins can create departments.
-     * @param principle User creating the department.
+     * @param principle ID (email) of user creating the department.
      * @param department Department name to create
+     * @return Transaction state.
      */
     public static TransactionState<Department> createDepartment(String principle,
         Department department){
@@ -53,8 +54,9 @@ public class DepartmentController extends Controller {
      * Changes a department (in some way).
      * Merges the given department with the persistent department.
      * Principle must be admin to run.
-     * @param principle User changing a department.
+     * @param principle ID (email) of user changing a department.
      * @param department Department object to change. ID must already exist in the database.
+     * @return Transaction state.
      */
     public static TransactionState<Department> updateDepartment(String principle,
         Department department){
@@ -78,10 +80,10 @@ public class DepartmentController extends Controller {
 
     /**
      * Gets a department object.
-     * @param principle Principle of the calling user.
+     * @param principle ID (email) of the calling user.
      * @param depID  Department to fetch.
-     * @return A department object. (as a transactionstate)
-      */
+     * @return A department object as a transaction state)
+     */
     public static TransactionState<Department> getDepartment(String principle, String depID) {
         try {
             Department department = em.find(Department.class, depID);
@@ -111,6 +113,7 @@ public class DepartmentController extends Controller {
      * Caller must be an admin to delete a department.
      * @param principle Principle of the calling user.
      * @param depID Department to delete.
+     * @return Transaction state.
      */
     public static TransactionState<Department> deleteDepartment(String principle, String depID) {
         try {
@@ -135,7 +138,7 @@ public class DepartmentController extends Controller {
      * Gets the applications for a department.
      * @param principle Principle of the calling user.
      * @param depID Department to fetch applications for.
-     * @return A list of applications (in a transactionstate).
+     * @return A list of applications as a transaction state).
      */
     public static TransactionState<List<Application>> getApplications(String principle,
         String depID) {
@@ -156,9 +159,9 @@ public class DepartmentController extends Controller {
 
     /**
      * Gets the templates for a department.
-     * @param principle Principle of the calling user.
+     * @param principle ID (email) of the calling user.
      * @param depID Department to fetch templates for.
-     * @return A list of templates.
+     * @return A list of templates as part of a transaction state.
      */
     public static TransactionState<List<Template>> getTemplates(String principle,
         String depID) {

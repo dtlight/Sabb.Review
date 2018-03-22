@@ -11,6 +11,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+/*
+ * Model class for the JPA entity manager to store fieldInstance database entries in.
+ */
 @Entity
 public class FieldInstance extends Model {
 

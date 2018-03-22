@@ -18,6 +18,9 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery( name="get-all-templates-for-department", query = "SELECT t.id, t.name FROM Template t WHERE t.department.id = :id")
 })
+/*
+ * Model class for the JPA entity manager to store application template database entries in
+ */
 public class Template extends Model {
 
   @Id @GeneratedValue(strategy = GenerationType.AUTO)

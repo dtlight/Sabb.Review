@@ -10,6 +10,10 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery(name="get-all-roles", query = "select a.id, a.name from roles a"),
 })
+
+/*
+ * Model class for the JPA entity manager to store role database entries in.
+ */
 @Entity(name = "roles") public class Role extends Model {
 
   @Id
