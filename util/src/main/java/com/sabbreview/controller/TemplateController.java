@@ -9,9 +9,19 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
-
+/**
+ * Contains the high level code for operations on Assignment objects.
+ * Authentication is currently *not* enforced with roles.
+ * @see Template
+ */
 public class TemplateController extends Controller {
 
+  /**
+   * Creates a an application template.
+   * @param principle Principle of the calling user.
+   * @param name A name (label) for the template to create. Should be unique.
+   * @param departmentId ID of the department to assign the application to.
+   */
   public static TransactionState<Template> createTemplate(String principle, String name, String departmentId) {
     try {
       em.getTransaction().begin();
@@ -29,6 +39,11 @@ public class TemplateController extends Controller {
   }
 
 
+  /**
+   * Deletes an application template.
+   * @param principle Principle of the calling user.
+   * @param id Id of the template to delete.
+   */
   public static TransactionState<Template> deleteTemplate(String principle, String id) {
     try {
       em.getTransaction().begin();
@@ -41,6 +56,13 @@ public class TemplateController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+
+  /**
+   * Deletes a field that belongs to a template
+   * @param principle Principle of the calling user.
+   * @param id Id of the template to modify.
+   * @param fieldId ID of the field to delete.
+   */
   public static TransactionState<Template> deleteTemplateField(String principle, String id,
       String fieldId) {
     try {
@@ -59,7 +81,12 @@ public class TemplateController extends Controller {
     }
   }
 
-
+  /**
+   * Fetches an application template.
+   * @param principle Principle of the callling user.
+   * @param id ID of the template to fetch.
+   * @return The template with ID id.
+   */
   public static TransactionState<Template> getTemplate(String principle, String id) {
     try {
       Template template = em.find(Template.class, id);
@@ -73,13 +100,19 @@ public class TemplateController extends Controller {
     }
   }
 
-  public static TransactionState<Template> addField(String principle, String id, Field field) {
+  /**
+   * Adds a field to an application template.
+   * @param principle Principle of the calling user.
+   * @param templateID ID of the template to modify.
+   * @param field The field to add to the template.
+   */
+  public static TransactionState<Template> addField(String principle, String templateID, Field field) {
     try {
       em.getTransaction().begin();
       if(field == null) {
         throw new ValidationException();
       }
-      Template template = em.find(Template.class, id);
+      Template template = em.find(Template.class, templateID);
       template.addField(field);
       em.merge(template);
       em.getTransaction().commit();

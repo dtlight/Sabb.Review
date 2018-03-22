@@ -8,8 +8,20 @@ import com.sabbreview.responses.ValidationException;
 
 import javax.persistence.RollbackException;
 
+/**
+ * Contains the high level code for operations on Assignment JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Assignments.
+ * @see Assignment
+ */
 public class AssignmentController extends Controller {
 
+  /**
+   * Assigns an application to a user. Currently has no authentication.
+   * @param principle Principle of the user assigning the application.
+   * @param applicationId ID of the application to assign.
+   * @param assigneeId ID of the user to whom the application is being assigned.
+   */
   public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
     try {
       em.getTransaction().begin();
@@ -32,67 +44,92 @@ public class AssignmentController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
     }
   }
+  
 
+  /**
+   * Creates and adds a comment to an application.
+   * Principle user needs to be assigned to the application (or be an admin) to comment.
+   * @param principle Principle of the user adding the comment.
+   * @param assignmentID ID of the assignment to add the comment to.
+   * @param comment The string of the comment.
+   */
   public static TransactionState<Assignment> createComment(String principle, String assignmentID, Comment comment) {
     try {
-      em.getTransaction().begin();
+
       Assignment assignment = em.find(Assignment.class, assignmentID);
-      User user = em.find(User.class, principle);
-      comment.setAuthor(user);
-      em.persist(comment);
-      assignment.addComment(comment);
-      em.persist(assignment);
-      em.getTransaction().commit();
-      return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
+      User user = em.find( User.class, principle);
+
+      if( assignment.getAssignee().getEmailAddress().equals(principle)|| user.getAdmin()){
+        em.getTransaction().begin();
+        comment.setAuthor(user);
+        em.persist(comment);
+        assignment.addComment(comment);
+        em.persist(assignment);
+        em.getTransaction().commit();
+        em.getTransaction().commit();
+
+        return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
+      }
+
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
+      
     } catch (Exception e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not create assignment");
     }
   }
 
-
+  /**
+   * Deletes the assignment of an application to a user.
+   * User needs to be assigned to an application or be an admin to delete an assignment.
+   * @param principle Principle of the user deleting the assignment.
+   * @param assignmentid ID of the assignment to delete.
+   */
   public static TransactionState<Assignment> deleteAssignment(String principle, String assignmentid) {
     try {
-      em.getTransaction().begin();
+
+      User user = em.find(User.class, principle);
       Assignment assignment = em.find(Assignment.class, assignmentid);
+
+
       if(assignment == null) {
         throw new ValidationException("Assignment does not exist");
-      } else {
-        em.remove(assignment);
-
       }
-      em.getTransaction().commit();
+
+      if( assignment.getAssignee().getEmailAddress().equals(principle) ||  user.getAdmin()){
+        em.getTransaction().begin();
+        em.remove(assignment);
+        em.getTransaction().commit();
+      }
+
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  
-    public static TransactionState<Assignment> setAcceptanceState(String applicationId, AcceptanceState acceptanceState){
-        Assignment assignment;
-        try{
-            em.getTransaction().begin();
-            assignment = em.find(Assignment.class, applicationId);
-            assignment.setState(acceptanceState);
-            em.getTransaction().commit();
-            new NotificationService().sendNotification(NotificationID.valueOf(acceptanceState.toString()),
-                    "User", assignment.getApplication().getApplicant().getEmailAddress());//need to decide on names or not
-            return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
-        } catch (RollbackException e) {
-            rollback();
-            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-        }
-    }
 
+  /**
+   * Fetches an assignment
+   * @param principle Principle of the calling user
+   * @param assignmentId Assignment to fetch
+   * @return The fetched assignment.
+   */
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {
       try {
-        Assignment assignment;
-        assignment = em.find(Assignment.class, assignmentId);
+
+        Assignment assignment = em.find(Assignment.class, assignmentId);
+        User user = em.find(User.class, principle);
+
         if (assignment == null) {
           return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
-        return new TransactionState<>(assignment, TransactionStatus.STATUS_OK, "");
+
+        if( assignment.getAssignee().getEmailAddress().equals(principle) || user.getAdmin()) {
+          return new TransactionState<Assignment>(assignment, TransactionStatus.STATUS_OK);
+        }
+
+        return new TransactionState<>(assignment, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
       } catch (Exception e) {
         rollback();
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");

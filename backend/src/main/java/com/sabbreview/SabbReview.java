@@ -36,6 +36,9 @@ import com.sabbreview.responses.TransactionStatus;
 import spark.Request;
 
 import java.io.File;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -45,6 +48,7 @@ import static spark.Spark.port;
 
 public class SabbReview {
   public static Gson gson = generateGson();
+  private static final ScheduledExecutorService DUE_CHECK_SCHEDULER = Executors.newScheduledThreadPool(1);
 
   public static void main(String... args) {
     port(getHerokuAssignedPort());
@@ -65,10 +69,11 @@ public class SabbReview {
     TemplateEndpoint.attach();
     AssignmentEndpoint.attach();
     PDFGeneratorEndpoint.attach();
-
     options("*", (req, res) -> "");
 
     notFound((request, response) -> gson.toJson(new NotFound()));
+
+    DUE_CHECK_SCHEDULER.scheduleAtFixedRate(new DueCheckWorker(), 1, 60, TimeUnit.MINUTES);
   }
 
   private static int getHerokuAssignedPort() {
