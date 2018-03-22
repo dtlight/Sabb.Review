@@ -17,8 +17,8 @@ import javax.persistence.RollbackException;
 public class TemplateController extends Controller {
 
   /**
-   * Creates a an application template.
-   * @param principle Principle of the calling user.
+   * Creates an application template.
+   * @param principle ID (email) of the calling user.
    * @param name A name (label) for the template to create. Should be unique.
    * @param departmentId ID of the department to assign the application to.
    */
@@ -41,7 +41,7 @@ public class TemplateController extends Controller {
 
   /**
    * Deletes an application template.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id Id of the template to delete.
    */
   public static TransactionState<Template> deleteTemplate(String principle, String id) {
@@ -59,8 +59,8 @@ public class TemplateController extends Controller {
 
   /**
    * Deletes a field that belongs to a template
-   * @param principle Principle of the calling user.
-   * @param id Id of the template to modify.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the template to modify.
    * @param fieldId ID of the field to delete.
    */
   public static TransactionState<Template> deleteTemplateField(String principle, String id,
@@ -83,7 +83,7 @@ public class TemplateController extends Controller {
 
   /**
    * Fetches an application template.
-   * @param principle Principle of the callling user.
+   * @param principle ID (email) of the callling user.
    * @param id ID of the template to fetch.
    * @return The template with ID id.
    */
@@ -102,7 +102,7 @@ public class TemplateController extends Controller {
 
   /**
    * Adds a field to an application template.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param templateID ID of the template to modify.
    * @param field The field to add to the template.
    */

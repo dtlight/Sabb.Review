@@ -42,7 +42,7 @@ public class RoleController extends Controller {
   /**
    * Persists a role in the database.
    * Only admins can create roles.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param role Role to persist.
    */
   public static TransactionState<Role> createRole(String principle, Role role) {
@@ -74,8 +74,8 @@ public class RoleController extends Controller {
   /**
    * Removes a role from the database.
    * Only admins can remove roles.
-   * @param principle Principle of the calling user.
-   * @param id Id of the role to delete.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the role to delete.
    */
   public static TransactionState<Role> removeRole(String principle, String id) {
     try {

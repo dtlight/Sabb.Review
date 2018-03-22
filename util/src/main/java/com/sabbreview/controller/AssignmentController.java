@@ -17,9 +17,10 @@ import javax.persistence.RollbackException;
 public class AssignmentController extends Controller {
 
   /**
-   * Assigns an application to a user. Currently has no authentication.
-   * @param principle Principle of the user assigning the application.
+   * Assigns an application to a user.
+   * @param principle ID (email) of the user assigning the application.
    * @param applicationId ID of the application to assign.
+   * @param roleId ID of the assignee's role.
    * @param assigneeId ID of the user to whom the application is being assigned.
    */
   public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
@@ -49,7 +50,7 @@ public class AssignmentController extends Controller {
   /**
    * Creates and adds a comment to an application.
    * Principle user needs to be assigned to the application (or be an admin) to comment.
-   * @param principle Principle of the user adding the comment.
+   * @param principle ID (email) of the user adding the comment.
    * @param assignmentID ID of the assignment to add the comment to.
    * @param comment The string of the comment.
    */
@@ -82,7 +83,7 @@ public class AssignmentController extends Controller {
   /**
    * Deletes the assignment of an application to a user.
    * User needs to be assigned to an application or be an admin to delete an assignment.
-   * @param principle Principle of the user deleting the assignment.
+   * @param principle ID (email) of the user deleting the assignment.
    * @param assignmentid ID of the assignment to delete.
    */
   public static TransactionState<Assignment> deleteAssignment(String principle, String assignmentid) {
@@ -110,9 +111,9 @@ public class AssignmentController extends Controller {
   }
 
   /**
-   * Fetches an assignment
-   * @param principle Principle of the calling user
-   * @param assignmentId Assignment to fetch
+   * Fetches an assignment.
+   * @param principle ID (email) of the calling user.
+   * @param assignmentId Assignment to fetch.
    * @return The fetched assignment.
    */
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {

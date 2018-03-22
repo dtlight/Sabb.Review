@@ -22,7 +22,7 @@ public class FieldController extends Controller {
 
   /**
    * Stores a field in the database.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param field Field to persist.
    */
   public static TransactionState<Field> createField(String principle, Field field) {
@@ -40,7 +40,7 @@ public class FieldController extends Controller {
 
   /**
    * Modifies a field.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param field Modified field, to be stored.
    */
   public static TransactionState<Field> editField(String principle, Field field) {
@@ -57,7 +57,7 @@ public class FieldController extends Controller {
 
   /**
    * Fetches a field from the database.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id Id of the field to fetch.
    * @return The field with ID id.
    */
@@ -80,7 +80,7 @@ public class FieldController extends Controller {
 
   /**
    * Deletes a field.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id ID of the field to delete.
    */
   public static TransactionState<Field> deleteField(String principle, String id) {
@@ -101,7 +101,7 @@ public class FieldController extends Controller {
 
   /**
    * Adds an option to a multi-choice question.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id ID of the field to add an option to. Should be of type multichoice.
    * @param fieldOption Option to add to the field.
    */

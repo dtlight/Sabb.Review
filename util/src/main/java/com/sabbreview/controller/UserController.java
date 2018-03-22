@@ -63,7 +63,7 @@ public class UserController extends Controller {
 
   /**
    * Fetches a user object.
-   * @param emailAddress Email address of user to fetch.
+   * @param principle ID (Email) of user to fetch.
    * @return The user object, as part of a transactionstate.
    */
   public static TransactionState<User> getUser(String emailAddress) {
@@ -77,8 +77,9 @@ public class UserController extends Controller {
 
   /**
    * Generates a session token.
-   * @param uap
+   * @param uap User parameters
    * @return A token, as part of a transactionstate.
+   * @see UserAuthenticationParameters
    */
   public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
@@ -120,7 +121,7 @@ public class UserController extends Controller {
 
   /**
    * Deletes the user that calls this function.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    */
   public static TransactionState<User> deleteUser(String principle) {
     try {
@@ -198,7 +199,7 @@ public class UserController extends Controller {
 
   /**
    * Fetches all the assignments for the calling user.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @return A list of Assignments.
    */
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
@@ -213,7 +214,9 @@ public class UserController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
   }
-
+    /**
+     * A class for storing user credentials without additional data.
+     */
   public class UserAuthenticationParameters {
     String emailAddress = "";
     String password = "";
