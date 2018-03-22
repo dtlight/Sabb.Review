@@ -95,6 +95,27 @@ public class ApplicationController extends Controller {
     }
   }
 
+
+  /**
+   * Retrieves an application.
+   * @param principle The ID of the user requesting the application.
+   * @param applicationID The application to be returned.
+   * @return The application along with a transaction status message.
+   */
+  public static TransactionState<AcceptanceState> getState(String principle, String applicationID) {
+    try {
+      AcceptanceState appState;
+      appState = em.createNamedQuery("get-application-state", AcceptanceState.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
+      if (appState == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
+      return new TransactionState<>(appState, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
   public static TransactionState<Application> setSignature(String applicationID, String sign) {
     try {
       em.getTransaction().begin();

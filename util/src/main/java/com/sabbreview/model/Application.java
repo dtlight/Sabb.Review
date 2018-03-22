@@ -7,9 +7,10 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name="delete-application", query = "delete from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-application", query = "select a from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
+    @NamedQuery(name="get-application-state", query = "select a.state from applications a where a.id = :id and a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-all-applications-for-user", query = "select a from applications a where a.applicant.emailAddress = :principle"),
     @NamedQuery(name="get-all-assignments-for-application", query = "select a.id, a.assignee.emailAddress, a.role.name from assignments a where a.application.id = :id"),
-    @NamedQuery(name="get-all-for-department", query = "select a from applications a where a.department.id = :id"),
+    @NamedQuery(name="get-all-for-department", query = "select a from applications a where a.department.id = :id AND ( :isAdmin = true OR a.department.HOD.emailAddress = :principle)"),
 })
 @Entity(name = "applications")
 public class Application
@@ -21,6 +22,7 @@ public class Application
 
   @ManyToOne() User applicant = null;
 
+  @OrderBy("field")
   @OneToMany(cascade = CascadeType.PERSIST) List<FieldInstance> fields = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.PERSIST) List<Assignment> assignments = new ArrayList<>();

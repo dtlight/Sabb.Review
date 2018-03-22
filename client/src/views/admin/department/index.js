@@ -19,7 +19,7 @@ export class DepartmentInfo extends React.Component {
       if(data.state === "STATUS_OK") {
         this.setState({
           isLoading: false,
-          hod: data.value.HOD,
+          hod: data.value.hod,
           name: data.value.name,
           applications: data.value.applications,
             templates: data.value.templates

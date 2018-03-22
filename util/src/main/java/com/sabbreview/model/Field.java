@@ -1,6 +1,7 @@
 package com.sabbreview.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 
 @Entity public class Field extends Model {
 
@@ -19,7 +21,10 @@ import javax.persistence.OneToMany;
 
   private FieldType type;
 
-  private Boolean showAtEnd = false;
+  Boolean showAtEnd = false;
+
+
+  private Date createdAt;
 
   @OneToMany(cascade = CascadeType.ALL) private List<FieldOption> fieldOptions;
 
@@ -70,8 +75,17 @@ import javax.persistence.OneToMany;
     fieldOptions.add(fieldOption);
   }
 
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
   @Override public String toString() {
     return "Field{" + "id=" + id + ", title='" + title + '\'' + ", type=" + type + ", fieldOptions="
         + fieldOptions + '}';
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
   }
 }

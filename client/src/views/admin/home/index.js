@@ -27,7 +27,6 @@ export default class Home extends React.Component {
             <div>
                 <h1 class="display-4">Departments</h1>
                 <p class="lead">These are the departments currently associated with SabbReview</p>
-                <hr />
                 <DepartmentList incr={this.state.deptIncr} />
                 <hr />
                 <strong class="display-5" >Add Department</strong>

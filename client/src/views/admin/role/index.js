@@ -29,7 +29,7 @@ export class ViewRoles extends React.Component {
       <div>
         <h1 class="display-4">View Roles</h1>
         <p class="lead">These are the roles that can be assigned to a new review.</p>
-        <hr />
+
           <RoleTable />
           <RoleEditor>Create a new role</RoleEditor>
       </div>

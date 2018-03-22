@@ -41,10 +41,12 @@ export default class Login extends React.Component {
       .then(function (response) {
         if(response.data.state !== "STATUS_ERROR") {
           window.localStorage.setItem('token', response.data.value.token);
-          this.setState({
+            window.localStorage.setItem('isAdmin', response.data.value.isAdmin);
+            this.setState({
             isSuccess: true,
             isLoading: false
           });
+            if(this.props.onAuthChange) this.props.onAuthChange();
         } else {
           this.setState({
             isError: true,

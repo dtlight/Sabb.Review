@@ -36,6 +36,12 @@ let applicationStates = {
         body: "The accepted sabbatical period has finished. Please complete the report.",
         colours: "success",
         buttonsVisible: false
+    },
+    FINALISED: {
+        humanStatus: "Finalised",
+        body: "The application has been finalised and the provided report has been submitted.",
+        colours: "success",
+        buttonsVisible: false
     }
 };
 

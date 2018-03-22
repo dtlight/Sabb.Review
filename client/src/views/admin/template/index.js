@@ -48,7 +48,6 @@ export class TemplateList extends React.Component {
             <div>
                 <h1 class="display-4">Avaliable Templates</h1>
                 <p class="lead">These are the templates that can be assigned to new candidates</p>
-                <hr />
                 <TemplateTable />
             </div>
         );

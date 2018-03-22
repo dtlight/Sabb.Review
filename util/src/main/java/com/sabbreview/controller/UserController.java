@@ -28,7 +28,6 @@ public class UserController extends Controller {
     try {
       em.getTransaction().begin();
       user.encryptPassword();
-      user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       }
@@ -73,10 +72,16 @@ public class UserController extends Controller {
           Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
           token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
               .withExpiresAt(calendar.getTime()).sign(algorithm);
+          Token instance = new Token(token);
+          instance.setAdmin(user.getAdmin());
+
+          return new TransactionState<>(instance, TransactionStatus.STATUS_OK);
+
         } else {
           throw new ValidationException();
         }
       }
+
     } catch (ValidationException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not verify user");
@@ -88,7 +93,6 @@ public class UserController extends Controller {
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-    return new TransactionState<>(new Token(token), TransactionStatus.STATUS_OK);
 
   }
 
@@ -101,6 +105,28 @@ public class UserController extends Controller {
       } else {
         em.remove(user);
       }
+      em.getTransaction().commit();
+    } catch (RollbackException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    } catch (ValidationException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Invalid user principle");
+    }
+    return new TransactionState<>(null, TransactionStatus.STATUS_OK);
+  }
+
+
+  public static TransactionState<User> promoteUser(String principle, String id) {
+    try {
+      em.getTransaction().begin();
+      User user = em.find(User.class, id);
+      if(user == null) {
+        throw new ValidationException();
+      } else {
+        user.setAdmin(true);
+      }
+      em.merge(user);
       em.getTransaction().commit();
     } catch (RollbackException e) {
       rollback();
@@ -125,6 +151,19 @@ public class UserController extends Controller {
     }
   }
 
+  public static TransactionState<List<User>> getAllUsers(String principle) {
+    try {
+      User user = em.find(User.class, principle);
+      TypedQuery<User> userTypedQuery = em.createNamedQuery("get-all-users", User.class);
+      userTypedQuery.setParameter("isAdmin", user.getAdmin());
+      return new TransactionState<>(userTypedQuery.getResultList(), TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    }
+  }
+
 
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
     try {
@@ -137,7 +176,6 @@ public class UserController extends Controller {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-
   }
 
   public class UserAuthenticationParameters {

@@ -10,7 +10,7 @@ export default class Authentication extends React.Component {
         <Container>
           <Router {...this.props}>
             <Switch>
-              <Route exact path='/auth/' component={LoginComponent}/>
+              <Route exact path='/auth/' render={(authProps) => <LoginComponent {...authProps} onAuthChange={this.props.onAuthChange}/>}/>
               <Route path='/auth/register' component={RegisterComponent}/>
             </Switch>
           </Router>

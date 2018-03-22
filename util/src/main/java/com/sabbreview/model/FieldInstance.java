@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 @Entity
 public class FieldInstance extends Model {
@@ -17,6 +18,7 @@ public class FieldInstance extends Model {
   @GeneratedValue(strategy = GenerationType.AUTO)
   String id;
 
+  @OrderBy("createdAt")
   @ManyToOne
   Field field;
 

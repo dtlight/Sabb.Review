@@ -29,15 +29,15 @@ public class PDFGeneratorEndpoint {
     static final double SIGNATURE_SCALE = 0.5;
 
     private static ByteArrayOutputStream getPDF(String assignmentID) {
-        try {
+
+      try(PDDocument document = new PDDocument()) {
           Application application = em.find(Application.class, assignmentID);
 
 
-          PDDocument document = new PDDocument();
           PDImageXObject pdImage = PDImageXObject.createFromFile(SabbReview.getStaticResource("backend", "sabbreview.png"), document);
           BASE64Decoder decoder = new BASE64Decoder();
 
-          PDImageXObject pdSignature = PDImageXObject.createFromByteArray(document, decoder.decodeBuffer(application.getSignature()), "sig.png");
+          PDImageXObject pdSignature = (application.getSignature() != null)?PDImageXObject.createFromByteArray(document, decoder.decodeBuffer(application.getSignature()), "sig.png"):null;
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -48,9 +48,8 @@ public class PDFGeneratorEndpoint {
             PDPage pdPage = new PDPage(); // Page 1: Details about application
 
             PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
-            contentStream.drawImage( pdImage, 380, 700);
-
-          contentStream.beginText();
+            contentStream.drawImage( pdImage, 380, 700, Math.round(pdImage.getWidth()*0.2), Math.round(pdImage.getHeight()*0.2));
+            contentStream.beginText();
             contentStream.setFont(font, 15);
             contentStream.setLeading(20f);
             contentStream.newLineAtOffset(25, 725);
@@ -65,11 +64,15 @@ public class PDFGeneratorEndpoint {
             contentStream.showText("Current state: "+application.getState());
           contentStream.newLine();
           contentStream.newLine();
+          if(pdSignature != null) {
+            contentStream.showText("Signed by "+application.getApplicant().getEmailAddress());
+            contentStream.endText();
+            contentStream.drawImage(pdSignature, 30, 500, Math.round(pdSignature.getWidth()*SIGNATURE_SCALE), Math.round(pdSignature.getHeight()*SIGNATURE_SCALE));
+          } else {
+            contentStream.showText("Application has not been signed");
+            contentStream.endText();
 
-          contentStream.showText("Signed by "+application.getApplicant().getEmailAddress());
-           contentStream.endText();
-
-          contentStream.drawImage(pdSignature, 30, 500, Math.round(pdSignature.getWidth()*SIGNATURE_SCALE), Math.round(pdSignature.getHeight()*SIGNATURE_SCALE));
+          }
 
 
             contentStream.close();

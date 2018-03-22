@@ -31,23 +31,37 @@ import Admin from './views/admin/home/';
 import {
     DepartmentInfo
 } from './views/admin/department/';
+import Users from "./views/admin/user";
+import withAdmin from './AdminHOC.js';
 
 export default class Routes extends React.Component {
+    state = {
+        sessionCount: 0
+    }
     render() {
         return (
             <span>
                 <Router {...this.props}>
                   <span>
-                  <Header isLoggedIn={isLoggedIn}/>
+                      <Header isLoggedIn={isLoggedIn} sessionCount={this.state.sessionCount}/>
                       <Switch>
                          <PrivateRoute exact path='/apply/:id' component={EditExisting} />
                          <PrivateRoute path='/review/:id' component={ReviewDetail} />
 
                          <div style={{"marginTop": "20px", "paddingBottom": "20px"}} className="container">
 
-                           <Route path='/auth/' component={Auth} />
+                           <Route path='/auth/' component={(props) => {
+                               return (
+                                   <Auth {...props} onAuthChange={() => {
+                                       this.setState({
+                                           sessionCount: this.state.sessionCount++
+                                       });
+                                   }}/>)
+                           }} />
                            <Route exact path='/logout' render={({history}) => {
                                window.localStorage.removeItem("token")
+                               window.localStorage.removeItem("isAdmin")
+
                                return (
                                    <Redirect to="/auth/" />
                                );
@@ -60,6 +74,8 @@ export default class Routes extends React.Component {
                            <PrivateRoute exact path='/admin/department/:id' component={DepartmentInfo} />
                            <PrivateRoute exact path='/admin/' component={Admin} />
                            <PrivateRoute exact path='/admin/roles' component={ViewRoles} />
+                             <PrivateRoute exact path='/admin/users' component={Users} />
+
                            <PrivateRoute path='/admin/template/:id' component={ViewTemplate} />
 
                         </div>

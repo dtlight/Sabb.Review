@@ -57,6 +57,7 @@ public class DepartmentController extends Controller {
 
     public static TransactionState<List<Department>> getDepartments(String principle) {
         try {
+            User principleUser = em.find(User.class, principle);
             List<Department>
                 departments = em.createNamedQuery("get_all_departments", Department.class).getResultList();
 
@@ -85,7 +86,11 @@ public class DepartmentController extends Controller {
         String depID) {
         try {
             em.getTransaction().begin();
-            List<Application> applicationList = em.createNamedQuery("get-all-for-department", Application.class).setParameter("id", depID).getResultList();
+
+            User principleUser = em.find(User.class, principle);
+
+            List<Application> applicationList = em.createNamedQuery("get-all-for-department", Application.class)
+                .setParameter("id", depID).setParameter("isAdmin", principleUser.isAdmin).setParameter("principle", principle).getResultList();
             em.getTransaction().commit();
             return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK, "");
         } catch (Exception e) {

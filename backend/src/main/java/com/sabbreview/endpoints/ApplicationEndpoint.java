@@ -20,7 +20,12 @@ public class ApplicationEndpoint extends Endpoint {
 
     get("/application/:id",
         (req, res) -> requireAuthentication(req, (principle) -> toJson(
-                ApplicationController.getApplication(principle, req.params(":id")))));
+            ApplicationController.getApplication(principle, req.params(":id")))));
+
+
+    get("/application/:id/state",
+        (req, res) -> requireAuthentication(req, (principle) -> toJson(
+            ApplicationController.getState(principle, req.params(":id")))));
 
     get("/application/:id/assignments",
         (req, res) -> requireAuthentication(req, (principle) ->
