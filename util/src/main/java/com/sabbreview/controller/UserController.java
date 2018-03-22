@@ -35,6 +35,7 @@ public class UserController extends Controller {
    * ALL USERS ARE CREATED AS ADMINS CURRENTLY.
    * SEE TODO!!!
    * @param user User to persist.
+   * @return Transaction state.
    */
   public static TransactionState<User> registerUser(User user) {
     try {
@@ -64,10 +65,10 @@ public class UserController extends Controller {
   /**
    * Fetches a user object.
    * @param principle ID (Email) of user to fetch.
-   * @return The user object, as part of a transactionstate.
+   * @return The user object as part of a transaction state.
    */
-  public static TransactionState<User> getUser(String emailAddress) {
-    User user = em.find(User.class, emailAddress);
+  public static TransactionState<User> getUser(String principle) {
+    User user = em.find(User.class, principle);
     if (user == null) {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not find user");
     } else {
@@ -78,7 +79,7 @@ public class UserController extends Controller {
   /**
    * Generates a session token.
    * @param uap User parameters
-   * @return A token, as part of a transactionstate.
+   * @return A token as part of a transaction state.
    * @see UserAuthenticationParameters
    */
   public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
@@ -122,6 +123,7 @@ public class UserController extends Controller {
   /**
    * Deletes the user that calls this function.
    * @param principle ID (email) of the calling user.
+   * @return Transaction state.
    */
   public static TransactionState<User> deleteUser(String principle) {
     try {
@@ -200,7 +202,7 @@ public class UserController extends Controller {
   /**
    * Fetches all the assignments for the calling user.
    * @param principle ID (email) of the calling user.
-   * @return A list of Assignments.
+   * @return A list of Assignments, as part of a transaction state.
    */
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
     try {

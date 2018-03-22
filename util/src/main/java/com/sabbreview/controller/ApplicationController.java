@@ -20,6 +20,7 @@ public class ApplicationController extends Controller {
      * Stores an application object in the database.
      * @param principle The ID (email) of the user creating the application.
      * @param application Application to store.
+     * @return Transaction state.
      */
     public static TransactionState<Application> createApplication(String principle,
                                                                   Application application) {
@@ -65,6 +66,7 @@ public class ApplicationController extends Controller {
    * Only admins and those who own an application can delete an application.
    * @param principle Principle (email) of the user calling this function.
    * @param applicationID ID of the application to be deleted.
+   * @return Transaction state.
    */
   public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
@@ -96,6 +98,7 @@ public class ApplicationController extends Controller {
    * Principle user must either own the application, be assigned the application, or be an admin.
    * @param principle The ID (email) of the user requesting the application.
    * @param applicationID The application to be returned.
+   * @return The application associated with the ID as part of a transaction state.
    */
   public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
@@ -116,7 +119,7 @@ public class ApplicationController extends Controller {
      * Retrieves the state of an application.
      * @param principle The ID (email) of the user calling this function.
      * @param applicationID ID of the application to be processed.
-     * @return Application state enum as part of a transaction state.
+     * @return The application state of the associated ID as part of a transaction state.
      */
   public static TransactionState<AcceptanceState> getState(String principle, String applicationID) {
     try {
@@ -137,6 +140,7 @@ public class ApplicationController extends Controller {
    * Sets the signature of an application and stores the changes in the database.
    * @param applicationID ID of the application to be processed.
    * @param sign  String conversion of the image generated from the canvas on the application front-end page.
+   * @return Transaction state.
    */
   public static TransactionState<Application> setSignature(String applicationID, String sign) {
     try {
@@ -162,7 +166,7 @@ public class ApplicationController extends Controller {
    * Retrieves the signature string from the database.
    * @param principle The ID (email) of the user calling this function.
    * @param applicationID ID of the application to be processed.
-   * @return The signature associated with the application ID.
+   * @return The signature associated with the application ID as part of a transaction state.
    */
   public static TransactionState<String> getSignature(String principle, String applicationID) {
     try {
@@ -187,6 +191,7 @@ public class ApplicationController extends Controller {
    * @param principle The ID (email) of the user setting the acceptance state
    * @param applicationID The application to modify
    * @param acceptanceStateString The acceptance state to set, in a string.
+   * @return Transaction state.
    */
   public static TransactionState<Application> setAcceptanceState(String principle,
       String applicationID, String acceptanceStateString) {
@@ -217,6 +222,7 @@ public class ApplicationController extends Controller {
    * @param principle The ID (email) of the user calling this function.
    * @param templateid Id of the template to use
    * @param departmentid Id of the department to assign the application to.
+   * @return Transaction state.
    */
   public static TransactionState<Application> useTemplate(String principle, String templateid,
       String departmentid) {
@@ -270,6 +276,7 @@ public class ApplicationController extends Controller {
      * @param principle The ID (email) of the user calling this function.
      * @param fieldInstanceId ID of the instance of the field whose value you want to modify.
      * @param value Value to set the field to.
+     * @return Transaction state.
      */
     public static TransactionState<FieldInstance> changeFieldValue(String principle,
                                                                    String fieldInstanceId, FieldInstanceValue value) {
@@ -332,7 +339,7 @@ public class ApplicationController extends Controller {
      * For internal use.
      * @param applicationID Application to check for.
      * @param user User to check.
-     * @return Whether a user is assigned an application with applicationID.
+     * @return Boolean of whether a user is assigned an application with applicationID.
      */
     private static boolean userIsAssignedApplication(String applicationID, User user){
         List<Assignment> assignments = user.getAssignments();

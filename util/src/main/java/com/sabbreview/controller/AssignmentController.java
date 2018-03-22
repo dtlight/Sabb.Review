@@ -22,6 +22,7 @@ public class AssignmentController extends Controller {
    * @param applicationId ID of the application to assign.
    * @param roleId ID of the assignee's role.
    * @param assigneeId ID of the user to whom the application is being assigned.
+   * @return Transaction state.
    */
   public static TransactionState<Assignment> createAssignment(String principle, String applicationId, String roleId, String assigneeId) {
     try {
@@ -53,6 +54,7 @@ public class AssignmentController extends Controller {
    * @param principle ID (email) of the user adding the comment.
    * @param assignmentID ID of the assignment to add the comment to.
    * @param comment The string of the comment.
+   * @return Transaction state.
    */
   public static TransactionState<Assignment> createComment(String principle, String assignmentID, Comment comment) {
     try {
@@ -85,6 +87,7 @@ public class AssignmentController extends Controller {
    * User needs to be assigned to an application or be an admin to delete an assignment.
    * @param principle ID (email) of the user deleting the assignment.
    * @param assignmentid ID of the assignment to delete.
+   * @return Transaction state.
    */
   public static TransactionState<Assignment> deleteAssignment(String principle, String assignmentid) {
     try {
@@ -114,7 +117,7 @@ public class AssignmentController extends Controller {
    * Fetches an assignment.
    * @param principle ID (email) of the calling user.
    * @param assignmentId Assignment to fetch.
-   * @return The fetched assignment.
+   * @return The assignment associated with the given ID as part of a transaction state.
    */
     public static TransactionState<Assignment> getAssignment(String principle, String assignmentId) {
       try {
