@@ -5,43 +5,23 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, InputGroup, FormGro
 import axios from "axios/index";
 import {RoleEditor} from '../../components/role/'
 import {SelectRole} from "../role";
+import {applicationStates} from "../home";
 
-let applicationStates = {
+export let reviewStates = {
     PENDING: {
         humanStatus: "Pending",
-        body: "This application is awaiting completion, please edit your application and press submit to proceed.",
-        colours: "warning",
-        buttonsVisible: true
+        body: "This review is pending.",
+        colours: "warning"
     },
     ACCEPTED: {
         humanStatus: "Accepted",
-        body: "This application has been accepted by the department and review groups. You will received further information by email.",
-        colours: "success",
-        buttonsVisible: false
+        body: "The review concludes that the application should be accepted.",
+        colours: "success"
     },
     REFUSED: {
         humanStatus: "Rejected",
-        body: "This application has been rejected by the department or review group.",
-        colours: "danger",
-        buttonsVisible: false
-    },
-    SUBMITTED: {
-        humanStatus: "Submitted",
-        body: "The application has been submitted and is currently awaiting approval.",
-        colours: "secondary",
-        buttonsVisible: true
-    },
-    COMPLETED: {
-        humanStatus: "Completed",
-        body: "The accepted sabbatical period has finished. Please complete the report.",
-        colours: "success",
-        buttonsVisible: false
-    },
-    FINALISED: {
-        humanStatus: "Finalised",
-        body: "The application has been finalised and the provided report has been submitted.",
-        colours: "success",
-        buttonsVisible: false
+        body: "The review concludes that the application should be rejected.",
+        colours: "danger"
     }
 };
 
@@ -169,7 +149,7 @@ export class ViewReviews extends React.Component {
                 let reviewItems = [];
                 for (let review of this.state.assignmentList) {
                     reviewItems.push(
-                        <ListGroupItem><strong>{review[2]}: </strong> {review[1]}</ListGroupItem>
+                        <ListGroupItem><strong>{review[2]}: </strong>{review[1]} {"  "}<Badge color={reviewStates[review[3]].colours}>{reviewStates[review[3]].humanStatus}</Badge></ListGroupItem>
                     )
                 }
                 body = <span><ListGroup>
@@ -214,14 +194,14 @@ export class AssignmentCard extends React.Component {
     }
     render() {
         return (
-            <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${applicationStates[this.props.state].colours} bg-light`}>
+            <Card style={{"marginBottom": "20px", "height": "100%", "minHeight": "180px"}} className={`border-${reviewStates[this.props.state].colours} bg-light`}>
                 <CardBody>
-                    <CardTitle><h5>Review for {this.props.applicant} <Badge color={applicationStates[this.props.state].colours}>{applicationStates[this.props.state].humanStatus}</Badge></h5></CardTitle>
+                    <CardTitle><h5>Review for {this.props.applicant} <Badge color={reviewStates[this.props.state].colours}>{reviewStates[this.props.state].humanStatus}</Badge></h5></CardTitle>
                     <CardSubtitle className="mb-2 text-muted">{this.props.role && this.props.role.name} for the {this.props.application.department} Dept.</CardSubtitle>
-                    <CardText>{applicationStates[this.props.state].body}</CardText>
-                    <div class={(applicationStates[this.props.state].buttonsVisible)?"visible":"invisible"}>
+                    <CardText>{reviewStates[this.props.state].body}</CardText>
+                    <div>
                         <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/review/${this.props.id}`}>View Review</Link>
-                        <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawAssignment}>Delete Assignment</button>
+                        <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawAssignment}>Delete Review</button>
                     </div>
                 </CardBody>
             </Card>

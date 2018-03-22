@@ -1,7 +1,11 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.NotificationService;
-import com.sabbreview.model.*;
+import com.sabbreview.model.AcceptanceState;
+import com.sabbreview.model.Application;
+import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Comment;
+import com.sabbreview.model.Role;
+import com.sabbreview.model.User;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
@@ -66,7 +70,6 @@ public class AssignmentController extends Controller {
         assignment.addComment(comment);
         em.persist(assignment);
         em.getTransaction().commit();
-        em.getTransaction().commit();
 
         return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
       }
@@ -126,7 +129,7 @@ public class AssignmentController extends Controller {
         }
 
         if( assignment.getAssignee().getEmailAddress().equals(principle) || user.getAdmin()) {
-          return new TransactionState<Assignment>(assignment, TransactionStatus.STATUS_OK);
+          return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
         }
 
         return new TransactionState<>(assignment, TransactionStatus.STATUS_ERROR, "BAD PERMISSIONS");
@@ -135,5 +138,29 @@ public class AssignmentController extends Controller {
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
       }
     }
+
+  public static TransactionState<Assignment> setAcceptanceState(String principle,
+      String assignmentId, String acceptanceStateString) {
+    try {
+      AcceptanceState acceptanceState =
+          AcceptanceState.valueOf(acceptanceStateString.toUpperCase());
+      em.getTransaction().begin();
+      Assignment assignment = em.find(Assignment.class, assignmentId);
+      assignment.setState(acceptanceState);
+      em.merge(assignment); //need to iterate through user, find acc state, and change
+      em.flush();
+      em.getTransaction().commit();
+      return new TransactionState<>(assignment, TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Invalid Acceptance State");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
 
 }
