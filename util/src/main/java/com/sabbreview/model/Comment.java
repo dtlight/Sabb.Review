@@ -5,7 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-
+/*
+ * Model class for the JPA entity manager to store comment database entries in.
+ */
 @Entity
 public class Comment extends Model {
   @GeneratedValue

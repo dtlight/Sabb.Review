@@ -22,6 +22,10 @@ import javax.persistence.*;
                 "where a.department.id = :id AND ( :isAdmin = true OR a.department.HOD.emailAddress = :principle)")
 })
 
+
+/*
+ * Model class for the JPA entity manager to store application database entries in.
+ */
 @Entity(name = "applications")
 public class Application
         extends Model {
