@@ -1,7 +1,6 @@
 package com.sabbreview.tests;
 
 import com.sabbreview.SabbReviewEntityManager;
-import com.sabbreview.controller.ApplicationController;
 import com.sabbreview.controller.DepartmentController;
 import com.sabbreview.controller.UserController;
 import com.sabbreview.model.*;
@@ -11,8 +10,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class DepartmentControllerTest {
     private Department testDepartment;
