@@ -8,6 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 
+/*
+ * Model class for the JPA entity manager to store fieldOption database entries in.
+ */
 @Entity public class FieldOption extends Model {
 
   @Id

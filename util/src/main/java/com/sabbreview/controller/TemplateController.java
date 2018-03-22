@@ -17,10 +17,11 @@ import javax.persistence.RollbackException;
 public class TemplateController extends Controller {
 
   /**
-   * Creates a an application template.
-   * @param principle Principle of the calling user.
+   * Creates an application template.
+   * @param principle ID (email) of the calling user.
    * @param name A name (label) for the template to create. Should be unique.
    * @param departmentId ID of the department to assign the application to.
+   * @return Transaction state.
    */
   public static TransactionState<Template> createTemplate(String principle, String name, String departmentId) {
     try {
@@ -41,8 +42,9 @@ public class TemplateController extends Controller {
 
   /**
    * Deletes an application template.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param id Id of the template to delete.
+   * @return Transaction state.
    */
   public static TransactionState<Template> deleteTemplate(String principle, String id) {
     try {
@@ -59,9 +61,10 @@ public class TemplateController extends Controller {
 
   /**
    * Deletes a field that belongs to a template
-   * @param principle Principle of the calling user.
-   * @param id Id of the template to modify.
+   * @param principle ID (email) of the calling user.
+   * @param id ID of the template to modify.
    * @param fieldId ID of the field to delete.
+   * @return Transaction state.
    */
   public static TransactionState<Template> deleteTemplateField(String principle, String id,
       String fieldId) {
@@ -83,9 +86,9 @@ public class TemplateController extends Controller {
 
   /**
    * Fetches an application template.
-   * @param principle Principle of the callling user.
+   * @param principle ID (email) of the callling user.
    * @param id ID of the template to fetch.
-   * @return The template with ID id.
+   * @return The template with the associated ID as part of a transaction state.
    */
   public static TransactionState<Template> getTemplate(String principle, String id) {
     try {
@@ -102,9 +105,10 @@ public class TemplateController extends Controller {
 
   /**
    * Adds a field to an application template.
-   * @param principle Principle of the calling user.
+   * @param principle ID (email) of the calling user.
    * @param templateID ID of the template to modify.
    * @param field The field to add to the template.
+   * @return Transaction state.
    */
   public static TransactionState<Template> addField(String principle, String templateID, Field field) {
     try {

@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Enum class for the automated email templates.
+ */
 public enum Email {
     APPLICATIONCREATION("applicationCreation", "Application Created"),
     LOREMIPSUM("loremIpsum", "Test Email"),

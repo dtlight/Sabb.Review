@@ -7,6 +7,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
+/**
+ * Creates and maintains a JPA entity manager for pulling and pushing data to the database.
+ */
 public class SabbReviewEntityManager {
   private static final String PERSISTENCE_UNIT_NAME = "SabbReview";
   private static final String DB_ENV_VARIABLE = "DATABASE_URL";
