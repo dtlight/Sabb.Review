@@ -30,6 +30,12 @@ public class AssignmentControllerTest {
         ApplicationController.createApplication(testuser.getEmailAddress(), testApplication);
     }
 
+    @After
+    public void teardownAssignment() {
+        UserController.deleteUser(testuser.getEmailAddress());
+        ApplicationController.deleteApplication(testuser.getEmailAddress(), testApplication.getId());
+    }
+
     @Test
     public void createAssignment() {
         TransactionState<Assignment>  assignmentTransactionState = AssignmentController.createAssignment(testuser.getEmailAddress(), testApplication.getId(), testuser.getEmailAddress());
@@ -40,11 +46,6 @@ public class AssignmentControllerTest {
         AssignmentController.deleteAssignment(testuser.getEmailAddress(), assignment.getId());
     }
 
-    @After
-    public void teardownAssignment() {
-        UserController.deleteUser(testuser.getEmailAddress());
-        ApplicationController.deleteApplication(testuser.getEmailAddress(), testApplication.getId());
-    }
 
     @Test
     public void setAcceptanceState() {
