@@ -3,7 +3,9 @@ import {Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {Input, Button, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonGroup, Alert} from 'reactstrap';
 import SignatureCanvas from 'react-signature-canvas'
+import {applicationStates} from '../home/index.js';
 import {AssignReview, ViewReviews} from '../review/'
+import withAdmin from "../../AdminHOC";
 
 export class CreateApplication extends React.Component {
   constructor(props) {
@@ -142,21 +144,49 @@ export class CreateApplication extends React.Component {
     }
 }
 
-export class ApplicationAdminButtons extends React.Component {
+export  class ApplicationAdminButtonsNoHoc extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            currentState: ""
+        };
         this.props = props;
         this.submitApplication = this.submitApplication.bind(this);
-
+        this.load = this.load.bind(this);
     }
 
-    submitApplication() {
-        axios.put(`/application/${this.props.id}/state/SUBMITTED`).then(({data})=> {
-                if(this.props.onStateChange) this.props.onStateChange("SUBMITTED");
+    componentWillMount() {
+        this.load()
+    }
+
+    load() {
+        axios.get(`/application/${this.props.id}/state`).then(({data}) => {
+            this.setState((state) => {
+                state.fieldInstances = [];
+                if (data.state === "STATUS_ERROR") {
+                    state.isError = true
+                } else {
+                    state.currentState = data.value;
+                    state.isEditable = (data.value === "PENDING");
+                    state.isLoading = false;
+                }
+                return state;
+            })
         })
     }
 
+    submitApplication() {
+        let newState = (this.state.currentState === "COMPLETED")?"FINALISED":"SUBMITTED";
+        axios.put(`/application/${this.props.id}/state/${newState}`).then(({data})=> {
+            if (this.props.onStateChange) this.props.onStateChange(newState);
+            this.setState({
+                currentState: newState
+            })
+        });
+    }
+
     render() {
+        let props = this.props;
         return (<div style={{
             "padding": "20px",
             "marginBottom": "20px",
@@ -167,15 +197,21 @@ export class ApplicationAdminButtons extends React.Component {
             "z-index": "99",
             "box-shadow": "0px 6px 11px 0px #65656726"}} class="bg-light">
 
-            <Button color="primary" style={{"marginRight":"10px"}}   onClick={this.submitApplication}><i class="fa fa-save"></i> Submit Application</Button>
-            <a href={`${axios.defaults.baseURL}/pdf/application/${this.props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
-            <AssignReview application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
-            <ViewReviews application={this.props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
-            <DropDownStates application={this.props.id} color="secondary" style={{"marginRight":"10px"}} onStateChange={this.props.onStateChange}> </DropDownStates>
+            {(!this.props.hideSubmit && (this.state.currentState === "COMPLETED" || this.state.currentState === "PENDING"))?
+                <Button color="primary" style={{"marginRight":"10px"}} onClick={this.submitApplication}><i class="fa fa-save"></i> {(this.state.currentState === "COMPLETED")?"Finalise":"Submit"} Application</Button>:""}
 
+            <a href={`${axios.defaults.baseURL}/pdf/application/${props.id}`} target={"_blank"} class="btn btn-secondary" style={{"marginRight":"10px"}} ><i class="fa fa-download"></i> Download</a>
+            {(props.isAdmin)?<span>
+                <AssignReview application={props.id} color="secondary" style={{"marginRight":"10px"}}>Assign Review</AssignReview>
+                <ViewReviews application={props.id} color="secondary" style={{"marginRight":"10px"}}>View Assigned Reviews</ViewReviews>
+            </span>:""}
+            {(props.showChangeState)?<DropDownStates application={props.id} color="secondary" style={{"marginRight":"10px"}} onStateChange={props.onStateChange}/>:""}
         </div>);
+
     }
 }
+
+export let ApplicationAdminButtons = withAdmin(ApplicationAdminButtonsNoHoc);
 
 export class EditApplication extends React.Component {
   constructor(props) {
@@ -220,7 +256,7 @@ export class EditApplication extends React.Component {
         let fieldInstances = [];
         for (var fieldInstance of this.state.fieldInstances) {
             if(this.state.currentState === "COMPLETED" && fieldInstance.field.showAtEnd){
-                fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
+                fieldInstances.push(<FieldInstance disabled={false} {...fieldInstance}/>);
             } else if (this.state.currentState !== "COMPLETED" && !fieldInstance.field.showAtEnd) {
                 fieldInstances.push(<FieldInstance disabled={ro||this.props.disabled} {...fieldInstance}/>);
             }
@@ -228,6 +264,7 @@ export class EditApplication extends React.Component {
         return fieldInstances;
     }
   render() {
+
     if(this.state.isError) {
       return <h1 class="text-danger display-6" style={{"textAlign": "center"}}>
         Could not load requested application
@@ -237,27 +274,95 @@ export class EditApplication extends React.Component {
     } else if(!this.state.isEditable) {
       return (<div>
           <Alert color="secondary">
-              This application has been submitted.
+              {applicationStates[this.state.currentState].body}
           </Alert>
           {this.getInstances(true)}
+          <ApplicationSignature id={this.props.id} isEditable={this.state.isEditable&&!this.props.disabled}/>
+
       </div>)
     } else if(this.state.fieldInstances) {
 
       return (
-          <form>
-              {this.getInstances()}
 
-            <div className={"bg-light"}>
-                <div class="form-group" style={{"padding": "10px"}}>
-                    <p class="lead">Please draw your signature in the area below</p>
-                <SignatureCanvas penColor='#252f3c'
-                                 canvasProps={{width: 500, height: 200, className: 'sigCanvas'}} />
-                </div>
-            </div>
-        </form>
+          <form>
+                {this.getInstances()}
+                <ApplicationSignature id={this.props.id} isEditable={this.state.isEditable&&!this.props.disabled}/>
+          </form>
+
         );
     }
+
   }
+}
+
+class ApplicationSignature extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        this.load();
+    }
+
+    state = {trimmedDataURL: null};
+    sigCanvas = {};
+    clear = () => {
+        this.sigCanvas.clear()
+    };
+    trim = () => {
+        axios.put(`/application/${this.props.id}/sign`, this.sigCanvas.getTrimmedCanvas().toDataURL('image/png')).then(({data}) => {
+            if(data.state !== "STATUS_ERROR") {
+                this.setState({
+                    saved: true
+                })
+            }
+        });
+    };
+
+    load = () => {
+        axios.get(`/application/${this.props.id}/sign`).then(({data})=> {
+            if(data.value) {
+                if(this.props.isEditable) {
+                    this.sigCanvas.fromDataURL("data:image/png;base64,"+data.value);
+
+                } else {
+                    var image = new Image(),
+                        ratio = window.devicePixelRatio || 1,
+                        width = this.sigCanvas.width / ratio,
+                        height = this.sigCanvas.height / ratio;
+
+                    image.src = "data:image/png;base64,"+data.value;
+                    image.onload = function () {
+                        this.sigCanvas.getContext("2d").drawImage(image, 0, 0, width, height);
+                    }.bind(this);
+                }
+            }
+        })
+    };
+    render() {
+        return (
+            <div>
+                {(this.state.saved)?<Alert color={"success"}>Signature saved to application</Alert>:""}
+
+                <div className={"bg-light"}>
+                <div class="form-group" style={{"padding": "10px"}}>
+                    <p class="lead">{(this.props.isEditable)?"Please draw your signature in the area below and click 'Sign'":"Signed:"}</p>
+                    {(this.props.isEditable)?<SignatureCanvas penColor='#252f3c'
+                                     canvasProps={{width: 500, height: 200, className: 'sigCanvas'}}
+                                     disabled={true}
+                                     ref={(ref) => { this.sigCanvas = ref }}/>:
+                        <canvas width="500" height="200" className={"sigCanvas"} ref={(ref) => { this.sigCanvas = ref }} />
+                    }
+                </div>
+            </div>
+                {(this.props.isEditable)?<ButtonGroup style={{"paddingBottom": "10px", "textAlign": "center", "display": "block"}}>
+                <Button color="secondary" style={{"marginRight":"10px"}} onClick={this.trim}> Sign</Button>
+                 <Button color="secondary" style={{"marginRight":"10px"}} color={"danger"} onClick={this.clear}> Clear Signature</Button>
+            </ButtonGroup>:""}
+        </div>
+
+        )
+    }
 }
 
 class DropDownStates extends React.Component {
@@ -288,6 +393,8 @@ class DropDownStates extends React.Component {
                         <DropdownItem onClick={()=> this.setState("REFUSED")}> Rejected </DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem onClick={()=> this.setState("COMPLETED")}> Completed </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem onClick={()=> this.setState("FINALISED")}> Finalised </DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown>
             </ButtonGroup>

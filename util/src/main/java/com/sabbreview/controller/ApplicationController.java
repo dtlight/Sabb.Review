@@ -1,60 +1,75 @@
 package com.sabbreview.controller;
 
-import com.sabbreview.model.AcceptanceState;
-import com.sabbreview.model.Application;
-import com.sabbreview.model.Department;
-import com.sabbreview.model.Field;
-import com.sabbreview.model.FieldInstance;
-import com.sabbreview.model.FieldOption;
-import com.sabbreview.model.FieldType;
-import com.sabbreview.model.Template;
-import com.sabbreview.model.User;
+import com.sabbreview.model.*;
 import com.sabbreview.responses.TransactionState;
 import com.sabbreview.responses.TransactionStatus;
 import com.sabbreview.responses.ValidationException;
-
+import com.sabbreview.NotificationService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains the high level code for operations on Application JPA objects.
+ * Authentication is enforced here.
+ * Call this class to do things with Applications.
+ * @see Application
+ */
 public class ApplicationController extends Controller {
 
-  public static TransactionState<Application> createApplication(String principle,
-      Application application) {
-    try {
-      if (application == null) {
-        application = new Application();
-      }
-      em.getTransaction().begin();
-      User user = em.find(User.class, principle);
-      application.setApplicant(user);
-      em.persist(application);
-      em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
-    } catch (Exception e) {
-      rollback();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    }
-  }
+    /**
+     * Stores an application object in the database.
+     * @param principle Principle (email) of the user creating the application
+     * @param application Application to store
+     */
+    public static TransactionState<Application> createApplication(String principle,
+                                                                  Application application) {
+        try {
 
-  private static TransactionState<Application> assignApplication(User applicant,
-      Application application) {
-    try {
-      em.getTransaction().begin();
-      application.setApplicant(applicant);
-      em.merge(application);
-      em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
-    } catch (Exception e) {
-      rollback();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    }
-  }
+            if (application == null) {
+                application = new Application();
+            }
 
-  public static TransactionState<Application> deleteApplication(String principle,
-      String applicationID) {
+            em.getTransaction().begin();
+            User user = em.find(User.class, principle);
+            queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
+            application.setApplicant(user);
+            em.persist(application);
+            em.getTransaction().commit();
+
+            return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
+        } catch (Exception e) {
+            rollback();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
+    }
+
+    /*
+    private static TransactionState<Application> assignApplication(String principle, User applicant,
+    Application application) {
+
+    try {
+    em.getTransaction().begin();
+    application.setApplicant(applicant);
+    em.merge(application);
+    em.getTransaction().commit();
+    return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+    rollback();
+    return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+    }
+     */
+
+  /**
+   * Deletes an application.
+   * @param principle Principle of the user calling this function..
+   * @param applicationID ID of the application to be deleted.
+   * @return
+   */
+  public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
       em.getTransaction().begin();
-      em.createNamedQuery("authenticated-delete").setParameter("id", applicationID).executeUpdate();
+      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
@@ -63,6 +78,7 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
+  
   public static TransactionState<List> getAssignments(String principle,
       String applicationID) {
     try {
@@ -74,16 +90,83 @@ public class ApplicationController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
-  public static TransactionState<Application> getApplication(String applicationID) {
+
+  /**
+   * Retrieves an application.
+   * @param principle The ID of the user requesting the application.
+   * @param applicationID The application to be returned.
+   * @return The application along with a transaction status message.
+   */
+  public static TransactionState<Application> getApplication(String principle, String applicationID) {
     try {
       Application application;
-      application = em.find(Application.class, applicationID);
+      application = em.createNamedQuery("get-application", Application.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
       if (application == null) {
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
       }
       return new TransactionState<>(application, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
       rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+
+  /**
+   * Retrieves an application.
+   * @param principle The ID of the user requesting the application.
+   * @param applicationID The application to be returned.
+   * @return The application along with a transaction status message.
+   */
+  public static TransactionState<AcceptanceState> getState(String principle, String applicationID) {
+    try {
+      AcceptanceState appState;
+      appState = em.createNamedQuery("get-application-state", AcceptanceState.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
+      if (appState == null) {
+        return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+      }
+      return new TransactionState<>(appState, TransactionStatus.STATUS_OK, "");
+    } catch (Exception e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+
+
+  public static TransactionState<Application> setSignature(String applicationID, String sign) {
+    try {
+      em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationID);
+      application.setSignature(sign.split(",")[1]);
+      em.merge(application); //need to iterate through user, find acc state, and change
+      em.flush();
+      em.getTransaction().commit();
+      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+              "Error Capturing Signature");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+    }
+  }
+
+  public static TransactionState<String> getSignature(String principle, String applicationID) {
+    try {
+      em.getTransaction().begin();
+      Application application = em.find(Application.class, applicationID);
+      em.getTransaction().commit();
+      return new TransactionState<>(application.getSignature(), TransactionStatus.STATUS_OK);
+    } catch (IllegalArgumentException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
+          "Error Capturing Signature");
+    } catch (Exception e) {
+      rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
@@ -99,6 +182,8 @@ public class ApplicationController extends Controller {
       em.merge(application); //need to iterate through user, find acc state, and change
       em.flush();
       em.getTransaction().commit();
+      new NotificationService().sendNotification(NotificationID.valueOf(acceptanceStateString.toUpperCase()),
+              "User", application.getApplicant().getEmailAddress());//need to decide on names or not
       return new TransactionState<>(application, TransactionStatus.STATUS_OK);
     } catch (IllegalArgumentException e) {
       rollback();
@@ -113,12 +198,19 @@ public class ApplicationController extends Controller {
 
   public static TransactionState<Application> useTemplate(String principle, String templateid,
       String departmentid) {
-    try {
+      try {
       em.getTransaction().begin();
 
       User user = em.find(User.class, principle);
       Department department = em.find(Department.class, departmentid);
       Template template = TemplateController.getTemplate(principle, templateid).getValue();
+
+      if( department == null || template == null){
+         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "TEMPLATE OR" +
+                        "DEPARTMENT NO EXISTERINO");
+      }
+
+      // TODO      queueInstance.publish(user.getEmailAddress()+"\\"+user.getEmailAddress()+"\\"+"applicationCreation");
 
       Application application = new Application();
       application.setDepartment(department);
@@ -132,95 +224,120 @@ public class ApplicationController extends Controller {
           FieldInstance fieldInstance = new FieldInstance(field);
           em.persist(fieldInstance);
           application.addFieldInstance(fieldInstance);
+                }
+            }
+
+            em.persist(application);
+            em.merge(application);
+            em.merge(user);
+            em.merge(department);
+
+
+            em.flush();
+            em.getTransaction().commit();
+            return new TransactionState<>(application, TransactionStatus.STATUS_OK);
+        } catch (Exception e) {
+            rollback();
+            e.printStackTrace();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
         }
-      }
-
-      em.persist(application);
-      em.merge(application);
-      em.merge(user);
-      em.merge(department);
-
-
-      em.flush();
-      em.getTransaction().commit();
-      return new TransactionState<>(application, TransactionStatus.STATUS_OK);
-    } catch (Exception e) {
-      rollback();
-      e.printStackTrace();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
-  }
 
-  public static TransactionState<FieldInstance> changeFieldValue(String principle,
-      String fieldInstanceId, FieldInstanceValue value) {
-    try {
-      em.getTransaction().begin();
-      FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
+    /**
+     * Changes the value of a field instance inside an application.
+     * @param principle Principle of the calling user
+     * @param fieldInstanceId ID of the instance of the field whose value you want to modify.
+     * @param value Value to set the field to.
+     */
+    public static TransactionState<FieldInstance> changeFieldValue(String principle,
+                                                                   String fieldInstanceId, FieldInstanceValue value) {
+        try {
+            em.getTransaction().begin();
+            FieldInstance fieldInstance = em.find(FieldInstance.class, fieldInstanceId);
 
       if (fieldInstance == null) {
         throw new ValidationException("Field Instance does not exist");
       }
 
-      Field fieldOf = fieldInstance.getField();
-      FieldType fieldType = fieldOf.getType();
+                Field fieldOf = fieldInstance.getField();
+                FieldType fieldType = fieldOf.getType();
 
-      switch (fieldType) {
-        case TEXT:
-          fieldInstance.setValue(value.getValue());
-          break;
-        case LONGTEXT:
-          fieldInstance.setValue(value.getValue());
-          break;
-        case DATE:
-          //TODO
-          break;
-        case MULTICHOICE:
-          String[] choices = value.value.split(",");
-          ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
-          for (String c:
-               choices) {
-            FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
-            selectedOptionsList.add(fieldOption);
-          }
-          fieldInstance.setSelectedValues(selectedOptionsList);
-          break;
-        case SINGLECHOICE:
-          FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
-          if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
-            ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
-            selectedOptionList.add(singlefieldoption);
-            fieldInstance.setSelectedValues(selectedOptionList);
-          } else {
-            throw new ValidationException("Field option does not exist for this field");
-          }
-      }
+                switch (fieldType) {
+                    case TEXT:
+                        fieldInstance.setValue(value.getValue());
+                        break;
+                    case LONGTEXT:
+                        fieldInstance.setValue(value.getValue());
+                        break;
+                    case DATE:
+                        //TODO
+                        break;
+                    case MULTICHOICE:
+                        String[] choices = value.value.split(",");
+                        ArrayList<FieldOption> selectedOptionsList = new ArrayList<>();
+                        for (String c :
+                                choices) {
+                            FieldOption fieldOption = em.getReference(FieldOption.class, Integer.parseInt(c));
+                            selectedOptionsList.add(fieldOption);
+                        }
+                        fieldInstance.setSelectedValues(selectedOptionsList);
+                        break;
+                    case SINGLECHOICE:
+                        FieldOption singlefieldoption = em.find(FieldOption.class, Integer.parseInt(value.value));
+                        if (singlefieldoption != null && fieldOf.getFieldOptions().contains(singlefieldoption)) {
+                            ArrayList<FieldOption> selectedOptionList = new ArrayList<>();
+                            selectedOptionList.add(singlefieldoption);
+                            fieldInstance.setSelectedValues(selectedOptionList);
+                        } else {
+                            throw new ValidationException("Field option does not exist for this field");
+                        }
+                }
 
       em.merge(fieldInstance);
       em.getTransaction().commit();
 
 
-      return new TransactionState<>(fieldInstance, TransactionStatus.STATUS_OK);
-    } catch (Exception e) {
-      rollback();
-      e.printStackTrace();
-      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
-    }
-  }
-
-  public class FieldInstanceValue {
-    String value;
-
-    public String getValue() {
-      return value;
+            return new TransactionState<>(fieldInstance, TransactionStatus.STATUS_OK);
+        } catch (Exception e) {
+            rollback();
+            e.printStackTrace();
+            return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
+        }
     }
 
-    public FieldInstanceValue setValue(String value) {
-      this.value = value;
-      return this;
+    /**
+     * Finds whether or not a user is assigned an application.
+     * For internal use.
+     * @param applicationID Application to check for.
+     * @param user User to check.
+     * @return Whether a user is assigned an application with applicationID.
+     */
+    private static boolean userIsAssignedApplication(String applicationID, User user){
+        List<Assignment> assignments = user.getAssignments();
+        for(int i = 0; i < assignments.size(); i++){
+            if( assignments.get(i).getId().equals(applicationID) ){
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    @Override public String toString() {
-      return "FieldInstanceValue{" + "value='" + value + '\'' + '}';
+
+    public class FieldInstanceValue {
+        String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public FieldInstanceValue setValue(String value) {
+            this.value = value;
+            return this;
+        }
+
+        @Override public String toString() {
+            return "FieldInstanceValue{" + "value='" + value + '\'' + '}';
+        }
     }
-  }
 }

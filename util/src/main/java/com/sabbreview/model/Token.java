@@ -5,6 +5,16 @@ package com.sabbreview.model;
  */
 public class Token extends Model {
   String token;
+  boolean isAdmin;
+
+  public boolean isAdmin() {
+    return isAdmin;
+  }
+
+  public Token setAdmin(boolean admin) {
+    isAdmin = admin;
+    return this;
+  }
 
   public Token(String token) {
     this.token = token;
@@ -17,5 +27,9 @@ public class Token extends Model {
   public Token setToken(String token) {
     this.token = token;
     return this;
+  }
+
+  @Override public String toString() {
+    return "Token{" + "token='" + token + '\'' + ", isAdmin=" + isAdmin + '}';
   }
 }

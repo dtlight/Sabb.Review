@@ -17,6 +17,12 @@ import java.util.List;
 import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 
+/**
+ * Contains the high level code for operations on User JPA Objects.
+ * Authentication is enforced for some methods in this class.
+ * Call this class to do operations on Users.
+ * @see User
+ */
 public class UserController extends Controller {
   private static final String EMAIL_REGEX;
 
@@ -24,11 +30,16 @@ public class UserController extends Controller {
     EMAIL_REGEX = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
   }
 
+  /**
+   * Stores a user object in the database.
+   * ALL USERS ARE CREATED AS ADMINS CURRENTLY.
+   * SEE TODO!!!
+   * @param user User to persist.
+   */
   public static TransactionState<User> registerUser(User user) {
     try {
       em.getTransaction().begin();
       user.encryptPassword();
-      user.setAdmin(true); //TODO GET RID OF THIS (obviously)
       if (!user.getEmailAddress().matches(EMAIL_REGEX)) {
         throw new ValidationException("emailAddress");
       }
@@ -40,9 +51,9 @@ public class UserController extends Controller {
       rollback();
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR,
-          (e.getCause().getMessage().contains("duplicate") ?
-              "There is already a user with that email address" :
-              null));
+              (e.getCause().getMessage().contains("duplicate") ?
+                      "There is already a user with that email address" :
+                      null));
     } catch (Exception e) {
       rollback();
       e.printStackTrace();
@@ -50,6 +61,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Fetches a user object.
+   * @param emailAddress Email address of user to fetch.
+   * @return The user object, as part of a transactionstate.
+   */
   public static TransactionState<User> getUser(String emailAddress) {
     User user = em.find(User.class, emailAddress);
     if (user == null) {
@@ -59,6 +75,11 @@ public class UserController extends Controller {
     }
   }
 
+  /**
+   * Generates a session token.
+   * @param uap
+   * @return A token, as part of a transactionstate.
+   */
   public static TransactionState<Token> generateSession(UserAuthenticationParameters uap) {
     String token;
     try {
@@ -73,10 +94,16 @@ public class UserController extends Controller {
           Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECURE_KEY"));
           token = JWT.create().withIssuer("sabbreview").withClaim("principle", user.getEmailAddress())
               .withExpiresAt(calendar.getTime()).sign(algorithm);
+          Token instance = new Token(token);
+          instance.setAdmin(user.getAdmin());
+
+          return new TransactionState<>(instance, TransactionStatus.STATUS_OK);
+
         } else {
           throw new ValidationException();
         }
       }
+
     } catch (ValidationException e) {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Could not verify user");
@@ -88,19 +115,49 @@ public class UserController extends Controller {
       e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-    return new TransactionState<>(new Token(token), TransactionStatus.STATUS_OK);
 
   }
 
+  /**
+   * Deletes the user that calls this function.
+   * @param principle Principle of the calling user.
+   */
   public static TransactionState<User> deleteUser(String principle) {
     try {
       em.getTransaction().begin();
       User user = em.find(User.class, principle);
+      if(user.getEmailAddress().equals(principle)) {
+
+        em.getTransaction().begin();
+        if (user == null) {
+          throw new ValidationException();
+        } else {
+          em.remove(user);
+        }
+        em.getTransaction().commit();
+
+      }
+    } catch (RollbackException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    } catch (ValidationException e) {
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "Invalid user principle");
+    }
+    return new TransactionState<>(null, TransactionStatus.STATUS_OK);
+  }
+
+
+  public static TransactionState<User> promoteUser(String principle, String id) {
+    try {
+      em.getTransaction().begin();
+      User user = em.find(User.class, id);
       if(user == null) {
         throw new ValidationException();
       } else {
-        em.remove(user);
+        user.setAdmin(true);
       }
+      em.merge(user);
       em.getTransaction().commit();
     } catch (RollbackException e) {
       rollback();
@@ -115,7 +172,7 @@ public class UserController extends Controller {
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
-      applicationTypedQuery.setParameter("owner", principle);
+      applicationTypedQuery.setParameter("id", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
       return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
@@ -125,7 +182,25 @@ public class UserController extends Controller {
     }
   }
 
+  public static TransactionState<List<User>> getAllUsers(String principle) {
+    try {
+      User user = em.find(User.class, principle);
+      TypedQuery<User> userTypedQuery = em.createNamedQuery("get-all-users", User.class);
+      userTypedQuery.setParameter("isAdmin", user.getAdmin());
+      return new TransactionState<>(userTypedQuery.getResultList(), TransactionStatus.STATUS_OK);
+    } catch (Exception e) {
+      e.printStackTrace();
+      rollback();
+      return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
+    }
+  }
 
+
+  /**
+   * Fetches all the assignments for the calling user.
+   * @param principle Principle of the calling user.
+   * @return A list of Assignments.
+   */
   public static TransactionState<List<Assignment>> getAssignmentsForUser(String principle) {
     try {
       TypedQuery<Assignment> assignmentTypedQuery = em.createNamedQuery("get-all-assignments-for-user", Assignment.class);
@@ -137,7 +212,6 @@ public class UserController extends Controller {
       rollback();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, e.getMessage());
     }
-
   }
 
   public class UserAuthenticationParameters {

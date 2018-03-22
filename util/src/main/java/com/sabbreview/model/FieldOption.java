@@ -1,10 +1,12 @@
 package com.sabbreview.model;
 
 
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 
 @Entity public class FieldOption extends Model {
 
@@ -13,6 +15,8 @@ import javax.persistence.Id;
   int id;
 
   String title;
+
+  Date createdAt;
 
   public FieldOption() {}
 
@@ -38,4 +42,10 @@ import javax.persistence.Id;
     return "FieldOption{" + "id=" + id + ", title='" + title + '\''
         + '}';
   }
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
+  }
+
 }

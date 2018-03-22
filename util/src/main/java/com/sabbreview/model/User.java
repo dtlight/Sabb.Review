@@ -8,15 +8,21 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
+@NamedQueries({
+    @NamedQuery(query = "SELECT U FROM users U WHERE :isAdmin = true", name = "get-all-users")
+})
 @Entity(name = "users") public class User extends Model {
   private static transient int HASH_ROUNDS = 10;
+
 
   @Id private String emailAddress;
   @SuppressWarnings("FieldCanBeLocal") private String password;
 
-  public Boolean isAdmin;
+  public boolean isAdmin;
 
   @OneToMany(cascade = CascadeType.ALL) List<Assignment> assignments = new ArrayList<>();
   @OneToMany(mappedBy="applicant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval=true ) List<Application> applications = new ArrayList<>();

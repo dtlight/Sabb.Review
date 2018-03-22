@@ -5,7 +5,7 @@ import { Card, Badge, CardText, CardBody,
 import axios from 'axios';
 
 
-let applicationStates = {
+export let applicationStates = {
     PENDING: {
         humanStatus: "Pending",
         body: "This application is awaiting completion, please edit your application and press submit to proceed.",
@@ -33,6 +33,12 @@ let applicationStates = {
     COMPLETED: {
         humanStatus: "Completed",
         body: "The accepted sabbatical period has finished. Please complete the report.",
+        colours: "success",
+        buttonsVisible: true
+    },
+    FINALISED: {
+        humanStatus: "Finalised",
+        body: "The application has been finalised and the provided report has been submitted.",
         colours: "success",
         buttonsVisible: false
     }
@@ -71,7 +77,7 @@ export class ApplicationCard extends React.Component {
           <CardText>{applicationStates[this.state.status].body}</CardText>
           <div class={(applicationStates[this.state.status].buttonsVisible)?"visible":"invisible"}>
             <Link style={{"position": "absolute", "bottom": "0", "paddingBottom": "15px"}} class="text-secondary" to={`/apply/${this.state.id}`}>View Application</Link>
-            <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
+              <button class="btn-link text-danger float-right" style={{"border": "0", "cursor": "pointer", "position": "absolute", "bottom": "0", "paddingBottom": "15px", "paddingRight": "20px", "right": "0"}} href="#" onClick={this.withdrawApplication}>Withdraw</button>
           </div>
         </CardBody>
       </Card></Link>

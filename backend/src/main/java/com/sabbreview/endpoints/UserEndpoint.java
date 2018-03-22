@@ -17,6 +17,10 @@ public class UserEndpoint extends Endpoint {
     post("/user",
         (req, res) -> toJson(UserController.registerUser(fromJson(req.body(), User.class))));
 
+    post("/user/:id/promote",
+        (req, res) -> requireAuthentication(req, (principe) ->
+            toJson(UserController.promoteUser(principe, req.params("id")))));
+
     get("/user/by-id/:id", (req, res) -> toJson(UserController.getUser(req.params("id"))));
 
     post("/login", (req, res) -> toJson(UserController
@@ -24,6 +28,9 @@ public class UserEndpoint extends Endpoint {
 
     get("/user", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(UserController.getUser(principle))));
+
+    get("/user/all", (req, res) -> requireAuthentication(req,
+        (principle) -> toJson(UserController.getAllUsers(principle))));
 
     get("/user/applications", (req, res) -> requireAuthentication(req,
         (principle) -> toJson(getApplicationsForUser(principle))));

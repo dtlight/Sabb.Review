@@ -1,9 +1,11 @@
 package com.sabbreview.endpoints;
 
 
+import com.sabbreview.SabbReview;
 import com.sabbreview.SabbReviewEntityManager;
 import com.sabbreview.model.Application;
 import com.sabbreview.model.Assignment;
+import com.sabbreview.model.Comment;
 import com.sabbreview.model.FieldInstance;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -12,29 +14,33 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
 
-import static java.lang.Thread.currentThread;
 import static spark.Spark.get;
 
 public class PDFGeneratorEndpoint {
     static PDFont font = PDType1Font.HELVETICA;
     static EntityManager em = SabbReviewEntityManager.getEntityManager();
+    static final double SIGNATURE_SCALE = 0.5;
 
     private static ByteArrayOutputStream getPDF(String assignmentID) {
-        try {
-          PDDocument document = new PDDocument();
 
-          PDImageXObject pdImage = PDImageXObject.createFromFile(
-              currentThread().getContextClassLoader().getResource("sabbreview.png").getPath(), document);
+      try(PDDocument document = new PDDocument()) {
+          Application application = em.find(Application.class, assignmentID);
+
+
+          PDImageXObject pdImage = PDImageXObject.createFromFile(SabbReview.getStaticResource("backend", "sabbreview.png"), document);
+          BASE64Decoder decoder = new BASE64Decoder();
+
+          PDImageXObject pdSignature = (application.getSignature() != null)?PDImageXObject.createFromByteArray(document, decoder.decodeBuffer(application.getSignature()), "sig.png"):null;
 
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            Application application = em.find(Application.class,assignmentID);
 
             PDDocumentInformation pdDocumentInformation = new PDDocumentInformation();
             pdDocumentInformation.setTitle("SabbReview Appraisal #"+application.getId());
@@ -42,7 +48,7 @@ public class PDFGeneratorEndpoint {
             PDPage pdPage = new PDPage(); // Page 1: Details about application
 
             PDPageContentStream contentStream = new PDPageContentStream(document, pdPage);
-            contentStream.drawImage( pdImage, 380, 700);
+            contentStream.drawImage( pdImage, 380, 700, Math.round(pdImage.getWidth()*0.2), Math.round(pdImage.getHeight()*0.2));
             contentStream.beginText();
             contentStream.setFont(font, 15);
             contentStream.setLeading(20f);
@@ -56,7 +62,19 @@ public class PDFGeneratorEndpoint {
             contentStream.newLine();
 
             contentStream.showText("Current state: "+application.getState());
+          contentStream.newLine();
+          contentStream.newLine();
+          if(pdSignature != null) {
+            contentStream.showText("Signed by "+application.getApplicant().getEmailAddress());
             contentStream.endText();
+            contentStream.drawImage(pdSignature, 30, 500, Math.round(pdSignature.getWidth()*SIGNATURE_SCALE), Math.round(pdSignature.getHeight()*SIGNATURE_SCALE));
+          } else {
+            contentStream.showText("Application has not been signed");
+            contentStream.endText();
+
+          }
+
+
             contentStream.close();
             document.addPage(pdPage);
 
@@ -147,6 +165,10 @@ public class PDFGeneratorEndpoint {
             assignmentContentStream.setFont(font, 12);
             assignmentContentStream.showText("  Status: "+ assignment.getState());
             assignmentContentStream.newLine();
+            for(Comment comment: assignment.getComments()) {
+              assignmentContentStream.showText("Comment: "+ comment.getBody());
+              assignmentContentStream.newLine();
+            }
         }
         assignmentContentStream.endText();
         assignmentContentStream.close();

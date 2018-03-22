@@ -3,6 +3,7 @@ package com.sabbreview.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -11,6 +12,7 @@ public class Comment extends Model {
   @Id
   private String id;
 
+  @Lob
   private String body;
 
   @ManyToOne
@@ -51,7 +53,7 @@ public class Comment extends Model {
     return author;
   }
 
-  private Comment setAuthor(User author) {
+  public Comment setAuthor(User author) {
     this.author = author;
     return this;
   }
