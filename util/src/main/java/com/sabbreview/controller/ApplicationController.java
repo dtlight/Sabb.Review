@@ -69,7 +69,7 @@ public class ApplicationController extends Controller {
   public static TransactionState<Application> deleteApplication(String principle, String applicationID) {
     try {
       em.getTransaction().begin();
-      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("principle", principle).executeUpdate();
+      em.createNamedQuery("delete-application").setParameter("id", applicationID).setParameter("id", principle).executeUpdate();
       em.getTransaction().commit();
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (Exception e) {
@@ -122,7 +122,7 @@ public class ApplicationController extends Controller {
   public static TransactionState<AcceptanceState> getState(String principle, String applicationID) {
     try {
       AcceptanceState appState;
-      appState = em.createNamedQuery("get-application-state", AcceptanceState.class).setParameter("id", applicationID).setParameter("principle", principle).getSingleResult();
+      appState = em.createNamedQuery("get-application-state", AcceptanceState.class).setParameter("id", applicationID).getSingleResult();
       if (appState == null) {
         return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
       }
