@@ -150,7 +150,7 @@ public class UserController extends Controller {
   public static TransactionState<List<Application>> getApplicationsForUser(String principle) {
     try {
       TypedQuery<Application> applicationTypedQuery = em.createNamedQuery("get-all-applications-for-user", Application.class);
-      applicationTypedQuery.setParameter("principle", principle);
+      applicationTypedQuery.setParameter("id", principle);
       List<Application> applicationList = applicationTypedQuery.getResultList();
       return new TransactionState<>(applicationList, TransactionStatus.STATUS_OK);
     } catch (Exception e) {
