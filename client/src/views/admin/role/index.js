@@ -21,6 +21,9 @@ export class ViewRoles extends React.Component {
     constructor(props) {
         super(props);
         this.props = props;
+        this.state = {
+            s: 0
+        }
     }
 
 
@@ -30,8 +33,12 @@ export class ViewRoles extends React.Component {
         <h1 class="display-4">View Roles</h1>
         <p class="lead">These are the roles that can be assigned to a new review.</p>
 
-          <RoleTable />
-          <RoleEditor>Create a new role</RoleEditor>
+          <RoleTable s={this.state.s}/>
+          <RoleEditor onChange={() => {
+              this.setState({
+                  s: this.state.s ++
+              })
+          }}>Edit Role</RoleEditor>
       </div>
     );
   }

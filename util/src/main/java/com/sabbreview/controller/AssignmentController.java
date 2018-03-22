@@ -94,13 +94,17 @@ public class AssignmentController extends Controller {
       User user = em.find(User.class, principle);
       Assignment assignment = em.find(Assignment.class, assignmentid);
 
-
+      Application application = assignment.getApplication();
+      application.getAssignments().remove(assignment);
+      assignment.getAssignee().getAssignments().remove(assignment);
       if(assignment == null) {
         throw new ValidationException("Assignment does not exist");
       }
 
       if( assignment.getAssignee().getEmailAddress().equals(principle) ||  user.getAdmin()){
         em.getTransaction().begin();
+        em.merge(assignment.getAssignee());
+        em.merge(application);
         em.remove(assignment);
         em.getTransaction().commit();
       }
@@ -108,6 +112,7 @@ public class AssignmentController extends Controller {
       return new TransactionState<>(null, TransactionStatus.STATUS_OK, "");
     } catch (ValidationException | RollbackException e) {
       rollback();
+      e.printStackTrace();
       return new TransactionState<>(null, TransactionStatus.STATUS_ERROR, "");
     }
   }
