@@ -20,7 +20,7 @@ public class TemplateControllerTest {
     private User newUser;
     @Before
     public void setUp() {
-        testTemplate = new Template);
+        testTemplate = new Template();
         newUser = new User();
         TemplateController.createTemplate(newUser.getEmailAddress(), testTemplate);
     }
