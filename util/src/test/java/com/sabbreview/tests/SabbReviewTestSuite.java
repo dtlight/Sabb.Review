@@ -6,7 +6,6 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     ApplicationControllerTest.class,
-    AssignmentControllerTest.class,
     DepartmentControllerTest.class,
     FieldControllerTest.class,
     RoleControllerTest.class,
